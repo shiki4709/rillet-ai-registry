@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Registry — Rillet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1a1a1a;
+    --border: #2a2a2a;
+    --border-hover: #3a3a3a;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --accent: #4ade80;
+    --accent-dim: #22c55e;
+    --yellow: #facc15;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+    --red: #f87171;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .header .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .stat {
+    flex: 1;
+    background: var(--surface);
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .stat:first-child { border-radius: 6px 0 0 6px; }
+  .stat:last-child { border-radius: 0 6px 6px 0; }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus {
+    border-color: var(--accent-dim);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+    transition: border-color 0.15s;
+  }
+
+  .filter-select:focus {
+    border-color: var(--accent-dim);
+  }
+
+  /* Table */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: var(--surface);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+
+  thead th:hover {
+    color: var(--text-dim);
+  }
+
+  thead th.sorted {
+    color: var(--accent);
+  }
+
+  thead th .sort-arrow {
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0.5;
+  }
+
+  thead th.sorted .sort-arrow {
+    opacity: 1;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background: var(--surface);
+  }
+
+  tbody tr.expanded {
+    background: var(--surface);
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .wf-name {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .wf-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .badge-live {
+    color: var(--accent);
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+  }
+
+  .badge-pilot {
+    color: var(--yellow);
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.2);
+  }
+
+  .badge-type {
+    color: var(--blue);
+    background: rgba(96, 165, 250, 0.1);
+    border: 1px solid rgba(96, 165, 250, 0.15);
+  }
+
+  .badge-risk-low {
+    color: var(--accent);
+    background: rgba(74, 222, 128, 0.08);
+  }
+
+  .badge-risk-medium {
+    color: var(--orange);
+    background: rgba(251, 146, 60, 0.1);
+  }
+
+  .bu-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .saves-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* Expand row */
+  .expand-icon {
+    display: inline-block;
+    width: 16px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    transition: transform 0.15s;
+  }
+
+  tr.expanded .expand-icon {
+    transform: rotate(90deg);
+  }
+
+  /* Detail row */
+  .detail-row td {
+    padding: 0;
+    background: var(--surface);
+    cursor: default;
+  }
+
+  .detail-content {
+    padding: 16px 14px 16px 44px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-section h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .detail-section p {
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .detail-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .detail-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .detail-meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .detail-meta-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .reuse-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    background: rgba(96, 165, 250, 0.08);
+    border: 1px solid rgba(96, 165, 250, 0.15);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .detail-content { grid-template-columns: 1fr; }
+    .stats-bar { flex-direction: column; }
+    .controls { flex-direction: column; }
+    .filter-select { width: 100%; }
+    table { font-size: 12px; }
+    .hide-mobile { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>AI Registry</h1>
+    <span class="tag">v1.0</span>
+  </div>
+  <p class="subtitle">Cross-BU AI workflow catalog — filter, search, and review active automations.</p>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat">
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-label">Workflows</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statLive">—</div>
+      <div class="stat-label">Live</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statBUs">—</div>
+      <div class="stat-label">Business Units</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statHours">—</div>
+      <div class="stat-label">Hours Saved / Wk</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statRewrite">—</div>
+      <div class="stat-label">Avg Rewrite Rate</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search workflows...">
+    <select class="filter-select" id="filterBU">
+      <option value="">All BUs</option>
+    </select>
+    <select class="filter-select" id="filterStatus">
+      <option value="">All Status</option>
+      <option value="Live">Live</option>
+      <option value="Pilot">Pilot</option>
+    </select>
+    <select class="filter-select" id="filterRisk">
+      <option value="">All Risk</option>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+    </select>
+    <select class="filter-select" id="filterType">
+      <option value="">All Types</option>
+      <option value="1">Type 1</option>
+      <option value="2">Type 2</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28px"></th>
+          <th data-sort="name">Name <span class="sort-arrow">▲</span></th>
+          <th data-sort="bu">BU <span class="sort-arrow">▲</span></th>
+          <th data-sort="type" class="hide-mobile">Type <span class="sort-arrow">▲</span></th>
+          <th data-sort="risk" class="hide-mobile">Risk <span class="sort-arrow">▲</span></th>
+          <th data-sort="status">Status <span class="sort-arrow">▲</span></th>
+          <th data-sort="saves" class="hide-mobile">Saves <span class="sort-arrow">▲</span></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function () {
+  let workflows = [];
+  let sortCol = 'name';
+  let sortAsc = true;
+  let expandedId = null;
+
+  // Load data
+  fetch('./data/registry.json')
+    .then(r => r.json())
+    .then(data => {
+      workflows = data;
+      populateBUFilter();
+      computeStats();
+      render();
+    })
+    .catch(err => {
+      document.getElementById('tableBody').innerHTML =
+        '<tr><td colspan="7" class="empty-state">Failed to load registry data.</td></tr>';
+      console.error(err);
+    });
+
+  // BU filter options
+  function populateBUFilter() {
+    const bus = [...new Set(workflows.map(w => w.bu))].sort();
+    const sel = document.getElementById('filterBU');
+    bus.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b;
+      opt.textContent = b;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Stats
+  function computeStats() {
+    document.getElementById('statTotal').textContent = workflows.length;
+    document.getElementById('statLive').textContent = workflows.filter(w => w.status === 'Live').length;
+    document.getElementById('statBUs').textContent = new Set(workflows.map(w => w.bu)).size;
+
+    let totalHrs = 0;
+    workflows.forEach(w => {
+      const m = w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);
+      if (m) {
+        let h = parseFloat(m[1]);
+        if (m[2] === 'mo') h = h / 4.33;
+        totalHrs += h;
+      }
+    });
+    document.getElementById('statHours').textContent = totalHrs.toFixed(1);
+
+    const rates = workflows.map(w => parseFloat(w.rewrite_rate));
+    const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+    document.getElementById('statRewrite').textContent = avgRate.toFixed(1) + '%';
+  }
+
+  // Filter + sort + render
+  function getFiltered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const bu = document.getElementById('filterBU').value;
+    const status = document.getElementById('filterStatus').value;
+    const risk = document.getElementById('filterRisk').value;
+    const type = document.getElementById('filterType').value;
+
+    return workflows.filter(w => {
+      if (q && !w.name.toLowerCase().includes(q) && !w.desc.toLowerCase().includes(q)) return false;
+      if (bu && w.bu !== bu) return false;
+      if (status && w.status !== status) return false;
+      if (risk && w.risk !== risk) return false;
+      if (type && w.type !== parseInt(type)) return false;
+      return true;
+    });
+  }
+
+  function parseSaves(s) {
+    const m = s.match(/([\d.]+)/);
+    return m ? parseFloat(m[1]) : 0;
+  }
+
+  function getSorted(list) {
+    return [...list].sort((a, b) => {
+      let va = a[sortCol], vb = b[sortCol];
+      if (sortCol === 'saves') { va = parseSaves(va); vb = parseSaves(vb); }
+      if (sortCol === 'type') { va = a.type; vb = b.type; }
+      if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+      if (va < vb) return sortAsc ? -1 : 1;
+      if (va > vb) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }
+
+  function render() {
+    const filtered = getSorted(getFiltered());
+    const tbody = document.getElementById('tableBody');
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No workflows match filters.</td></tr>';
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(w => {
+      const isExpanded = expandedId === w.id;
+      const statusClass = w.status === 'Live' ? 'badge-live' : 'badge-pilot';
+      const riskClass = w.risk === 'Low' ? 'badge-risk-low' : 'badge-risk-medium';
+
+      html += `<tr class="${isExpanded ? 'expanded' : ''}" data-id="${w.id}">
+        <td><span class="expand-icon">▶</span></td>
+        <td>
+          <div class="wf-name">${esc(w.name)}</div>
+          <div class="wf-desc">${esc(w.desc)}</div>
+        </td>
+        <td><span class="bu-label">${esc(w.bu)}</span></td>
+        <td class="hide-mobile"><span class="badge badge-type">Type ${w.type}</span></td>
+        <td class="hide-mobile"><span class="badge ${riskClass}">${esc(w.risk)}</span></td>
+        <td><span class="badge ${statusClass}">${esc(w.status)}</span></td>
+        <td class="hide-mobile"><span class="saves-label">${esc(w.saves)}</span></td>
+      </tr>`;
+
+      if (isExpanded) {
+        const reuseTags = w.reused_by.length
+          ? w.reused_by.map(r => `<span class="reuse-tag">${esc(r)}</span>`).join('')
+          : '<span style="color:var(--text-muted)">—</span>';
+
+        html += `<tr class="detail-row">
+          <td colspan="7">
+            <div class="detail-content">
+              <div class="detail-section">
+                <h4>Prompt / Pipeline</h4>
+                <p>${esc(w.prompt_summary)}</p>
+              </div>
+              <div class="detail-section">
+                <h4>Review & Reuse</h4>
+                <div class="detail-meta">
+                  <div class="detail-meta-item">
+                    <span class="detail-meta-label">Reviewer</span>
+                    <span class="detail-meta-value">${esc(w.reviewer)}</span>
+                  </div>
+                  <div class="detail-meta-item">
+                    <span class="detail-meta-label">Rewrite Rate</span>
+                    <span class="detail-meta-value">${esc(w.rewrite_rate)}</span>
+                  </div>
+                  <div class="detail-meta-item">
+                    <span class="detail-meta-label">Type</span>
+                    <span class="detail-meta-value">Type ${w.type} — ${w.type === 1 ? 'Deterministic' : 'Generative'}</span>
+                  </div>
+                </div>
+                <div style="margin-top:12px">
+                  <span class="detail-meta-label">Reused by</span>
+                  <div style="margin-top:4px">${reuseTags}</div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>`;
+      }
+    });
+
+    tbody.innerHTML = html;
+
+    // Update sort headers
+    document.querySelectorAll('thead th[data-sort]').forEach(th => {
+      th.classList.toggle('sorted', th.dataset.sort === sortCol);
+      const arrow = th.querySelector('.sort-arrow');
+      if (arrow) arrow.textContent = (th.dataset.sort === sortCol && !sortAsc) ? '▼' : '▲';
+    });
+  }
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // Event: row click → expand
+  document.getElementById('tableBody').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]');
+    if (!row) return;
+    const id = parseInt(row.dataset.id);
+    expandedId = expandedId === id ? null : id;
+    render();
+  });
+
+  // Event: sort
+  document.querySelectorAll('thead th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (sortCol === col) { sortAsc = !sortAsc; }
+      else { sortCol = col; sortAsc = true; }
+      render();
+    });
+  });
+
+  // Event: filters
+  ['searchInput', 'filterBU', 'filterStatus', 'filterRisk', 'filterType'].forEach(id => {
+    document.getElementById(id).addEventListener('input', render);
+    document.getElementById(id).addEventListener('change', render);
+  });
+})();
+</script>
+</body>
+</html>
