@@ -265,7 +265,9 @@
   tbody tr.data-row.expanded { background: var(--surface-2); }
 
   tbody td { padding:10px 14px; font-size:.8125rem; vertical-align:middle; }
-  .cell-name { min-width:180px; }
+  .cell-name { min-width:180px; display:flex; align-items:center; gap:10px; }
+  .wf-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.625rem; font-weight:700; letter-spacing:.02em; flex-shrink:0; color:#fff; }
+  .wf-info { min-width:0; }
   .wf-name { font-weight:700; color:var(--tx); line-height:1.25; }
   .wf-desc { font-size:.6875rem; color:var(--tx-3); margin-top:2px; line-height:1.4; }
 
@@ -343,6 +345,33 @@
 
   /* Reuse Intelligence in detail row */
   .intel-section h4 { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+  /* Comments & Use Cases in detail row */
+  .detail-extras { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-dim); }
+  .detail-extras h4 { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+  .comment-list { max-height:120px; overflow-y:auto; }
+  .comment-item { display:flex; gap:8px; align-items:flex-start; padding:4px 0; }
+  .comment-item + .comment-item { border-top:1px solid var(--border-dim); }
+  .comment-avatar { width:20px; height:20px; border-radius:50%; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:.5rem; font-weight:600; color:var(--tx-2); flex-shrink:0; margin-top:1px; }
+  .comment-body { min-width:0; }
+  .comment-text { font-size:.6875rem; color:var(--tx-2); line-height:1.4; }
+  .comment-meta { font-size:.5625rem; color:var(--tx-3); margin-top:1px; }
+  .comment-input-wrap { display:flex; gap:6px; margin-top:6px; }
+  .comment-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:4px; padding:6px 8px; font-size:.6875rem; color:var(--tx); font-family:var(--sans); outline:none; transition:border-color 150ms; }
+  .comment-input:focus { border-color:var(--teal); }
+  .comment-input::placeholder { color:var(--tx-3); }
+  .usecase-chip { display:inline-block; font-size:.5625rem; font-weight:500; padding:3px 8px; border-radius:4px; margin:2px 3px 2px 0; color:var(--plum); background:var(--plum-bg); }
+
+  .intel-badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .intel-badge-group { display:flex; align-items:center; gap:4px; }
+  .intel-badge-label { font-size:.5rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; }
+  .quality-badge { font-size:.5625rem; font-weight:600; padding:2px 6px; border-radius:3px; }
+  .quality-modular { color:var(--teal); background:var(--teal-bg); }
+  .quality-coupled { color:var(--gold); background:var(--gold-bg); }
+  .quality-fragile { color:var(--rust); background:var(--rust-bg); }
+  .quality-actionable { color:var(--teal); background:var(--teal-bg); }
+  .quality-informational { color:var(--slate); background:var(--slate-bg); }
+  .quality-raw { color:var(--rust); background:var(--rust-bg); }
+
   .intel-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
   .intel-chip { font-size:.5625rem; font-weight:500; padding:2px 7px; border-radius:3px; }
   .intel-chip-stack { color:var(--slate); background:var(--slate-bg); }
@@ -743,6 +772,64 @@
     12:{stack:['Usage analytics','Zendesk sentiment','Payment system','Claude'],reusable:['Multi-signal scoring model','Factor ranking logic','Risk threshold framework'],specific:['Account tier definitions','Renewal terms structure','Engagement benchmarks'],readiness:'High',days_to_live:16,reuse_days:7,risks:['Engagement benchmarks vary by segment','Payment system integration is BU-specific','Risk thresholds need calibration per portfolio']}
   };
 
+  // Workflow quality signals: design usability + output usability
+  // Design: Modular (easy to maintain/extend), Coupled (works but tightly integrated), Fragile (hard to change)
+  // Output: Actionable (directly drives decisions), Informational (supports decisions), Raw (needs interpretation)
+  const WF_QUALITY={
+    1:{design:'Modular',output:'Actionable',designNote:'Webhook-triggered, template-based',outputNote:'Summaries go directly into pipeline reviews'},
+    2:{design:'Modular',output:'Actionable',designNote:'Rule engine with configurable thresholds',outputNote:'Flags trigger AP workflow directly'},
+    3:{design:'Modular',output:'Informational',designNote:'Multi-source aggregator, easy to add signals',outputNote:'Digest informs but CSM decides outreach'},
+    4:{design:'Coupled',output:'Actionable',designNote:'Tightly tied to SOW PDF format',outputNote:'Structured JSON feeds project tracker automatically'},
+    5:{design:'Fragile',output:'Informational',designNote:'Hardcoded KPI definitions and tone rules',outputNote:'Narrative used as-is in all-hands but needs review'},
+    6:{design:'Modular',output:'Actionable',designNote:'Taxonomy and routing rules are configurable',outputNote:'Classification routes tickets without manual triage'},
+    7:{design:'Modular',output:'Informational',designNote:'Feed list is editable, summarization prompt reusable',outputNote:'Digest informs strategy but no auto-action'},
+    8:{design:'Coupled',output:'Actionable',designNote:'Policy rules hardcoded per company',outputNote:'Violations flag specific policy sections for AP'},
+    9:{design:'Modular',output:'Informational',designNote:'Template-driven, department-agnostic generator',outputNote:'Checklist is a starting point, HR customizes'},
+    10:{design:'Fragile',output:'Raw',designNote:'4 API integrations, credential-heavy',outputNote:'Data tables need CoS interpretation and context'},
+    11:{design:'Coupled',output:'Actionable',designNote:'Depends on internal KB quality and structure',outputNote:'Draft responses used directly after SE review'},
+    12:{design:'Modular',output:'Actionable',designNote:'Signal weights adjustable, scoring transparent',outputNote:'Risk scores drive renewal outreach priority'}
+  };
+
+  // Workflow icons: 2-letter abbreviation + color
+  const WF_ICONS={
+    1:{abbr:'DS',bg:'#4e6378'},2:{abbr:'IF',bg:'#c4603a'},3:{abbr:'HS',bg:'#1a8a7a'},
+    4:{abbr:'SC',bg:'#7e5ba5'},5:{abbr:'MN',bg:'#9a7b15'},6:{abbr:'TC',bg:'#4a8fe8'},
+    7:{abbr:'CI',bg:'#1f9d6e'},8:{abbr:'EP',bg:'#d48806'},9:{abbr:'OC',bg:'#7e5ba5'},
+    10:{abbr:'BD',bg:'#e25555'},11:{abbr:'RD',bg:'#4e6378'},12:{abbr:'RS',bg:'#1a8a7a'}
+  };
+
+  // Seed comments (session-stored, can be added to)
+  const COMMENTS={
+    1:[{author:'JS',text:'Works great for weekly pipeline syncs. Cuts prep time significantly.',ts:'Mar 10'},{author:'KL',text:'Could we add competitor mention detection to the summaries?',ts:'Mar 8'}],
+    2:[{author:'MR',text:'Caught a $12k variance last week. Controller loves it.',ts:'Mar 9'}],
+    3:[{author:'AP',text:'Red/yellow/green is clear but would be nice to see trend arrows too.',ts:'Mar 7'},{author:'JS',text:'Product team using this for feature prioritization signals.',ts:'Mar 5'}],
+    4:[{author:'DL',text:'Legal found this useful for contract review — minimal changes needed.',ts:'Mar 6'}],
+    5:[{author:'CK',text:'Tone matching works well. Exec team stopped editing the output.',ts:'Mar 8'}],
+    6:[{author:'TW',text:'Routing accuracy at 94%. P1 tickets getting to eng within minutes.',ts:'Mar 11'}],
+    7:[{author:'JS',text:'Marketing wants competitor pricing change alerts split into separate feed.',ts:'Mar 9'}],
+    8:[{author:'MR',text:'Pilot catching edge cases — foreign currency per-diems need tuning.',ts:'Mar 12'}],
+    9:[{author:'HR',text:'New hires say the checklist helped them ramp faster. 30-day section is best.',ts:'Mar 4'}],
+    10:[{author:'CK',text:'Still fighting Stripe rate limits. May need to cache MRR data.',ts:'Mar 10'}],
+    11:[{author:'SE',text:'Rewrite rate dropping — prompt tuning on technical questions helped.',ts:'Mar 7'},{author:'AP',text:'CS team using for renewal proposals, not just RFPs.',ts:'Mar 5'}],
+    12:[{author:'KL',text:'Score accuracy improved after adding payment history signal.',ts:'Mar 8'}]
+  };
+
+  // Possible use cases per workflow
+  const USE_CASES={
+    1:['QBR prep for CS','Implementation kickoff summaries','Board pipeline reporting'],
+    2:['Procurement audit checks','Expense report cross-referencing','Vendor payment validation'],
+    3:['Sales renewal prep','Product usage reporting','Executive account reviews'],
+    4:['Legal contract review','Finance milestone tracking','Procurement vendor terms'],
+    5:['Board meeting prep','Investor update drafts','Department-level weekly updates'],
+    6:['Internal IT ticket routing','Sales inquiry classification','HR request triage'],
+    7:['Product roadmap inputs','Marketing campaign targeting','Pricing strategy reviews'],
+    8:['Procurement policy checks','Travel reimbursement review','Contractor invoice validation'],
+    9:['Contractor onboarding','Cross-team rotation guides','Intern program setup'],
+    10:['Investor reporting','Department budget reviews','Quarterly business reviews'],
+    11:['Security questionnaires','Vendor due diligence responses','Partnership proposals'],
+    12:['Upsell opportunity scoring','At-risk account alerts','Executive sponsor tracking']
+  };
+
   // Pipeline data: sources → AI logic → outputs → review gate
   const PIPELINES={
     1:{sources:['HubSpot CRM','Call Transcripts'],ai:['Extract metadata','Score confidence','Standardize format'],outputs:['Deal Summary PDF','Pipeline Report'],gate:'VP Sales'},
@@ -806,21 +893,32 @@
       const ex=expandedId===w.id,stCls=w.status==='Live'?'badge-live':'badge-pilot',delay=Math.min(i*20,200);
       const intel=REUSE_INTEL[w.id]||{readiness:'—'};
       const rdCls=intel.readiness==='High'?'readiness-high':intel.readiness==='Medium'?'readiness-medium':'readiness-low';
-      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
+      const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
       const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>';
       // Reuse Intelligence detail section
       const stackChips=(intel.stack||[]).map(s=>'<span class="intel-chip intel-chip-stack">'+esc(s)+'</span>').join('');
       const topRisk=(intel.risks&&intel.risks[0])?esc(intel.risks[0]):'—';
-      const dtl=intel.days_to_live?intel.days_to_live+'d':'—';
-      const dtr=intel.reuse_days?intel.reuse_days+'d':'—';
-      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Pipeline</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="meta-row"><div class="meta-item"><div class="ml">Readiness</div><div class="mv"><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div></div><div class="meta-item"><div class="ml">Build</div><div class="mv">'+dtl+'</div></div><div class="meta-item"><div class="ml">Reuse</div><div class="mv">'+dtr+'</div></div></div><div class="intel-label" style="margin-top:8px">Stack</div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:8px">'+topRisk+'</div></div></div></div></div></div></td></tr>';
+      // Quality signals
+      const qual=WF_QUALITY[w.id]||{design:'—',output:'—',designNote:'',outputNote:''};
+      const dCls='quality-'+qual.design.toLowerCase();
+      const oCls='quality-'+qual.output.toLowerCase();
+      // Comments
+      const comments=COMMENTS[w.id]||[];
+      const commentHtml=comments.map(c=>'<div class="comment-item"><div class="comment-avatar">'+esc(c.author)+'</div><div class="comment-body"><div class="comment-text">'+esc(c.text)+'</div><div class="comment-meta">'+esc(c.ts)+'</div></div></div>').join('');
+      // Use cases
+      const useCases=USE_CASES[w.id]||[];
+      const useCaseHtml=useCases.map(u=>'<span class="usecase-chip">'+esc(u)+'</span>').join('');
+      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Pipeline</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="intel-badges"><div class="intel-badge-group"><span class="intel-badge-label">Ready</span><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Design</span><span class="quality-badge '+dCls+'">'+esc(qual.design)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Output</span><span class="quality-badge '+oCls+'">'+esc(qual.output)+'</span></div></div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:6px">'+topRisk+'</div></div></div><div class="detail-extras"><div><h4>Comments</h4><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div><div><h4>Other Use Cases</h4><div>'+useCaseHtml+'</div></div></div></div></div></div></td></tr>';
     });
     tbody.innerHTML=html;
     document.querySelectorAll('thead th[data-sort]').forEach(th=>{const a=th.dataset.sort===sortCol;th.classList.toggle('sorted',a);const ar=th.querySelector('.sort-arrow');if(ar)ar.textContent=(a&&!sortAsc)?'\u25BC':'\u25B2'});
     ['filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.classList.toggle('active',el.value!=='')});
   }
 
-  document.getElementById('tableBody').addEventListener('click',e=>{const row=e.target.closest('tr.data-row');if(!row)return;const id=parseInt(row.dataset.id);expandedId=expandedId===id?null:id;document.querySelectorAll('tr.data-row').forEach(r=>r.classList.toggle('expanded',parseInt(r.dataset.id)===expandedId));document.querySelectorAll('.detail-outer').forEach(o=>{const dr=o.closest('tr').previousElementSibling;if(dr)o.classList.toggle('open',parseInt(dr.dataset.id)===expandedId)})});
+  document.getElementById('tableBody').addEventListener('click',e=>{if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;const row=e.target.closest('tr.data-row');if(!row)return;const id=parseInt(row.dataset.id);expandedId=expandedId===id?null:id;document.querySelectorAll('tr.data-row').forEach(r=>r.classList.toggle('expanded',parseInt(r.dataset.id)===expandedId));document.querySelectorAll('.detail-outer').forEach(o=>{const dr=o.closest('tr').previousElementSibling;if(dr)o.classList.toggle('open',parseInt(dr.dataset.id)===expandedId)})});
+  // Comment input handler
+  document.getElementById('tableBody').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target.closest('.comment-input');if(!input)return;e.stopPropagation();const text=input.value.trim();if(!text)return;const wfId=parseInt(input.dataset.wf);if(!COMMENTS[wfId])COMMENTS[wfId]=[];COMMENTS[wfId].push({author:'Me',text,ts:'Now'});const list=document.getElementById('comments-'+wfId);const item=document.createElement('div');item.className='comment-item';item.innerHTML='<div class="comment-avatar">Me</div><div class="comment-body"><div class="comment-text">'+esc(text)+'</div><div class="comment-meta">Now</div></div>';list.appendChild(item);list.scrollTop=list.scrollHeight;input.value=''});
   document.querySelectorAll('thead th[data-sort]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.sort;if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true}render()})});
   ['searchInput','filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',render);el.addEventListener('change',render)});
 
