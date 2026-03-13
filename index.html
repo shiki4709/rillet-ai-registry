@@ -765,6 +765,23 @@
   }
   .composer-block:hover .cb-remove { opacity:1; }
   .composer-hint { font-size:.625rem; color:var(--tx-3); line-height:1.5; }
+  .composer-chat { margin-top:4px; }
+  .chat-messages { max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:8px 0; }
+  .chat-msg { font-size:.75rem; line-height:1.5; padding:8px 12px; border-radius:var(--r-sm); max-width:90%; }
+  .chat-msg em { font-style:italic; color:var(--tx-3); }
+  .chat-msg-ai { background:var(--bg); border:1px solid var(--border-dim); color:var(--tx-2); align-self:flex-start; }
+  .chat-msg-user { background:var(--accent); color:#fff; align-self:flex-end; }
+  .chat-msg-blocks { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .chat-msg-blocks .chat-block-chip {
+    font-size:.625rem; padding:2px 8px; border-radius:var(--r-pill); cursor:pointer;
+    border:1px solid var(--border-dim); background:var(--surface-2); color:var(--tx);
+    transition:background 100ms;
+  }
+  .chat-msg-blocks .chat-block-chip:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .chat-msg-blocks .chat-block-chip.added { opacity:.5; pointer-events:none; }
+  .chat-input-row { display:flex; gap:6px; align-items:center; }
+  .chat-input { flex:1; font-size:.75rem; padding:6px 10px; border:1px solid var(--border-dim); border-radius:var(--r-sm); background:var(--bg); color:var(--tx); font-family:var(--sans); }
+  .chat-input:focus { outline:none; border-color:var(--accent); }
   .composer-meta { display:flex; flex-wrap:wrap; gap:8px; }
   .composer-meta-item {
     display:flex; align-items:center; gap:4px;
@@ -928,8 +945,11 @@
             <div class="composer-flow" id="composerFlow"><span class="composer-flow-empty">Click blocks from the catalog to add them here</span></div>
             <div id="composerMeta" style="margin-top:8px"></div>
             <div class="composer-hint">Credentials are resolved from the vault automatically. Type is auto-detected from your blocks.</div>
-            <button class="btn btn-sm" id="composerGenerate" style="margin-top:8px;display:flex;align-items:center;gap:6px"><span class="block-dot block-dot-ai" style="width:6px;height:6px"></span>Generate Code with Agent</button>
-            <div id="composerCodePreview" style="display:none"></div>
+            <div class="composer-chat" id="composerChat">
+              <div class="field-group-label" style="margin-top:8px;display:flex;align-items:center;gap:6px"><span class="block-dot block-dot-ai" style="width:6px;height:6px"></span>Block Assistant</div>
+              <div class="chat-messages" id="chatMessages"><div class="chat-msg chat-msg-ai">Describe what you want to automate and I'll recommend the right blocks. e.g. <em>"Pull deals from CRM and summarize them weekly"</em></div></div>
+              <div class="chat-input-row"><input type="text" id="chatInput" class="chat-input" placeholder="What do you want to automate?"><button class="btn btn-sm btn-accent" id="chatSend">Send</button></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1540,7 +1560,7 @@
   // Click block cards — detect workflow context from detail row
   document.addEventListener('click',e=>{
     const card=e.target.closest('[data-block]');
-    if(card&&!card.closest('.composer-catalog')&&!card.closest('.composer-flow')){
+    if(card&&!card.closest('.composer-catalog')){
       e.stopPropagation();
       const bid=card.dataset.block;
       // Detect workflow context from expanded row
@@ -1704,7 +1724,7 @@
     setModalStep(1);composerBlocks=[];renderComposerFlow();
     ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('fBU').selectedIndex=0;
-    document.getElementById('composerCodePreview').style.display='none';
+    document.getElementById('chatMessages').innerHTML='<div class="chat-msg chat-msg-ai">Describe what you want to automate and I\'ll recommend the right blocks. e.g. <em>"Pull deals from CRM and summarize them weekly"</em></div>';
     const submitBtn=document.getElementById('modalSubmit');
     submitBtn.disabled=false;submitBtn.textContent='Launch as Pilot';
   }
@@ -1734,27 +1754,96 @@
   document.getElementById('reviewBack').addEventListener('click',()=>setModalStep(2));
 
   // Generate Code with Agent
-  document.getElementById('composerGenerate').addEventListener('click',function(){
-    if(!composerBlocks.length){showToast('Add blocks first');return}
-    const btn=this;btn.disabled=true;btn.innerHTML='<span class="spin"></span> Generating...';
-    const preview=document.getElementById('composerCodePreview');
-    // Simulate agent code generation
+  // ── Block Assistant Chat ──
+  const BLOCK_KEYWORDS={
+    'hubspot-pull':['crm','deal','contact','pipeline','hubspot','sales data'],
+    'stripe-pull':['payment','invoice','stripe','billing','charge','subscription'],
+    'zendesk-pull':['ticket','support','zendesk','customer issue','help desk'],
+    'jira-pull':['task','project','jira','sprint','backlog','issue'],
+    'gsheet-pull':['spreadsheet','sheet','google sheet','gsheet','csv'],
+    'slack-pull':['slack','message','channel','conversation'],
+    'email-pull':['email','inbox','mail','gmail'],
+    'pdf-pull':['pdf','document','file','attachment'],
+    'sql-pull':['database','sql','query','db','postgres','mysql'],
+    'api-pull':['api','rest','endpoint','webhook','fetch'],
+    'calendar-pull':['calendar','schedule','meeting','event'],
+    'docusign-pull':['contract','signature','docusign','sign'],
+    'keyword-classify':['keyword','classify','categorize','tag','label','route','rule'],
+    'threshold-check':['threshold','check','limit','alert','flag','variance'],
+    'dedup':['duplicate','dedup','merge','deduplicate','clean'],
+    'template-fill':['template','fill','merge field','placeholder','format'],
+    'date-calc':['date','deadline','overdue','aging','days','calculate'],
+    'score':['score','rank','weight','prioritize','rating'],
+    'claude-summarize':['summarize','summary','recap','digest','tldr','brief'],
+    'claude-classify':['classify','categorize','sentiment','score','llm classify','ai classify'],
+    'claude-draft':['draft','write','compose','generate text','content','copy'],
+    'claude-extract':['extract','parse','structured','pull data from text','ocr'],
+    'claude-narrator':['narrative','explain','describe','plain language','story'],
+    'slack-send':['send slack','post slack','notify slack','slack message'],
+    'email-send':['send email','notify email','email alert','mail send'],
+    'gsheet-write':['write sheet','update sheet','log sheet','append sheet'],
+    'pdf-report':['report','pdf','generate pdf','export pdf','document output'],
+    'jira-update':['update jira','create ticket','jira write','log jira'],
+    'dashboard-push':['dashboard','push metric','analytics','visualization'],
+    'webhook-fire':['webhook','callback','trigger','fire event','notify'],
+    'salesforce-push':['salesforce','sf','crm update','crm write'],
+    'manager-approve':['approve','review','sign off','manager','gate'],
+    'legal-review':['legal','compliance','legal review','counsel'],
+    'exec-approve':['executive','exec','cfo','vp','senior approve']
+  };
+  function matchBlocks(query){
+    const q=query.toLowerCase();
+    const scores=Object.entries(BLOCK_KEYWORDS).map(([bid,keywords])=>{
+      let score=0;
+      keywords.forEach(kw=>{if(q.includes(kw))score+=2;else kw.split(' ').forEach(w=>{if(q.includes(w))score+=1})});
+      return{bid,score};
+    }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score);
+    return scores.slice(0,6).map(s=>s.bid);
+  }
+  function addChatMsg(type,html){
+    const el=document.getElementById('chatMessages');
+    const msg=document.createElement('div');
+    msg.className='chat-msg chat-msg-'+type;
+    msg.innerHTML=html;
+    el.appendChild(msg);
+    el.scrollTop=el.scrollHeight;
+    return msg;
+  }
+  function handleChatSend(){
+    const input=document.getElementById('chatInput');
+    const q=input.value.trim();if(!q)return;
+    addChatMsg('user',esc(q));
+    input.value='';
+    // Simulate thinking delay
     setTimeout(()=>{
-      const name=document.getElementById('fName').value.trim()||'workflow';
-      const blocks=composerBlocks.map(bid=>{const bl=BLOCKS[bid];return bl?{id:bid,name:bl.name,api:bl.api,type:bl.type,model:bl.model||null,cred:BLOCK_CREDS[bid]?CREDENTIALS[BLOCK_CREDS[bid]]?.maskedKey:null}:null}).filter(Boolean);
-      let code='# Auto-generated by AI Agent\n# Workflow: '+esc(name)+'\n# Blocks: '+blocks.length+'\n\n';
-      blocks.forEach((bl,i)=>{
-        code+='# Step '+(i+1)+': '+bl.name+' ('+bl.api+')\n';
-        if(bl.type==='source')code+='data_'+i+' = '+bl.api.toLowerCase().replace(/\s/g,'_')+'.fetch(credentials=vault["'+esc(bl.cred||'...')+'"])\n\n';
-        else if(bl.type==='transform')code+='data_'+i+' = transform(data_'+(i-1)+', rules=config)\n\n';
-        else if(bl.type==='ai')code+='data_'+i+' = claude.run(\n  model="'+esc(bl.model||'claude-sonnet-4-20250514')+'",\n  input=data_'+(i-1)+',\n  credentials=vault["'+esc(bl.cred||'...')+'"])\n\n';
-        else if(bl.type==='output')code+=''+bl.api.toLowerCase().replace(/\s/g,'_')+'.send(data_'+(i-1)+', credentials=vault["'+esc(bl.cred||'...')+'"])\n\n';
-        else if(bl.type==='gate')code+='await review_gate(reviewer=config.reviewer, data=data_'+(i-1)+')\n\n';
+      const matches=matchBlocks(q);
+      if(!matches.length){
+        addChatMsg('ai','I couldn\'t find specific blocks for that. Try describing the data source (e.g. "HubSpot", "Stripe"), what to do with it (e.g. "summarize", "classify"), and where it should go (e.g. "Slack", "email").');
+        return;
+      }
+      // Build response
+      let resp='Here\'s what I\'d recommend:<div class="chat-msg-blocks">';
+      matches.forEach(bid=>{
+        const bl=BLOCKS[bid];if(!bl)return;
+        const alreadyAdded=composerBlocks.includes(bid);
+        const typeColor=bl.type==='source'?'var(--slate-bg)':bl.type==='transform'?'var(--amber-bg)':bl.type==='ai'?'var(--teal-bg)':bl.type==='output'?'var(--plum-bg)':'var(--gold-bg)';
+        resp+='<span class="chat-block-chip'+(alreadyAdded?' added':'')+'" data-chat-block="'+bid+'" style="border-left:3px solid '+typeColor+'">'+(alreadyAdded?'✓ ':' + ')+esc(bl.name)+'</span>';
       });
-      preview.style.display='block';
-      preview.innerHTML='<div class="field-group-label" style="margin-top:12px">Generated Code Preview</div><pre style="font-family:var(--mono);font-size:.625rem;color:var(--tx-2);background:var(--surface-2);padding:12px;border-radius:var(--r-sm);line-height:1.6;overflow-x:auto;max-height:200px">'+code+'</pre><div style="font-size:.5625rem;color:var(--tx-3);margin-top:4px">Credentials pulled from vault automatically. No keys in code.</div>';
-      btn.disabled=false;btn.innerHTML='<span class="block-dot block-dot-ai" style="width:6px;height:6px"></span> Generate Code with Agent';
-    },1500);
+      resp+='</div><div style="font-size:.5625rem;color:var(--tx-3);margin-top:4px">Click a block to add it to your pipeline.</div>';
+      addChatMsg('ai',resp);
+    },600);
+  }
+  document.getElementById('chatSend').addEventListener('click',handleChatSend);
+  document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleChatSend()}});
+  // Click to add block from chat recommendation
+  document.getElementById('chatMessages').addEventListener('click',e=>{
+    const chip=e.target.closest('[data-chat-block]');if(!chip||chip.classList.contains('added'))return;
+    const bid=chip.dataset.chatBlock;
+    composerBlocks.push(bid);
+    renderComposerFlow();
+    chip.classList.add('added');
+    chip.textContent='✓ '+BLOCKS[bid].name;
+    showToast('Added '+BLOCKS[bid].name);
   });
 
   // Inline validation helpers
