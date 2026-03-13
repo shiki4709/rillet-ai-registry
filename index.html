@@ -351,7 +351,15 @@
   .comment-list { max-height:120px; overflow-y:auto; }
   .comment-item { display:flex; gap:8px; align-items:flex-start; padding:4px 0; }
   .comment-item + .comment-item { border-top:1px solid var(--border-dim); }
-  .comment-avatar { width:20px; height:20px; border-radius:50%; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:.5rem; font-weight:600; color:var(--tx-2); flex-shrink:0; margin-top:1px; }
+  .comment-avatar { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.5rem; font-weight:600; color:#fff; flex-shrink:0; margin-top:1px; }
+
+  /* Slack-style avatars */
+  .avatar {
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:50%; color:#fff; font-weight:600;
+    letter-spacing:.01em; flex-shrink:0; line-height:1;
+    user-select:none;
+  }
   .comment-body { min-width:0; }
   .comment-text { font-size:.6875rem; color:var(--tx-2); line-height:1.4; }
   .comment-meta { font-size:.5625rem; color:var(--tx-3); margin-top:1px; }
@@ -593,6 +601,83 @@
   .rq-submitted-text { font-size:.8125rem; color:var(--tx); font-weight:600; }
   .rq-submitted-sub { font-size:.6875rem; color:var(--tx-3); margin-top:4px; }
 
+  /* Block detail popover */
+  .block-popover {
+    position:fixed; z-index:250;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--r); width:320px;
+    box-shadow:0 12px 40px rgba(44,42,37,.12),0 2px 8px rgba(44,42,37,.06);
+    opacity:0; transform:translateY(4px);
+    transition:opacity 150ms var(--ease),transform 150ms var(--ease);
+    pointer-events:none;
+  }
+  .block-popover.open { opacity:1; transform:translateY(0); pointer-events:auto; }
+  .bp-head { padding:12px 16px; border-bottom:1px solid var(--border-dim); display:flex; align-items:center; gap:8px; }
+  .bp-head-info { flex:1; min-width:0; }
+  .bp-head-name { font-size:.8125rem; font-weight:700; color:var(--tx); }
+  .bp-head-api { font-size:.625rem; color:var(--tx-3); }
+  .bp-body { padding:12px 16px; }
+  .bp-section { margin-bottom:12px; }
+  .bp-section:last-child { margin-bottom:0; }
+  .bp-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+  .bp-desc { font-size:.75rem; color:var(--tx-2); line-height:1.5; }
+  .bp-owner { display:flex; align-items:center; gap:6px; font-size:.75rem; color:var(--tx); }
+  .health-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .health-item {}
+  .health-val { font-size:.8125rem; font-weight:600; color:var(--tx); font-variant-numeric:tabular-nums; }
+  .health-val.health-good { color:var(--green); }
+  .health-val.health-warn { color:var(--amber); }
+  .health-val.health-bad { color:var(--red); }
+  .health-lbl { font-size:.5625rem; color:var(--tx-3); }
+  .bp-wf-list { display:flex; flex-wrap:wrap; gap:4px; }
+  .bp-wf-chip { font-size:.5625rem; font-weight:500; padding:2px 7px; border-radius:3px; color:var(--teal); background:var(--teal-bg); }
+
+  /* Block health dot on cards */
+  .block-health-dot {
+    width:5px; height:5px; border-radius:50%; flex-shrink:0;
+    position:absolute; top:4px; right:4px;
+  }
+  .block-card { position:relative; cursor:pointer; }
+
+  /* Composer (step 2 of Add Workflow modal) */
+  .composer-steps { display:flex; gap:8px; padding:0 24px 12px; }
+  .step-dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:background .15s; }
+  .step-dot.active { background:var(--teal); }
+  .composer-step { display:none; }
+  .composer-step.active { display:block; }
+  .composer-picker { display:flex; gap:16px; min-height:260px; }
+  .composer-catalog { width:200px; flex-shrink:0; max-height:340px; overflow-y:auto; border-right:1px solid var(--border-dim); padding-right:12px; }
+  .composer-catalog::-webkit-scrollbar { width:3px; }
+  .composer-catalog::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .composer-canvas { flex:1; display:flex; flex-direction:column; gap:12px; }
+  .catalog-group-label { font-size:.5rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; margin-top:12px; }
+  .catalog-group-label:first-child { margin-top:0; }
+  .catalog-block { display:flex; align-items:center; gap:6px; padding:5px 8px; border-radius:var(--r-sm); cursor:pointer; font-size:.6875rem; transition:background 100ms; }
+  .catalog-block:hover { background:var(--surface-2); }
+  .catalog-block-name { font-weight:500; color:var(--tx); }
+  .catalog-block-api { font-size:.5625rem; color:var(--tx-3); margin-left:auto; }
+  .composer-flow {
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+    min-height:48px; padding:12px;
+    background:var(--bg); border:1px dashed var(--border); border-radius:var(--r-sm);
+  }
+  .composer-flow-empty { color:var(--tx-3); font-size:.6875rem; }
+  .composer-block {
+    display:flex; align-items:center; gap:6px;
+    padding:5px 10px; border-radius:var(--r-sm);
+    border:1px solid var(--border-dim); background:var(--surface);
+    font-size:.625rem; position:relative;
+  }
+  .composer-block .cb-name { font-weight:600; color:var(--tx); }
+  .composer-block .cb-remove {
+    margin-left:4px; width:14px; height:14px;
+    border-radius:50%; background:var(--red-bg); color:var(--red);
+    font-size:.5rem; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; border:none; opacity:0; transition:opacity 100ms;
+  }
+  .composer-block:hover .cb-remove { opacity:1; }
+  .composer-hint { font-size:.625rem; color:var(--tx-3); line-height:1.5; }
+
   /* ====== RESPONSIVE ====== */
   @media(max-width:1100px) { .side-col{display:none} .main-col{border-right:none} }
   @media(max-width:768px) {
@@ -682,41 +767,64 @@
 </div>
 </div>
 
-<!-- Add Workflow Modal -->
+<!-- Add Workflow Modal (2-step) -->
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
-  <div class="modal">
+  <div class="modal" id="addModal">
     <div class="modal-head">
       <h2>Add Workflow</h2>
       <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
     </div>
-    <div class="modal-body">
-      <div class="field-group">
-        <div class="field-group-label">Workflow</div>
-        <div class="field"><label for="fName">Name <span class="req">*</span></label><input id="fName" placeholder="e.g. Invoice Matcher" aria-required="true" aria-describedby="errName"><div class="field-error-msg" id="errName">Workflow name is required</div></div>
-        <div class="field"><label for="fBU">Business Unit <span class="req">*</span></label><select id="fBU" aria-required="true" aria-describedby="errBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select><div class="field-error-msg" id="errBU">Select a business unit</div></div>
-        <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
-      </div>
-      <div class="field-group">
-        <div class="field-group-label">Classification</div>
-        <div class="field-row">
-          <div class="field"><label for="fType">Type</label><select id="fType"><option value="1">Type 1 — Deterministic</option><option value="2">Type 2 — Generative</option></select></div>
-          <div class="field"><label for="fRisk">Risk</label><select id="fRisk"><option value="Low">Low</option><option value="Medium">Medium</option></select></div>
+    <div class="composer-steps" id="stepDots">
+      <span class="step-dot active" data-step="1"></span>
+      <span class="step-dot" data-step="2"></span>
+    </div>
+    <div class="composer-step active" id="composerStep1">
+      <div class="modal-body">
+        <div class="field-group">
+          <div class="field-group-label">Workflow</div>
+          <div class="field"><label for="fName">Name <span class="req">*</span></label><input id="fName" placeholder="e.g. Invoice Matcher" aria-required="true" aria-describedby="errName"><div class="field-error-msg" id="errName">Workflow name is required</div></div>
+          <div class="field"><label for="fBU">Business Unit <span class="req">*</span></label><select id="fBU" aria-required="true" aria-describedby="errBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select><div class="field-error-msg" id="errBU">Select a business unit</div></div>
+          <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
         </div>
-        <div class="field"><label for="fReviewer">Reviewer</label><input id="fReviewer" placeholder="e.g. VP Sales"><div class="field-hint">Role title of human reviewer. Defaults to TBD.</div></div>
+        <div class="field-group">
+          <div class="field-group-label">Classification</div>
+          <div class="field-row">
+            <div class="field"><label for="fType">Type</label><select id="fType"><option value="1">Type 1 — Deterministic</option><option value="2">Type 2 — Generative</option></select></div>
+            <div class="field"><label for="fRisk">Risk</label><select id="fRisk"><option value="Low">Low</option><option value="Medium">Medium</option></select></div>
+          </div>
+          <div class="field"><label for="fReviewer">Reviewer</label><input id="fReviewer" placeholder="e.g. VP Sales"><div class="field-hint">Role title of human reviewer. Defaults to TBD.</div></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Prompt Details</div>
+          <div class="field"><label for="fDetails">Details</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs, and who reviews."></textarea><div class="field-hint">Claude generates the prompt_summary from this. Leave blank to add later.</div></div>
+          <div class="generating" id="generating"><span class="spin"></span>Generating prompt summary...</div>
+        </div>
       </div>
-      <div class="field-group">
-        <div class="field-group-label">Prompt Details</div>
-        <div class="field"><label for="fDetails">Details</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs, and who reviews."></textarea><div class="field-hint">Claude generates the prompt_summary from this. Leave blank to add later.</div></div>
-        <div class="generating" id="generating"><span class="spin"></span>Generating prompt summary...</div>
+      <div class="modal-foot">
+        <button class="btn" id="modalCancel">Cancel</button>
+        <button class="btn btn-accent" id="modalNext">Next: Configure Blocks</button>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn" id="modalCancel">Cancel</button>
-      <button class="btn btn-accent" id="modalSubmit">Add as Pilot</button>
+    <div class="composer-step" id="composerStep2">
+      <div class="modal-body">
+        <div class="composer-picker">
+          <div class="composer-catalog" id="composerCatalog"></div>
+          <div class="composer-canvas">
+            <div class="field-group-label">Assembled Pipeline</div>
+            <div class="composer-flow" id="composerFlow"><span class="composer-flow-empty">Click blocks from the catalog to add them here</span></div>
+            <div class="composer-hint">Click blocks on the left to add. Click the X to remove. Blocks are grouped by type automatically.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="composerBack">Back</button>
+        <button class="btn btn-accent" id="modalSubmit">Add as Pilot</button>
+      </div>
     </div>
   </div>
 </div>
 
+<div class="block-popover" id="blockPopover"></div>
 <div class="toast" id="toast"></div>
 
 <!-- Request Workflow Modal -->
@@ -893,6 +1001,83 @@
     12:['hubspot-pull','zendesk-stream','sheets-import','claude-classify','slack-notify','manager-approve']
   };
 
+  // ── People (Slack-style profiles) ──
+  const PEOPLE={
+    'VP Sales':{initials:'JS',name:'Jake Sullivan',color:'#4e6378'},
+    'Controller':{initials:'MC',name:'Mike Chen',color:'#c4603a'},
+    'Head of CS':{initials:'KL',name:'Karen Liu',color:'#1a8a7a'},
+    'Dir. of Impl.':{initials:'AT',name:'Ana Torres',color:'#7e5ba5'},
+    'Chief of Staff':{initials:'RB',name:'Rachel Brown',color:'#9a7b15'},
+    'Support Lead':{initials:'SK',name:'Sam Kim',color:'#4a8fe8'},
+    'People Ops Lead':{initials:'DP',name:'David Park',color:'#1f9d6e'},
+    'Head of SE':{initials:'EP',name:'Emma Phillips',color:'#4e6378'},
+    'TBD':{initials:'?',name:'Unassigned',color:'#9e968c'},
+    'JS':{initials:'JS',name:'Jake Sullivan',color:'#4e6378'},
+    'KL':{initials:'KL',name:'Karen Liu',color:'#1a8a7a'},
+    'MR':{initials:'MR',name:'Mia Rodriguez',color:'#c4603a'},
+    'AP':{initials:'AP',name:'Alex Park',color:'#7e5ba5'},
+    'DL':{initials:'DL',name:'Derek Lee',color:'#9a7b15'},
+    'CK':{initials:'CK',name:'Chris Kim',color:'#4a8fe8'},
+    'TW':{initials:'TW',name:'Tom Wilson',color:'#1f9d6e'},
+    'HR':{initials:'HR',name:'Holly Reed',color:'#d48806'},
+    'SE':{initials:'SE',name:'Sara Evans',color:'#e25555'},
+    'LM':{initials:'LM',name:'Lisa Morgan',color:'#7e5ba5'},
+    'Me':{initials:'Me',name:'You',color:'#1a8a7a'}
+  };
+
+  // Block owners (who maintains each block)
+  const BLOCK_OWNERS={
+    'hubspot-pull':'VP Sales','zendesk-stream':'Support Lead','sheets-import':'Chief of Staff',
+    'stripe-feed':'Controller','ocr-ingest':'Controller','drive-scan':'Chief of Staff',
+    'bamboo-pull':'People Ops Lead','rss-feed':'VP Sales','mixpanel-pull':'Head of CS',
+    'delighted-pull':'Head of CS','knowledge-base':'Head of SE',
+    'keyword-classify':'Support Lead','threshold-check':'Controller','schema-map':'Chief of Staff',
+    'regex-extract':'Dir. of Impl.','policy-validator':'Controller','signal-aggregator':'Head of CS',
+    'claude-summarize':'Chief of Staff','claude-classify':'Head of CS','claude-draft':'Head of SE',
+    'claude-extract':'Dir. of Impl.','claude-narrator':'Chief of Staff',
+    'slack-notify':'Chief of Staff','sheets-write':'Controller','sendgrid-email':'Head of CS',
+    'pdf-report':'VP Sales','notion-write':'People Ops Lead','zendesk-update':'Support Lead',
+    'salesforce-update':'VP Sales','json-export':'Dir. of Impl.',
+    'manager-approve':'Chief of Staff','confidence-gate':'Support Lead','dual-review':'Head of SE'
+  };
+
+  // Block health/monitoring (simulated real-time data)
+  const BLOCK_HEALTH={
+    'hubspot-pull':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'2 min ago',latency:'340ms'},
+    'zendesk-stream':{status:'healthy',uptime:'99.5%',errorRate:'0.5%',lastRun:'5 min ago',latency:'220ms'},
+    'sheets-import':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'8 min ago',latency:'180ms'},
+    'stripe-feed':{status:'degraded',uptime:'98.2%',errorRate:'1.8%',lastRun:'1 min ago',latency:'890ms'},
+    'ocr-ingest':{status:'healthy',uptime:'99.4%',errorRate:'0.6%',lastRun:'12 min ago',latency:'2.1s'},
+    'drive-scan':{status:'healthy',uptime:'99.7%',errorRate:'0.3%',lastRun:'15 min ago',latency:'410ms'},
+    'bamboo-pull':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'1 hr ago',latency:'290ms'},
+    'rss-feed':{status:'healthy',uptime:'99.6%',errorRate:'0.4%',lastRun:'30 min ago',latency:'520ms'},
+    'mixpanel-pull':{status:'healthy',uptime:'99.7%',errorRate:'0.3%',lastRun:'3 min ago',latency:'650ms'},
+    'delighted-pull':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'2 hr ago',latency:'310ms'},
+    'knowledge-base':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'6 min ago',latency:'140ms'},
+    'keyword-classify':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'5 min ago',latency:'45ms'},
+    'threshold-check':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'1 min ago',latency:'12ms'},
+    'schema-map':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'8 min ago',latency:'65ms'},
+    'regex-extract':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'12 min ago',latency:'8ms'},
+    'policy-validator':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'22 min ago',latency:'28ms'},
+    'signal-aggregator':{status:'healthy',uptime:'99.7%',errorRate:'0.3%',lastRun:'3 min ago',latency:'95ms'},
+    'claude-summarize':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'1 min ago',latency:'1.2s'},
+    'claude-classify':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'3 min ago',latency:'980ms'},
+    'claude-draft':{status:'healthy',uptime:'99.7%',errorRate:'0.3%',lastRun:'10 min ago',latency:'2.4s'},
+    'claude-extract':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'12 min ago',latency:'1.5s'},
+    'claude-narrator':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'8 min ago',latency:'1.8s'},
+    'slack-notify':{status:'healthy',uptime:'99.9%',errorRate:'0.1%',lastRun:'2 min ago',latency:'120ms'},
+    'sheets-write':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'8 min ago',latency:'210ms'},
+    'sendgrid-email':{status:'healthy',uptime:'99.6%',errorRate:'0.4%',lastRun:'15 min ago',latency:'340ms'},
+    'pdf-report':{status:'healthy',uptime:'99.5%',errorRate:'0.5%',lastRun:'20 min ago',latency:'1.8s'},
+    'notion-write':{status:'healthy',uptime:'99.7%',errorRate:'0.3%',lastRun:'1 hr ago',latency:'280ms'},
+    'zendesk-update':{status:'healthy',uptime:'99.5%',errorRate:'0.5%',lastRun:'5 min ago',latency:'250ms'},
+    'salesforce-update':{status:'degraded',uptime:'97.8%',errorRate:'2.2%',lastRun:'4 min ago',latency:'1.1s'},
+    'json-export':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'12 min ago',latency:'5ms'},
+    'manager-approve':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'—',latency:'—'},
+    'confidence-gate':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'5 min ago',latency:'3ms'},
+    'dual-review':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'—',latency:'—'}
+  };
+
   let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
   const chevSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
 
@@ -911,7 +1096,8 @@
       html+='<div class="blib-group"><div class="blib-group-label" style="color:'+colors[type]+'">'+labels[type]+'</div>';
       blocks.forEach(([id,b])=>{
         const c=counts[id]||0;
-        html+='<div class="blib-item"><span class="block-dot block-dot-'+type+'"></span><span class="blib-name" title="'+esc(b.desc)+'">'+esc(b.name)+'</span>'+(c?'<span class="blib-count">'+c+'</span>':'')+'</div>';
+        const owner=BLOCK_OWNERS[id];
+        html+='<div class="blib-item" data-block="'+id+'"><span class="block-dot block-dot-'+type+'"></span><span class="blib-name" title="'+esc(b.desc)+'">'+esc(b.name)+'</span>'+(owner?renderAvatar(owner,16):'')+(c?'<span class="blib-count">'+c+'</span>':'')+'</div>';
       });
       html+='</div>';
     });
@@ -935,9 +1121,19 @@
 
   function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
   function getSorted(list){return[...list].sort((a,b)=>{let va=a[sortCol],vb=b[sortCol];if(sortCol==='saves'){va=parseSaves(va);vb=parseSaves(vb)}if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase()}if(va<vb)return sortAsc?-1:1;if(va>vb)return sortAsc?1:-1;return 0})}
+  function renderAvatar(name,size){
+    size=size||20;
+    const p=PEOPLE[name]||{initials:(name||'?').slice(0,2).toUpperCase(),name:name||'?',color:'#9e968c'};
+    const fs=size<=20?'.5rem':size<=28?'.5625rem':'.625rem';
+    return '<span class="avatar" style="width:'+size+'px;height:'+size+'px;background:'+p.color+';font-size:'+fs+'" title="'+esc(p.name||name)+'">'+esc(p.initials)+'</span>';
+  }
+
   function renderBlockCard(blockId){
     const b=BLOCKS[blockId];if(!b)return'';
-    return '<div class="block-card" title="'+esc(b.desc)+'">'
+    const h=BLOCK_HEALTH[blockId];
+    const hColor=!h?'var(--tx-3)':h.status==='healthy'?'var(--green)':h.status==='degraded'?'var(--amber)':'var(--red)';
+    return '<div class="block-card" data-block="'+blockId+'" title="'+esc(b.desc)+'">'
+      +'<span class="block-health-dot" style="background:'+hColor+'"></span>'
       +'<span class="block-dot block-dot-'+b.type+'"></span>'
       +'<div><div class="block-label">'+esc(b.name)+'</div>'
       +'<div class="block-api">'+esc(b.api)+'</div></div></div>';
@@ -972,7 +1168,7 @@
       const intel=REUSE_INTEL[w.id]||{readiness:'—'};
       const rdCls=intel.readiness==='High'?'readiness-high':intel.readiness==='Medium'?'readiness-medium':'readiness-low';
       const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
-      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span style="display:flex;align-items:center;gap:4px">'+renderAvatar(w.reviewer,18)+'<span class="saves-label">'+esc(w.saves)+'</span></span></td></tr>';
       const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>';
       // Reuse Intelligence detail section
       const stackChips=(intel.stack||[]).map(s=>'<span class="intel-chip intel-chip-stack">'+esc(s)+'</span>').join('');
@@ -983,20 +1179,20 @@
       const oCls='quality-'+qual.output.toLowerCase();
       // Comments
       const comments=COMMENTS[w.id]||[];
-      const commentHtml=comments.map(c=>'<div class="comment-item"><div class="comment-avatar">'+esc(c.author)+'</div><div class="comment-body"><div class="comment-text">'+esc(c.text)+'</div><div class="comment-meta">'+esc(c.ts)+'</div></div></div>').join('');
+      const commentHtml=comments.map(c=>'<div class="comment-item">'+renderAvatar(c.author,20)+'<div class="comment-body"><div class="comment-text">'+esc(c.text)+'</div><div class="comment-meta">'+esc(c.ts)+'</div></div></div>').join('');
       // Use cases
       const useCases=USE_CASES[w.id]||[];
       const useCaseHtml=useCases.map(u=>'<span class="usecase-chip">'+esc(u)+'</span>').join('');
-      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Blocks</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="intel-badges"><div class="intel-badge-group"><span class="intel-badge-label">Ready</span><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Design</span><span class="quality-badge '+dCls+'">'+esc(qual.design)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Output</span><span class="quality-badge '+oCls+'">'+esc(qual.output)+'</span></div></div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:6px">'+topRisk+'</div></div></div><div class="detail-extras"><div><h4>Comments</h4><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div><div><h4>Other Use Cases</h4><div>'+useCaseHtml+'</div></div></div></div></div></div></td></tr>';
+      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Blocks</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv" style="display:flex;align-items:center;gap:6px">'+renderAvatar(w.reviewer,22)+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="intel-badges"><div class="intel-badge-group"><span class="intel-badge-label">Ready</span><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Design</span><span class="quality-badge '+dCls+'">'+esc(qual.design)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Output</span><span class="quality-badge '+oCls+'">'+esc(qual.output)+'</span></div></div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:6px">'+topRisk+'</div></div></div><div class="detail-extras"><div><h4>Comments</h4><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div><div><h4>Other Use Cases</h4><div>'+useCaseHtml+'</div></div></div></div></div></div></td></tr>';
     });
     tbody.innerHTML=html;
     document.querySelectorAll('thead th[data-sort]').forEach(th=>{const a=th.dataset.sort===sortCol;th.classList.toggle('sorted',a);const ar=th.querySelector('.sort-arrow');if(ar)ar.textContent=(a&&!sortAsc)?'\u25BC':'\u25B2'});
     ['filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.classList.toggle('active',el.value!=='')});
   }
 
-  document.getElementById('tableBody').addEventListener('click',e=>{if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;const row=e.target.closest('tr.data-row');if(!row)return;const id=parseInt(row.dataset.id);expandedId=expandedId===id?null:id;document.querySelectorAll('tr.data-row').forEach(r=>r.classList.toggle('expanded',parseInt(r.dataset.id)===expandedId));document.querySelectorAll('.detail-outer').forEach(o=>{const dr=o.closest('tr').previousElementSibling;if(dr)o.classList.toggle('open',parseInt(dr.dataset.id)===expandedId)})});
+  // Row click handled in block popover section above
   // Comment input handler
-  document.getElementById('tableBody').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target.closest('.comment-input');if(!input)return;e.stopPropagation();const text=input.value.trim();if(!text)return;const wfId=parseInt(input.dataset.wf);if(!COMMENTS[wfId])COMMENTS[wfId]=[];COMMENTS[wfId].push({author:'Me',text,ts:'Now'});const list=document.getElementById('comments-'+wfId);const item=document.createElement('div');item.className='comment-item';item.innerHTML='<div class="comment-avatar">Me</div><div class="comment-body"><div class="comment-text">'+esc(text)+'</div><div class="comment-meta">Now</div></div>';list.appendChild(item);list.scrollTop=list.scrollHeight;input.value=''});
+  document.getElementById('tableBody').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target.closest('.comment-input');if(!input)return;e.stopPropagation();const text=input.value.trim();if(!text)return;const wfId=parseInt(input.dataset.wf);if(!COMMENTS[wfId])COMMENTS[wfId]=[];COMMENTS[wfId].push({author:'Me',text,ts:'Now'});const list=document.getElementById('comments-'+wfId);const item=document.createElement('div');item.className='comment-item';item.innerHTML=renderAvatar('Me',20)+'<div class="comment-body"><div class="comment-text">'+esc(text)+'</div><div class="comment-meta">Now</div></div>';list.appendChild(item);list.scrollTop=list.scrollHeight;input.value=''});
   document.querySelectorAll('thead th[data-sort]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.sort;if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true}render()})});
   ['searchInput','filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',render);el.addEventListener('change',render)});
 
@@ -1009,12 +1205,145 @@
   // Export
   document.getElementById('btnExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(workflows,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='registry.json';a.click();URL.revokeObjectURL(url)});
 
-  // Add Workflow Modal
+  // ── Block Popover ──
+  const popover=document.getElementById('blockPopover');
+  let popoverOpen=false;
+  function renderBlockPopover(blockId){
+    const b=BLOCKS[blockId];if(!b)return'';
+    const h=BLOCK_HEALTH[blockId]||{};
+    const owner=BLOCK_OWNERS[blockId]||'TBD';
+    // Find workflows using this block
+    const usedIn=[];Object.entries(WORKFLOW_BLOCKS).forEach(([wid,bids])=>{if(bids.includes(blockId)){const w=workflows.find(x=>x.id===parseInt(wid));if(w)usedIn.push(w)}});
+    const hCls=v=>{const n=parseFloat(v);if(isNaN(n))return'';return n<=0.5?'health-good':n<=1.5?'health-warn':'health-bad'};
+    return '<div class="bp-head"><span class="block-dot block-dot-'+b.type+'" style="width:8px;height:8px"></span><div class="bp-head-info"><div class="bp-head-name">'+esc(b.name)+'</div><div class="bp-head-api">'+esc(b.api)+' \u00B7 '+esc(b.type)+'</div></div></div>'
+      +'<div class="bp-body">'
+      +'<div class="bp-section"><div class="bp-label">Description</div><div class="bp-desc">'+esc(b.desc)+'</div></div>'
+      +'<div class="bp-section"><div class="bp-label">Owner</div><div class="bp-owner">'+renderAvatar(owner,24)+' '+esc(PEOPLE[owner]?PEOPLE[owner].name:owner)+'</div></div>'
+      +'<div class="bp-section"><div class="bp-label">Health</div><div class="health-grid">'
+      +'<div class="health-item"><div class="health-val '+(h.uptime&&parseFloat(h.uptime)>=99.5?'health-good':h.uptime?'health-warn':'')+'">'+esc(h.uptime||'—')+'</div><div class="health-lbl">Uptime</div></div>'
+      +'<div class="health-item"><div class="health-val '+hCls(h.errorRate)+'">'+esc(h.errorRate||'—')+'</div><div class="health-lbl">Error Rate</div></div>'
+      +'<div class="health-item"><div class="health-val">'+esc(h.latency||'—')+'</div><div class="health-lbl">Avg Latency</div></div>'
+      +'<div class="health-item"><div class="health-val">'+esc(h.lastRun||'—')+'</div><div class="health-lbl">Last Run</div></div>'
+      +'</div></div>'
+      +(usedIn.length?'<div class="bp-section"><div class="bp-label">Used in '+usedIn.length+' workflow'+(usedIn.length>1?'s':'')+'</div><div class="bp-wf-list">'+usedIn.map(w=>'<span class="bp-wf-chip">'+esc(w.name)+'</span>').join('')+'</div></div>':'')
+      +'</div>';
+  }
+  function showBlockPopover(blockId,anchor){
+    popover.innerHTML=renderBlockPopover(blockId);
+    const rect=anchor.getBoundingClientRect();
+    let top=rect.bottom+6,left=rect.left;
+    if(top+300>window.innerHeight)top=rect.top-306;
+    if(left+320>window.innerWidth)left=window.innerWidth-328;
+    if(left<8)left=8;
+    popover.style.top=top+'px';popover.style.left=left+'px';
+    popover.classList.add('open');popoverOpen=true;
+  }
+  function hideBlockPopover(){popover.classList.remove('open');popoverOpen=false}
+  // Click block cards in pipeline or sidebar
+  document.addEventListener('click',e=>{
+    const card=e.target.closest('[data-block]');
+    if(card&&!card.closest('.composer-catalog')&&!card.closest('.composer-flow')){
+      e.stopPropagation();
+      const bid=card.dataset.block;
+      if(popoverOpen){hideBlockPopover();setTimeout(()=>showBlockPopover(bid,card),50)}
+      else showBlockPopover(bid,card);
+      return;
+    }
+    if(popoverOpen&&!e.target.closest('.block-popover'))hideBlockPopover();
+  });
+
+  // Prevent block clicks from toggling row expand
+  document.getElementById('tableBody').addEventListener('click',e=>{
+    if(e.target.closest('[data-block]')){e.stopPropagation();return}
+    if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;
+    const row=e.target.closest('tr.data-row');if(!row)return;
+    const id=parseInt(row.dataset.id);expandedId=expandedId===id?null:id;
+    document.querySelectorAll('tr.data-row').forEach(r=>r.classList.toggle('expanded',parseInt(r.dataset.id)===expandedId));
+    document.querySelectorAll('.detail-outer').forEach(o=>{const dr=o.closest('tr').previousElementSibling;if(dr)o.classList.toggle('open',parseInt(dr.dataset.id)===expandedId)});
+  });
+
+  // ── Block Composer ──
+  let composerBlocks=[];
+  function renderComposerCatalog(){
+    const order=['source','transform','ai','output','gate'];
+    const labels={source:'Sources',transform:'Transform',ai:'AI',output:'Outputs',gate:'Gates'};
+    const colors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
+    let html='';
+    order.forEach(type=>{
+      const blocks=Object.entries(BLOCKS).filter(([,b])=>b.type===type);
+      if(!blocks.length)return;
+      html+='<div class="catalog-group-label" style="color:'+colors[type]+'">'+labels[type]+'</div>';
+      blocks.forEach(([id,b])=>{
+        html+='<div class="catalog-block" data-catalog="'+id+'"><span class="block-dot block-dot-'+type+'"></span><span class="catalog-block-name">'+esc(b.name)+'</span><span class="catalog-block-api">'+esc(b.api)+'</span></div>';
+      });
+    });
+    document.getElementById('composerCatalog').innerHTML=html;
+  }
+  function renderComposerFlow(){
+    const flow=document.getElementById('composerFlow');
+    if(!composerBlocks.length){flow.innerHTML='<span class="composer-flow-empty">Click blocks from the catalog to add them here</span>';return}
+    // Group by type preserving order
+    const order=['source','transform','ai','output','gate'];
+    const groups={};composerBlocks.forEach((bid,i)=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push({bid,idx:i})});
+    let html='',first=true;
+    order.forEach(type=>{
+      if(!groups[type])return;
+      if(!first)html+='<span class="block-arrow">\u2192</span>';
+      first=false;
+      groups[type].forEach(({bid,idx})=>{
+        const b=BLOCKS[bid];
+        html+='<div class="composer-block"><span class="block-dot block-dot-'+b.type+'"></span><span class="cb-name">'+esc(b.name)+'</span><button class="cb-remove" data-idx="'+idx+'">&times;</button></div>';
+      });
+    });
+    flow.innerHTML=html;
+  }
+  // Catalog click → add block
+  document.getElementById('composerCatalog').addEventListener('click',e=>{
+    const el=e.target.closest('[data-catalog]');if(!el)return;
+    composerBlocks.push(el.dataset.catalog);
+    renderComposerFlow();
+  });
+  // Remove block
+  document.getElementById('composerFlow').addEventListener('click',e=>{
+    const btn=e.target.closest('.cb-remove');if(!btn)return;
+    composerBlocks.splice(parseInt(btn.dataset.idx),1);
+    renderComposerFlow();
+  });
+
+  // ── Add Workflow Modal (2-step) ──
   const overlay=document.getElementById('modalOverlay');
-  document.getElementById('btnAdd').addEventListener('click',()=>{overlay.classList.add('open');document.getElementById('fName').focus()});
-  document.getElementById('modalClose').addEventListener('click',()=>overlay.classList.remove('open'));
-  document.getElementById('modalCancel').addEventListener('click',()=>overlay.classList.remove('open'));
+  const addModal=document.getElementById('addModal');
+  let modalStep=1;
+  function setModalStep(step){
+    modalStep=step;
+    document.getElementById('composerStep1').classList.toggle('active',step===1);
+    document.getElementById('composerStep2').classList.toggle('active',step===2);
+    document.querySelectorAll('#stepDots .step-dot').forEach(d=>d.classList.toggle('active',parseInt(d.dataset.step)<=step));
+    addModal.classList.toggle('modal-wide',step===2);
+  }
+  function resetModal(){
+    setModalStep(1);composerBlocks=[];renderComposerFlow();
+    ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fBU').selectedIndex=0;
+    const submitBtn=document.getElementById('modalSubmit');
+    submitBtn.disabled=false;submitBtn.textContent='Add as Pilot';
+  }
+  document.getElementById('btnAdd').addEventListener('click',()=>{resetModal();renderComposerCatalog();overlay.classList.add('open');document.getElementById('fName').focus()});
+  document.getElementById('modalClose').addEventListener('click',()=>{overlay.classList.remove('open')});
+  document.getElementById('modalCancel').addEventListener('click',()=>{overlay.classList.remove('open')});
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
+
+  // Step navigation
+  document.getElementById('modalNext').addEventListener('click',()=>{
+    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim();
+    let valid=true;
+    if(!name){showFieldError('fName','errName');valid=false}else{clearFieldError('fName','errName')}
+    if(!bu){showFieldError('fBU','errBU');valid=false}else{clearFieldError('fBU','errBU')}
+    if(!desc){showFieldError('fDesc','errDesc');valid=false}else{clearFieldError('fDesc','errDesc')}
+    if(!valid){document.querySelector('.field-error')?.focus();return}
+    setModalStep(2);
+  });
+  document.getElementById('composerBack').addEventListener('click',()=>setModalStep(1));
 
   // Inline validation helpers
   function clearFieldError(inputId,errId){document.getElementById(inputId).classList.remove('field-error');const e=document.getElementById(errId);if(e)e.classList.remove('show')}
@@ -1039,11 +1368,15 @@
     if(details){genEl.classList.add('show');try{const apiKey=localStorage.getItem('ANTHROPIC_API_KEY')||'';if(apiKey){const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:'Write a prompt_summary for an AI workflow registry entry. Format: [What it ingests]. [What AI logic/rules it applies and outputs]. [Who reviews before action].\n\nNever start with "This workflow". Be specific.\n\nWorkflow: '+name+'\nBU: '+bu+'\nDetails: '+details+'\nReviewer: '+reviewer+'\n\nWrite ONLY the prompt_summary. 2-3 sentences.'}]})});const data=await resp.json();promptSummary=data.content[0].text}else{promptSummary=details}}catch(e){promptSummary=details}genEl.classList.remove('show')}else{promptSummary='Workflow details pending. Human reviewer required before any action.'}
     const maxId=Math.max(...workflows.map(w=>w.id)),maxDay=Math.max(...workflows.map(w=>w.day));
     const nw={id:maxId+1,name,desc,bu,type,risk,status:'Pilot',saves:'\u2014',day:maxDay+5,prompt_summary:promptSummary,reused_by:[],reviewer,rewrite_rate:'\u2014%'};
-    workflows.push(nw);REUSE_INTEL[nw.id]={stack:[],reusable:[],specific:[],readiness:'Low',days_to_live:null,reuse_days:null,risks:['New workflow — reuse assessment pending']};
-    ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('fBU').selectedIndex=0;overlay.classList.remove('open');
-    submitBtn.disabled=false;submitBtn.textContent='Add as Pilot';
-    computeStats();computeReuseMap();render();
+    workflows.push(nw);
+    // Save composed blocks
+    if(composerBlocks.length){WORKFLOW_BLOCKS[nw.id]=[...composerBlocks]}
+    else{WORKFLOW_BLOCKS[nw.id]=['manager-approve']}
+    // Derive stack from blocks
+    const stack=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.api).filter(Boolean).filter(a=>a!=='Internal'&&a!=='Custom'&&a!=='Rule Engine'))];
+    REUSE_INTEL[nw.id]={stack,reusable:[],specific:[],readiness:'Low',days_to_live:null,reuse_days:null,risks:['New workflow — reuse assessment pending']};
+    overlay.classList.remove('open');resetModal();
+    computeStats();computeReuseMap();renderBlockLibrary();render();
     showToast('Added "'+name+'" as Pilot');
   });
 
@@ -1100,7 +1433,7 @@
   });
 
   // Escape key closes modals
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){overlay.classList.remove('open');reqOv.classList.remove('open')}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideBlockPopover();overlay.classList.remove('open');reqOv.classList.remove('open')}});
 })();
 </script>
 </body>
