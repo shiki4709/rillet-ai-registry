@@ -2,675 +2,601 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AI Registry — Rillet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --surface-2: #1a1a1a;
-    --border: #2a2a2a;
-    --border-hover: #3a3a3a;
-    --text: #e0e0e0;
-    --text-dim: #888;
-    --text-muted: #555;
-    --accent: #4ade80;
-    --accent-dim: #22c55e;
-    --yellow: #facc15;
-    --orange: #fb923c;
-    --blue: #60a5fa;
-    --red: #f87171;
+    /* Warm sand palette — not gray, not blue, not the AI default */
+    --bg:        #f6f3ee;
+    --surface:   #fffefb;
+    --surface-2: #f0ede6;
+    --surface-3: #e8e4db;
+    --border:    #ddd8ce;
+    --border-dim:#eae6dd;
+
+    /* Text — warm charcoal, never pure black */
+    --tx:   #2c2a25;
+    --tx-2: #6b6660;
+    --tx-3: #9e968c;
+
+    /* Accents — warm teal + earthy tones */
+    --teal:     #1a8a7a;
+    --teal-bg:  #e6f5f2;
+    --teal-deep:#14705f;
+    --rust:     #c4603a;
+    --rust-bg:  #fdf0ea;
+    --plum:     #7e5ba5;
+    --plum-bg:  #f3eef9;
+    --gold:     #b08d1e;
+    --gold-bg:  #fbf6e3;
+    --slate:    #5a7088;
+    --slate-bg: #edf1f5;
+
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
     --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
+
+    --ease:  cubic-bezier(.22, 1, .36, 1);
+    --r:     10px;
+    --r-sm:  6px;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
   body {
     background: var(--bg);
-    color: var(--text);
+    color: var(--tx);
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: .875rem;
     line-height: 1.6;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 32px 24px;
-  }
+  /* ====== SHELL ====== */
+  .shell { display: flex; min-height: 100vh; }
 
-  /* Header */
-  .header {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 8px;
+  .main-col {
+    flex: 1; min-width: 0;
+    border-right: 1px solid var(--border-dim);
+    padding: 36px 32px 56px;
   }
-
-  .header h1 {
-    font-family: var(--mono);
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: -0.5px;
-  }
-
-  .header .tag {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-muted);
+  .side-col {
+    width: 300px; flex-shrink: 0;
+    padding: 36px 18px;
+    display: flex; flex-direction: column; gap: 16px;
+    overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
     background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2px 8px;
-    border-radius: 3px;
   }
+
+  /* ====== HEADER ====== */
+  .header {
+    display: flex; align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .header-left { display: flex; align-items: baseline; gap: 10px; }
+  .header h1 {
+    font-size: 1.5rem; font-weight: 700;
+    letter-spacing: -.03em; color: var(--tx);
+    line-height: 1;
+  }
+  .header h1 em {
+    font-style: normal; font-weight: 400;
+    color: var(--tx-3);
+  }
+  .header .ver {
+    font-family: var(--mono); font-size: .6rem;
+    color: var(--tx-3); background: var(--surface-2);
+    padding: 2px 6px; border-radius: 3px;
+  }
+  .header-actions { display: flex; gap: 8px; }
 
   .subtitle {
-    font-size: 13px;
-    color: var(--text-dim);
+    font-size: .8125rem; color: var(--tx-3);
+    margin-bottom: 32px;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    font-family: var(--sans);
+    font-size: .75rem; font-weight: 600;
+    padding: 8px 16px; border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--tx-2);
+    cursor: pointer;
+    transition: all 150ms var(--ease);
+    outline: none;
+  }
+  .btn:hover { background: var(--surface-2); color: var(--tx); border-color: var(--tx-3); }
+  .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--teal); }
+  .btn:active { transform: scale(.97); }
+
+  .btn-accent {
+    background: var(--teal); color: #fff;
+    border-color: var(--teal-deep);
+  }
+  .btn-accent:hover { background: var(--teal-deep); color: #fff; border-color: var(--teal-deep); }
+
+  /* ====== STATS ====== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
     margin-bottom: 28px;
   }
 
-  /* Stats bar */
-  .stats-bar {
-    display: flex;
-    gap: 1px;
-    background: var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
   .stat {
-    flex: 1;
-    background: var(--surface);
-    padding: 16px 20px;
-    text-align: center;
+    padding: 20px 0;
+    text-align: left;
+    position: relative;
+    opacity: 0; transform: translateY(10px);
+    animation: stat-in 500ms var(--ease) forwards;
+  }
+  .stat:nth-child(1) { animation-delay: 0ms; }
+  .stat:nth-child(2) { animation-delay: 60ms; }
+  .stat:nth-child(3) { animation-delay: 120ms; }
+  .stat:nth-child(4) { animation-delay: 180ms; }
+  .stat:nth-child(5) { animation-delay: 240ms; }
+  @keyframes stat-in { to { opacity:1; transform:translateY(0); } }
+
+  .stat::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 32px; height: 3px; border-radius: 2px;
+  }
+  .stat[data-c="teal"]::before  { background: var(--teal); }
+  .stat[data-c="slate"]::before { background: var(--slate); }
+  .stat[data-c="plum"]::before  { background: var(--plum); }
+  .stat[data-c="gold"]::before  { background: var(--gold); }
+  .stat[data-c="rust"]::before  { background: var(--rust); }
+
+  .stat-val {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.04em;
+    line-height: 1;
+  }
+  .stat[data-c="teal"] .stat-val  { color: var(--teal); }
+  .stat[data-c="slate"] .stat-val { color: var(--slate); }
+  .stat[data-c="plum"] .stat-val  { color: var(--plum); }
+  .stat[data-c="gold"] .stat-val  { color: var(--gold); }
+  .stat[data-c="rust"] .stat-val  { color: var(--rust); }
+
+  .stat-lbl {
+    font-size: .6875rem; font-weight: 500;
+    color: var(--tx-3);
+    margin-top: 4px;
   }
 
-  .stat:first-child { border-radius: 6px 0 0 6px; }
-  .stat:last-child { border-radius: 0 6px 6px 0; }
-
-  .stat-value {
-    font-family: var(--mono);
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--accent);
+  /* ====== SPOTLIGHT ====== */
+  .spotlight {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 0 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border-dim);
+    font-size: .8125rem;
   }
+  .spotlight-icon { color: var(--plum); font-size: .75rem; }
+  .spotlight-label { color: var(--tx-3); font-weight: 500; }
+  .spotlight-name { color: var(--tx); font-weight: 700; }
+  .spotlight-flow { color: var(--tx-3); font-family: var(--mono); font-size: .6875rem; }
+  .spotlight-flow .arrow { color: var(--plum); margin: 0 3px; }
 
-  .stat-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-  }
-
-  /* Controls */
-  .controls {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
+  /* ====== CONTROLS ====== */
+  .controls { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
 
   .search-input {
-    flex: 1;
-    min-width: 200px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 12px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
+    flex:1; min-width:200px;
+    background: var(--surface); border:1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 9px 14px;
+    color: var(--tx); font-size: .8125rem;
     outline: none;
-    transition: border-color 0.15s;
+    transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
   }
+  .search-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-bg); }
+  .search-input::placeholder { color: var(--tx-3); }
 
-  .search-input:focus {
-    border-color: var(--accent-dim);
+  .filter-sel {
+    background: var(--surface); border:1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 9px 12px; padding-right: 28px;
+    color: var(--tx-2); font-size: .75rem; font-weight: 500;
+    outline:none; cursor:pointer;
+    appearance:none; -webkit-appearance:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239e968c' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 10px center;
+    transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
   }
+  .filter-sel:focus-visible { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-bg); }
+  .filter-sel.active { border-color:var(--teal); color:var(--teal); }
 
-  .search-input::placeholder {
-    color: var(--text-muted);
-  }
-
-  .filter-select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 12px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    outline: none;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    padding-right: 28px;
-    transition: border-color 0.15s;
-  }
-
-  .filter-select:focus {
-    border-color: var(--accent-dim);
-  }
-
-  /* Table */
+  /* ====== TABLE ====== */
   .table-wrap {
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--r);
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(44,42,37,.04);
   }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+  table { width:100%; border-collapse:collapse; }
 
   thead th {
-    background: var(--surface);
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 10px 14px;
-    text-align: left;
+    font-size: .625rem; font-weight: 600;
+    color: var(--tx-3);
+    text-transform: uppercase; letter-spacing: .07em;
+    padding: 12px 16px; text-align: left;
     border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
-    transition: color 0.15s;
+    cursor:pointer; user-select:none; white-space:nowrap;
+    transition: color 120ms;
   }
+  thead th:hover { color: var(--tx-2); }
+  thead th.sorted { color: var(--teal); }
+  .sort-arrow { margin-left:2px; font-size:.5rem; opacity:.3; }
+  thead th.sorted .sort-arrow { opacity:1; }
 
-  thead th:hover {
-    color: var(--text-dim);
+  tbody tr.data-row {
+    border-bottom: 1px solid var(--border-dim);
+    cursor:pointer; transition: background 80ms;
+    opacity:0; animation: row-in 350ms var(--ease) forwards;
   }
+  @keyframes row-in { to { opacity:1; } }
 
-  thead th.sorted {
-    color: var(--accent);
-  }
+  tbody tr.data-row:hover { background: var(--surface-2); }
+  tbody tr.data-row.expanded { background: var(--surface-2); }
 
-  thead th .sort-arrow {
-    margin-left: 4px;
-    font-size: 10px;
-    opacity: 0.5;
-  }
-
-  thead th.sorted .sort-arrow {
-    opacity: 1;
-  }
-
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: background 0.1s;
-  }
-
-  tbody tr:last-child {
-    border-bottom: none;
-  }
-
-  tbody tr:hover {
-    background: var(--surface);
-  }
-
-  tbody tr.expanded {
-    background: var(--surface);
-  }
-
-  tbody td {
-    padding: 10px 14px;
-    font-size: 13px;
-    vertical-align: middle;
-  }
-
-  .wf-name {
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .wf-desc {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
+  tbody td { padding:11px 16px; font-size:.8125rem; vertical-align:middle; }
+  .cell-name { min-width:180px; }
+  .wf-name { font-weight:700; color:var(--tx); line-height:1.25; }
+  .wf-desc { font-size:.6875rem; color:var(--tx-3); margin-top:2px; line-height:1.4; }
 
   /* Badges */
   .badge {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 3px;
-    white-space: nowrap;
+    display:inline-block; font-size:.625rem; font-weight:600;
+    padding:3px 9px; border-radius:4px; white-space:nowrap;
   }
+  .badge-live   { color:var(--teal); background:var(--teal-bg); }
+  .badge-pilot  { color:var(--gold); background:var(--gold-bg); }
+  .badge-type   { color:var(--slate); background:var(--slate-bg); }
+  .badge-risk-low    { color:var(--teal);  background:var(--teal-bg); }
+  .badge-risk-medium { color:var(--rust);  background:var(--rust-bg); }
 
-  .badge-live {
-    color: var(--accent);
-    background: rgba(74, 222, 128, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.2);
-  }
-
-  .badge-pilot {
-    color: var(--yellow);
-    background: rgba(250, 204, 21, 0.1);
-    border: 1px solid rgba(250, 204, 21, 0.2);
-  }
-
-  .badge-type {
-    color: var(--blue);
-    background: rgba(96, 165, 250, 0.1);
-    border: 1px solid rgba(96, 165, 250, 0.15);
-  }
-
-  .badge-risk-low {
-    color: var(--accent);
-    background: rgba(74, 222, 128, 0.08);
-  }
-
-  .badge-risk-medium {
-    color: var(--orange);
-    background: rgba(251, 146, 60, 0.1);
-  }
-
-  .bu-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    white-space: nowrap;
-  }
-
+  .bu-label { font-size:.75rem; color:var(--tx-2); white-space:nowrap; }
   .saves-label {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
-    white-space: nowrap;
+    font-family:var(--mono); font-size:.6875rem;
+    color:var(--teal); white-space:nowrap;
+    font-variant-numeric:tabular-nums;
   }
 
-  /* Expand row */
-  .expand-icon {
-    display: inline-block;
-    width: 16px;
-    color: var(--text-muted);
-    font-family: var(--mono);
-    font-size: 12px;
-    transition: transform 0.15s;
-  }
+  /* Progress mini */
+  .progress-cell { display:flex; align-items:center; gap:7px; white-space:nowrap; }
+  .progress-bar { width:48px; height:4px; background:var(--surface-3); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:2px; }
+  .progress-pct { font-family:var(--mono); font-size:.625rem; color:var(--tx-3); font-variant-numeric:tabular-nums; }
 
-  tr.expanded .expand-icon {
-    transform: rotate(90deg);
-  }
+  /* Reuse dots */
+  .reuse-dots { display:flex; align-items:center; gap:3px; }
+  .reuse-dot { width:6px; height:6px; border-radius:50%; background:var(--plum); }
+  .reuse-count { font-family:var(--mono); font-size:.625rem; color:var(--tx-3); margin-left:3px; }
 
-  /* Detail row */
-  .detail-row td {
-    padding: 0;
-    background: var(--surface);
-    cursor: default;
-  }
+  /* Chevron */
+  .expand-cell { width:28px; text-align:center; }
+  .chv { display:inline-block; width:14px; height:14px; color:var(--tx-3); transition:transform 200ms var(--ease),color 120ms; }
+  .chv svg { display:block; width:14px; height:14px; }
+  tr.data-row:hover .chv { color:var(--tx-2); }
+  tr.expanded .chv { transform:rotate(90deg); color:var(--teal); }
+
+  /* ====== DETAIL ROW ====== */
+  .detail-row td { padding:0; cursor:default; }
+  .detail-outer { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms var(--ease); }
+  .detail-outer.open { grid-template-rows:1fr; }
+  .detail-inner { overflow:hidden; }
 
   .detail-content {
-    padding: 16px 14px 16px 44px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    font-size: 13px;
-    border-top: 1px solid var(--border);
+    padding: 24px 20px 24px 48px;
+    display:grid; grid-template-columns:1.1fr .8fr .5fr;
+    gap:28px;
+    border-top:1px solid var(--border-dim);
+    background: var(--bg);
   }
-
   .detail-section h4 {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    font-size:.5625rem; font-weight:600;
+    color:var(--tx-3); text-transform:uppercase;
+    letter-spacing:.07em; margin-bottom:10px;
   }
+  .detail-section p { color:var(--tx-2); font-size:.8125rem; line-height:1.7; max-width:52ch; }
 
-  .detail-section p {
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
+  .meta-row { display:flex; gap:24px; flex-wrap:wrap; margin-bottom:14px; }
+  .meta-item .ml { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; }
+  .meta-item .mv { font-size:.8125rem; color:var(--tx); margin-top:3px; font-variant-numeric:tabular-nums; }
+  .reuse-tag { display:inline-block; font-size:.625rem; font-weight:600; color:var(--plum); background:var(--plum-bg); padding:2px 8px; border-radius:4px; margin:2px 3px 2px 0; }
 
-  .detail-meta {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
+  /* Build progress */
+  .build-pct { font-family:var(--mono); font-size:1.25rem; font-weight:500; font-variant-numeric:tabular-nums; line-height:1; }
+  .build-bar { width:100%; height:5px; background:var(--surface-3); border-radius:3px; overflow:hidden; margin:10px 0; }
+  .build-fill { height:100%; border-radius:3px; }
+  .build-ts { font-size:.625rem; color:var(--tx-3); }
 
-  .detail-meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  .btn-sm {
+    font-size:.625rem; font-weight:600;
+    padding:5px 10px; border-radius:4px;
+    border:1px solid var(--border); background:var(--surface);
+    color:var(--tx-2); cursor:pointer; margin-top:10px;
+    transition:all 120ms var(--ease); outline:none;
   }
+  .btn-sm:hover { background:var(--surface-2); color:var(--tx); }
+  .btn-sm:focus-visible { box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--teal); }
 
-  .detail-meta-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+  .empty-state { text-align:center; padding:48px 16px; color:var(--tx-3); font-size:.8125rem; }
 
-  .detail-meta-value {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text);
-  }
+  /* ====== SIDE PANELS ====== */
+  .panel { background:var(--surface); border:1px solid var(--border-dim); border-radius:var(--r); overflow:hidden; }
+  .panel-head { font-size:.6875rem; font-weight:600; color:var(--tx-2); padding:11px 14px; border-bottom:1px solid var(--border-dim); display:flex; align-items:center; gap:7px; }
+  .panel-head .dot { width:5px; height:5px; border-radius:50%; }
+  .panel-body { padding:6px 14px; font-size:.75rem; max-height:270px; overflow-y:auto; }
+  .panel-body::-webkit-scrollbar { width:3px; }
+  .panel-body::-webkit-scrollbar-track { background:transparent; }
+  .panel-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
-  .reuse-tag {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--blue);
-    background: rgba(96, 165, 250, 0.08);
-    border: 1px solid rgba(96, 165, 250, 0.15);
-    padding: 1px 6px;
-    border-radius: 3px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-  }
+  /* Khoj */
+  .khoj-item { padding:8px 0; border-bottom:1px solid var(--border-dim); }
+  .khoj-item:last-child { border-bottom:none; }
+  .khoj-tag { font-family:var(--mono); font-size:.5625rem; font-weight:500; padding:1px 5px; border-radius:3px; margin-right:4px; }
+  .khoj-tag-progress { color:var(--teal); background:var(--teal-bg); }
+  .khoj-tag-reuse    { color:var(--plum); background:var(--plum-bg); }
+  .khoj-tag-note     { color:var(--slate); background:var(--slate-bg); }
+  .khoj-tag-shipped  { color:var(--gold); background:var(--gold-bg); }
+  .khoj-tag-context  { color:var(--rust); background:var(--rust-bg); }
+  .khoj-text { color:var(--tx-2); font-size:.6875rem; margin-top:3px; line-height:1.55; }
+  .khoj-ts { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); margin-top:2px; }
 
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--text-muted);
-    font-family: var(--mono);
-    font-size: 13px;
+  .khoj-input-wrap { padding:8px 14px; border-top:1px solid var(--border-dim); }
+  .khoj-input {
+    width:100%; background:var(--bg); border:1px solid var(--border);
+    border-radius:4px; padding:7px 10px;
+    color:var(--tx); font-size:.6875rem; outline:none;
+    transition:border-color 150ms;
   }
+  .khoj-input::placeholder { color:var(--tx-3); }
+  .khoj-input:focus { border-color:var(--teal); }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .detail-content { grid-template-columns: 1fr; }
-    .stats-bar { flex-direction: column; }
-    .controls { flex-direction: column; }
-    .filter-select { width: 100%; }
-    table { font-size: 12px; }
-    .hide-mobile { display: none; }
+  /* Reuse map */
+  .rmap-row { display:flex; align-items:center; gap:7px; padding:7px 0; border-bottom:1px solid var(--border-dim); font-size:.6875rem; }
+  .rmap-row:last-child { border-bottom:none; }
+  .rmap-src { color:var(--tx); font-weight:600; min-width:72px; font-size:.625rem; }
+  .rmap-arrow { color:var(--tx-3); font-size:.625rem; }
+  .rmap-dst { display:flex; flex-wrap:wrap; gap:3px; }
+  .rmap-chip { font-size:.5625rem; font-weight:600; color:var(--plum); background:var(--plum-bg); padding:2px 7px; border-radius:3px; }
+
+  /* Activity */
+  .activity-item { padding:7px 0; border-bottom:1px solid var(--border-dim); display:flex; gap:8px; align-items:flex-start; }
+  .activity-item:last-child { border-bottom:none; }
+  .activity-dot { width:5px; height:5px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+  .activity-text { font-size:.6875rem; color:var(--tx-2); line-height:1.5; }
+  .activity-ts { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); }
+
+  /* ====== MODAL ====== */
+  .modal-overlay { position:fixed; inset:0; background:rgba(44,42,37,.35); display:none; align-items:center; justify-content:center; z-index:100; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:14px; width:480px; max-width:92vw; max-height:90vh; overflow-y:auto; box-shadow:0 32px 80px rgba(44,42,37,.12),0 2px 8px rgba(44,42,37,.06); }
+  .modal-head { padding:20px 24px; border-bottom:1px solid var(--border-dim); display:flex; justify-content:space-between; align-items:center; }
+  .modal-head h2 { font-size:.9375rem; font-weight:700; color:var(--tx); }
+  .modal-close { background:none; border:none; color:var(--tx-3); font-size:1.25rem; cursor:pointer; padding:4px; transition:color 120ms; }
+  .modal-close:hover { color:var(--tx); }
+  .modal-body { padding:24px; }
+  .field { margin-bottom:16px; }
+  .field label { display:block; font-size:.625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; }
+  .field input,.field select,.field textarea { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:var(--r-sm); padding:10px 12px; color:var(--tx); font-family:var(--sans); font-size:.8125rem; outline:none; transition:border-color 150ms,box-shadow 150ms; }
+  .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-bg); }
+  .field textarea { resize:vertical; min-height:80px; line-height:1.55; }
+  .field select { appearance:none; -webkit-appearance:none; cursor:pointer; }
+  .modal-foot { padding:16px 24px; border-top:1px solid var(--border-dim); display:flex; justify-content:flex-end; gap:8px; }
+  .generating { display:none; align-items:center; gap:8px; padding:10px 0; font-size:.75rem; color:var(--teal); }
+  .generating.show { display:flex; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:var(--teal); border-radius:50%; animation:spin .6s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ====== RESPONSIVE ====== */
+  @media(max-width:1100px) { .side-col{display:none} .main-col{border-right:none} }
+  @media(max-width:768px) {
+    .main-col{padding:20px 16px 36px}
+    .stats{grid-template-columns:repeat(3,1fr);gap:0}
+    .controls{flex-direction:column}
+    .hide-sm{display:none}
+    .detail-content{grid-template-columns:1fr;padding-left:16px}
+    .header{flex-direction:column;align-items:flex-start;gap:14px}
   }
+  @media(pointer:coarse) { thead th,tbody td{padding:14px 16px} .search-input,.filter-sel{padding:12px 14px} }
+  @media(prefers-reduced-motion:reduce) { *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important} }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>AI Registry</h1>
-    <span class="tag">v1.0</span>
-  </div>
-  <p class="subtitle">Cross-BU AI workflow catalog — filter, search, and review active automations.</p>
 
-  <div class="stats-bar" id="statsBar">
-    <div class="stat">
-      <div class="stat-value" id="statTotal">—</div>
-      <div class="stat-label">Workflows</div>
+<div class="shell">
+<div class="main-col">
+  <div class="header">
+    <div class="header-left">
+      <h1>AI Registry <em>/ Rillet</em></h1>
+      <span class="ver">v2</span>
     </div>
-    <div class="stat">
-      <div class="stat-value" id="statLive">—</div>
-      <div class="stat-label">Live</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="statBUs">—</div>
-      <div class="stat-label">Business Units</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="statHours">—</div>
-      <div class="stat-label">Hours Saved / Wk</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="statRewrite">—</div>
-      <div class="stat-label">Avg Rewrite Rate</div>
+    <div class="header-actions">
+      <button class="btn" id="btnExport">Export JSON</button>
+      <button class="btn btn-accent" id="btnAdd">Add Workflow</button>
     </div>
   </div>
+  <p class="subtitle">Cross-BU AI workflow catalog. Filter, search, and review active automations.</p>
+
+  <div class="stats">
+    <div class="stat" data-c="teal"><div class="stat-val" id="statTotal">&mdash;</div><div class="stat-lbl">Workflows</div></div>
+    <div class="stat" data-c="slate"><div class="stat-val" id="statLive">&mdash;</div><div class="stat-lbl">Live</div></div>
+    <div class="stat" data-c="plum"><div class="stat-val" id="statBUs">&mdash;</div><div class="stat-lbl">Business Units</div></div>
+    <div class="stat" data-c="gold"><div class="stat-val" id="statHours">&mdash;</div><div class="stat-lbl">Hrs Saved / Wk</div></div>
+    <div class="stat" data-c="rust"><div class="stat-val" id="statReuses">&mdash;</div><div class="stat-lbl">Cross-BU Reuses</div></div>
+  </div>
+
+  <div class="spotlight" id="spotlight"></div>
 
   <div class="controls">
     <input type="text" class="search-input" id="searchInput" placeholder="Search workflows...">
-    <select class="filter-select" id="filterBU">
-      <option value="">All BUs</option>
-    </select>
-    <select class="filter-select" id="filterStatus">
-      <option value="">All Status</option>
-      <option value="Live">Live</option>
-      <option value="Pilot">Pilot</option>
-    </select>
-    <select class="filter-select" id="filterRisk">
-      <option value="">All Risk</option>
-      <option value="Low">Low</option>
-      <option value="Medium">Medium</option>
-    </select>
-    <select class="filter-select" id="filterType">
-      <option value="">All Types</option>
-      <option value="1">Type 1</option>
-      <option value="2">Type 2</option>
-    </select>
+    <select class="filter-sel" id="filterBU"><option value="">All BUs</option></select>
+    <select class="filter-sel" id="filterStatus"><option value="">All Status</option><option value="Live">Live</option><option value="Pilot">Pilot</option></select>
+    <select class="filter-sel" id="filterType"><option value="">All Types</option><option value="1">Type 1</option><option value="2">Type 2</option></select>
   </div>
 
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th style="width:28px"></th>
-          <th data-sort="name">Name <span class="sort-arrow">▲</span></th>
-          <th data-sort="bu">BU <span class="sort-arrow">▲</span></th>
-          <th data-sort="type" class="hide-mobile">Type <span class="sort-arrow">▲</span></th>
-          <th data-sort="risk" class="hide-mobile">Risk <span class="sort-arrow">▲</span></th>
-          <th data-sort="status">Status <span class="sort-arrow">▲</span></th>
-          <th data-sort="saves" class="hide-mobile">Saves <span class="sort-arrow">▲</span></th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th class="expand-cell"></th>
+        <th data-sort="name">Name <span class="sort-arrow">&#9650;</span></th>
+        <th data-sort="bu">BU <span class="sort-arrow">&#9650;</span></th>
+        <th data-sort="type" class="hide-sm">Type <span class="sort-arrow">&#9650;</span></th>
+        <th data-sort="status">Status <span class="sort-arrow">&#9650;</span></th>
+        <th data-sort="saves" class="hide-sm">Saves <span class="sort-arrow">&#9650;</span></th>
+        <th class="hide-sm">Progress</th>
+        <th class="hide-sm">Reused</th>
+      </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
 </div>
 
+<div class="side-col">
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--teal)"></span>Khoj Second Brain</div>
+    <div class="panel-body" id="khojFeed"></div>
+    <div class="khoj-input-wrap"><input class="khoj-input" id="khojInput" placeholder="Query Khoj..."></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Cross-BU Reuse Map</div>
+    <div class="panel-body" id="reuseMap"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--slate)"></span>Activity</div>
+    <div class="panel-body" id="activityFeed"></div>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Add Workflow</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Workflow Name</label><input id="fName" placeholder="e.g. Invoice Matcher"></div>
+      <div class="field"><label>Business Unit</label><select id="fBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
+      <div class="field"><label>Description</label><input id="fDesc" placeholder="One-sentence summary"></div>
+      <div class="field"><label>Details (for prompt generation)</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs, and reviewer. Claude generates the prompt_summary from this."></textarea></div>
+      <div class="field"><label>Type</label><select id="fType"><option value="1">Type 1 — Deterministic</option><option value="2">Type 2 — Generative</option></select></div>
+      <div class="field"><label>Risk</label><select id="fRisk"><option value="Low">Low</option><option value="Medium">Medium</option></select></div>
+      <div class="field"><label>Reviewer</label><input id="fReviewer" placeholder="e.g. VP Sales"></div>
+      <div class="generating" id="generating"><span class="spin"></span>Claude generating prompt_summary...</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="modalCancel">Cancel</button>
+      <button class="btn btn-accent" id="modalSubmit">Add as Pilot</button>
+    </div>
+  </div>
+</div>
+
 <script>
-(function () {
-  let workflows = [];
-  let sortCol = 'name';
-  let sortAsc = true;
-  let expandedId = null;
+(function(){
+  const REGISTRY_DATA=[{"id":1,"name":"Deal Summary Generator","desc":"Auto-generates structured deal summaries from CRM notes and call transcripts for weekly pipeline reviews.","bu":"GTM / Sales","type":2,"risk":"Low","status":"Live","saves":"2.5 hrs/wk","day":1,"prompt_summary":"Extracts key deal metadata (stage, ARR, next steps, blockers) from unstructured CRM notes. Outputs a standardized one-page summary with confidence scores for each field. Runs on HubSpot webhook trigger.","reused_by":["Implementation","Customer Success"],"reviewer":"VP Sales","rewrite_rate":"8%"},{"id":2,"name":"Invoice Discrepancy Flagger","desc":"Compares vendor invoices against PO terms and flags mismatches above threshold for AP review.","bu":"Finance","type":1,"risk":"Medium","status":"Live","saves":"4 hrs/wk","day":3,"prompt_summary":"Parses PDF invoices via OCR, extracts line items, and cross-references against approved PO database. Flags unit price variance >2%, quantity mismatches, and unapproved line items. Human reviewer required before any AP action.","reused_by":["Procurement"],"reviewer":"Controller","rewrite_rate":"5%"},{"id":3,"name":"Customer Health Score Digest","desc":"Synthesizes product usage, support tickets, and NPS data into a weekly health score digest per account.","bu":"Customer Success","type":2,"risk":"Low","status":"Live","saves":"3 hrs/wk","day":5,"prompt_summary":"Aggregates signals from Mixpanel (usage trends), Zendesk (ticket volume/sentiment), and Delighted (NPS). Produces a red/yellow/green health classification with plain-language reasoning. CSMs review before client outreach.","reused_by":["GTM / Sales","Product"],"reviewer":"Head of CS","rewrite_rate":"12%"},{"id":4,"name":"SOW Clause Extractor","desc":"Pulls key commercial and delivery terms from signed SOWs into structured fields for the project tracker.","bu":"Implementation","type":1,"risk":"Medium","status":"Live","saves":"1.5 hrs/wk","day":7,"prompt_summary":"Identifies and extracts: payment milestones, SLA commitments, scope boundaries, change order terms, and termination clauses from uploaded SOW PDFs. Outputs structured JSON for downstream project management tooling.","reused_by":["Finance","Legal"],"reviewer":"Dir. of Impl.","rewrite_rate":"15%"},{"id":5,"name":"Weekly Metrics Narrator","desc":"Converts raw KPI exports into a plain-English narrative for the Monday all-hands update.","bu":"Chief of Staff","type":2,"risk":"Low","status":"Live","saves":"2 hrs/wk","day":10,"prompt_summary":"Ingests weekly KPI spreadsheet (revenue, burn, headcount, pipeline). Generates a 3-paragraph narrative highlighting WoW changes, anomalies, and items needing exec attention. Tone-matched to existing company update style.","reused_by":[],"reviewer":"Chief of Staff","rewrite_rate":"18%"},{"id":6,"name":"Support Ticket Classifier","desc":"Auto-tags incoming Zendesk tickets by product area, severity, and suggested routing.","bu":"Customer Success","type":1,"risk":"Low","status":"Live","saves":"5 hrs/wk","day":14,"prompt_summary":"Classifies inbound tickets into product taxonomy (Billing, Integrations, Core Platform, Admin). Assigns severity (P1-P4) based on keyword detection and customer tier. Suggests routing to appropriate engineering pod. Agent reviews classification before routing.","reused_by":["Product"],"reviewer":"Support Lead","rewrite_rate":"6%"},{"id":7,"name":"Competitive Intel Summarizer","desc":"Monitors competitor changelog and blog feeds, produces a weekly competitive digest for GTM.","bu":"GTM / Sales","type":2,"risk":"Low","status":"Live","saves":"3 hrs/wk","day":18,"prompt_summary":"Scrapes RSS feeds and changelog pages for tracked competitors. Summarizes new features, pricing changes, and positioning shifts. Highlights items relevant to active deals. Sales team reviews for accuracy before distribution.","reused_by":["Product","Marketing"],"reviewer":"VP Sales","rewrite_rate":"10%"},{"id":8,"name":"Expense Policy Checker","desc":"Reviews submitted expense reports against company policy and flags violations before AP approval.","bu":"Finance","type":1,"risk":"Medium","status":"Pilot","saves":"2 hrs/wk","day":22,"prompt_summary":"Parses expense report line items and validates against policy rules: per-diem limits, approved vendor list, receipt requirements, manager approval chain. Flags violations with specific policy section references. AP team makes final determination.","reused_by":[],"reviewer":"Controller","rewrite_rate":"9%"},{"id":9,"name":"Onboarding Checklist Generator","desc":"Generates role-specific onboarding checklists from job description and team context.","bu":"People Ops","type":2,"risk":"Low","status":"Live","saves":"1.5 hrs/wk","day":25,"prompt_summary":"Takes job title, department, and manager as inputs. Generates a 30/60/90-day onboarding checklist with system access requests, training modules, and intro meeting suggestions. HR reviews and customizes before sending to new hire.","reused_by":["Implementation"],"reviewer":"People Ops Lead","rewrite_rate":"20%"},{"id":10,"name":"Board Deck Data Puller","desc":"Aggregates cross-functional metrics into a pre-formatted board deck data appendix.","bu":"Chief of Staff","type":2,"risk":"Medium","status":"Pilot","saves":"6 hrs/mo","day":30,"prompt_summary":"Pulls data from finance (Stripe MRR, burn), sales (HubSpot pipeline), product (feature velocity), and CS (health scores). Formats into standardized board deck appendix tables. CoS reviews all numbers against source systems before inclusion.","reused_by":["Finance"],"reviewer":"Chief of Staff","rewrite_rate":"22%"},{"id":11,"name":"RFP Response Drafter","desc":"Generates first-draft RFP responses by matching questions against an internal knowledge base.","bu":"GTM / Sales","type":2,"risk":"Medium","status":"Live","saves":"8 hrs/wk","day":35,"prompt_summary":"Ingests RFP questions, searches internal knowledge base (past responses, product docs, security questionnaires) for relevant content. Generates draft answers with source citations. Sales engineer reviews and edits every response before submission.","reused_by":["Customer Success","Implementation"],"reviewer":"Head of SE","rewrite_rate":"25%"},{"id":12,"name":"Contract Renewal Risk Scorer","desc":"Scores upcoming renewals by churn risk using usage, support, and engagement signals.","bu":"Customer Success","type":1,"risk":"Medium","status":"Live","saves":"3 hrs/wk","day":40,"prompt_summary":"Analyzes accounts 90 days from renewal: product usage trends, support ticket sentiment, exec sponsor engagement, payment history. Produces a 0-100 risk score with top 3 contributing factors. CS reviews scores weekly and adjusts outreach strategy.","reused_by":["GTM / Sales","Finance"],"reviewer":"Head of CS","rewrite_rate":"11%"}];
 
-  // Load data
-  fetch('./data/registry.json')
-    .then(r => r.json())
-    .then(data => {
-      workflows = data;
-      populateBUFilter();
-      computeStats();
-      render();
-    })
-    .catch(err => {
-      document.getElementById('tableBody').innerHTML =
-        '<tr><td colspan="7" class="empty-state">Failed to load registry data.</td></tr>';
-      console.error(err);
-    });
+  const PROGRESS={1:100,2:100,3:95,4:100,5:88,6:100,7:92,8:45,9:85,10:30,11:100,12:90};
+  const PROGRESS_TS={1:'Mar 1',2:'Mar 3',3:'Mar 8',4:'Mar 5',5:'Mar 7',6:'Mar 6',7:'Mar 9',8:'Mar 11',9:'Mar 4',10:'Mar 10',11:'Mar 2',12:'Mar 8'};
 
-  // BU filter options
-  function populateBUFilter() {
-    const bus = [...new Set(workflows.map(w => w.bu))].sort();
-    const sel = document.getElementById('filterBU');
-    bus.forEach(b => {
-      const opt = document.createElement('option');
-      opt.value = b;
-      opt.textContent = b;
-      sel.appendChild(opt);
-    });
+  let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
+  const chevSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+
+  fetch('./data/registry.json').then(r=>r.json()).then(boot).catch(()=>boot(REGISTRY_DATA));
+
+  function boot(d){workflows=d;populateBUFilter();computeStats();computeSpotlight();computeReuseMap();seedKhoj();seedActivity();render();startActivityTicker()}
+  function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+  function parseSaves(s){const m=s.match(/([\d.]+)/);return m?parseFloat(m[1]):0}
+
+  function populateBUFilter(){const bus=[...new Set(workflows.map(w=>w.bu))].sort();const sel=document.getElementById('filterBU');bus.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o)})}
+
+  function computeStats(){
+    document.getElementById('statTotal').textContent=workflows.length;
+    document.getElementById('statLive').textContent=workflows.filter(w=>w.status==='Live').length;
+    document.getElementById('statBUs').textContent=new Set(workflows.map(w=>w.bu)).size;
+    let h=0;workflows.forEach(w=>{const m=w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);if(m){let v=parseFloat(m[1]);if(m[2]==='mo')v/=4.33;h+=v}});
+    document.getElementById('statHours').textContent=h.toFixed(1);
+    let r=0;workflows.forEach(w=>{r+=w.reused_by.length});
+    document.getElementById('statReuses').textContent=r;
   }
 
-  // Stats
-  function computeStats() {
-    document.getElementById('statTotal').textContent = workflows.length;
-    document.getElementById('statLive').textContent = workflows.filter(w => w.status === 'Live').length;
-    document.getElementById('statBUs').textContent = new Set(workflows.map(w => w.bu)).size;
-
-    let totalHrs = 0;
-    workflows.forEach(w => {
-      const m = w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);
-      if (m) {
-        let h = parseFloat(m[1]);
-        if (m[2] === 'mo') h = h / 4.33;
-        totalHrs += h;
-      }
-    });
-    document.getElementById('statHours').textContent = totalHrs.toFixed(1);
-
-    const rates = workflows.map(w => parseFloat(w.rewrite_rate));
-    const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
-    document.getElementById('statRewrite').textContent = avgRate.toFixed(1) + '%';
+  function computeSpotlight(){
+    let best=null,mx=0;workflows.forEach(w=>{if(w.reused_by.length>mx){mx=w.reused_by.length;best=w}});if(!best)return;
+    const el=document.getElementById('spotlight');
+    const dsts=best.reused_by.map(b=>'<span>'+esc(b)+'</span>').join('<span class="arrow">\u2192</span>');
+    el.innerHTML='<span class="spotlight-icon">\u25C6</span><span class="spotlight-label">Most reused:</span><span class="spotlight-name">'+esc(best.name)+'</span><span class="spotlight-flow">'+esc(best.bu)+' <span class="arrow">\u2192</span> '+dsts+'</span>';
   }
 
-  // Filter + sort + render
-  function getFiltered() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const bu = document.getElementById('filterBU').value;
-    const status = document.getElementById('filterStatus').value;
-    const risk = document.getElementById('filterRisk').value;
-    const type = document.getElementById('filterType').value;
+  function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
+  function getSorted(list){return[...list].sort((a,b)=>{let va=a[sortCol],vb=b[sortCol];if(sortCol==='saves'){va=parseSaves(va);vb=parseSaves(vb)}if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase()}if(va<vb)return sortAsc?-1:1;if(va>vb)return sortAsc?1:-1;return 0})}
+  function pColor(pct){if(pct>=90)return'var(--teal)';if(pct>=60)return'var(--gold)';return'var(--rust)'}
 
-    return workflows.filter(w => {
-      if (q && !w.name.toLowerCase().includes(q) && !w.desc.toLowerCase().includes(q)) return false;
-      if (bu && w.bu !== bu) return false;
-      if (status && w.status !== status) return false;
-      if (risk && w.risk !== risk) return false;
-      if (type && w.type !== parseInt(type)) return false;
-      return true;
+  function render(){
+    const filtered=getSorted(getFiltered());const tbody=document.getElementById('tableBody');
+    if(!filtered.length){tbody.innerHTML='<tr><td colspan="8" class="empty-state">No workflows match current filters.</td></tr>';return}
+    let html='';
+    filtered.forEach((w,i)=>{
+      const ex=expandedId===w.id,stCls=w.status==='Live'?'badge-live':'badge-pilot',pct=PROGRESS[w.id]||0,rc=w.reused_by.length,delay=Math.min(i*25,250);
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td><td class="hide-sm"><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;background:'+pColor(pct)+'"></div></div><span class="progress-pct">'+pct+'%</span></div></td><td class="hide-sm"><div class="reuse-dots">';
+      for(let d=0;d<rc;d++)html+='<span class="reuse-dot"></span>';
+      if(rc)html+='<span class="reuse-count">'+rc+'</span>';
+      html+='</div></td></tr>';
+      const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>',ts=PROGRESS_TS[w.id]||'\u2014';
+      html+='<tr class="detail-row"><td colspan="8"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-section"><h4>Prompt / Pipeline</h4><p>'+esc(w.prompt_summary)+'</p></div><div class="detail-section"><h4>Review &amp; Reuse</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Rewrite Rate</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div></div><div class="meta-item"><div class="ml">Classification</div><div class="mv">Type '+w.type+' \u2014 '+(w.type===1?'Deterministic':'Generative')+'</div></div><div style="margin-top:10px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Build Progress</h4><div class="build-pct" style="color:'+pColor(pct)+'">'+pct+'%</div><div class="build-bar"><div class="build-fill" style="width:'+pct+'%;background:'+pColor(pct)+'"></div></div><div class="build-ts">Updated '+ts+'</div><button class="btn-sm" onclick="event.stopPropagation()">\u2192 Sync to Khoj</button></div></div></div></div></td></tr>';
     });
+    tbody.innerHTML=html;
+    document.querySelectorAll('thead th[data-sort]').forEach(th=>{const a=th.dataset.sort===sortCol;th.classList.toggle('sorted',a);const ar=th.querySelector('.sort-arrow');if(ar)ar.textContent=(a&&!sortAsc)?'\u25BC':'\u25B2'});
+    ['filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.classList.toggle('active',el.value!=='')});
   }
 
-  function parseSaves(s) {
-    const m = s.match(/([\d.]+)/);
-    return m ? parseFloat(m[1]) : 0;
-  }
+  document.getElementById('tableBody').addEventListener('click',e=>{const row=e.target.closest('tr.data-row');if(!row)return;const id=parseInt(row.dataset.id);expandedId=expandedId===id?null:id;document.querySelectorAll('tr.data-row').forEach(r=>r.classList.toggle('expanded',parseInt(r.dataset.id)===expandedId));document.querySelectorAll('.detail-outer').forEach(o=>{const dr=o.closest('tr').previousElementSibling;if(dr)o.classList.toggle('open',parseInt(dr.dataset.id)===expandedId)})});
+  document.querySelectorAll('thead th[data-sort]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.sort;if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true}render()})});
+  ['searchInput','filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',render);el.addEventListener('change',render)});
 
-  function getSorted(list) {
-    return [...list].sort((a, b) => {
-      let va = a[sortCol], vb = b[sortCol];
-      if (sortCol === 'saves') { va = parseSaves(va); vb = parseSaves(vb); }
-      if (sortCol === 'type') { va = a.type; vb = b.type; }
-      if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
-      if (va < vb) return sortAsc ? -1 : 1;
-      if (va > vb) return sortAsc ? 1 : -1;
-      return 0;
-    });
-  }
+  function computeReuseMap(){const map={};workflows.forEach(w=>{if(w.reused_by.length){if(!map[w.bu])map[w.bu]=new Set();w.reused_by.forEach(b=>map[w.bu].add(b))}});const el=document.getElementById('reuseMap');let h='';Object.keys(map).sort().forEach(src=>{const dsts=[...map[src]].sort();h+='<div class="rmap-row"><span class="rmap-src">'+esc(src)+'</span><span class="rmap-arrow">\u2192</span><div class="rmap-dst">'+dsts.map(d=>'<span class="rmap-chip">'+esc(d)+'</span>').join('')+'</div></div>'});el.innerHTML=h}
 
-  function render() {
-    const filtered = getSorted(getFiltered());
-    const tbody = document.getElementById('tableBody');
+  const khojSeed=[{tag:'progress',text:'Invoice Discrepancy Flagger \u2014 promoted Pilot \u2192 Live. Rewrite rate settled at 5%.',ts:'Mar 10'},{tag:'reuse',text:'Deal Summary Generator now reused by Customer Success for QBR prep.',ts:'Mar 9'},{tag:'shipped',text:'Support Ticket Classifier v2 deployed with P1-P4 severity routing.',ts:'Mar 8'},{tag:'context',text:'Board Deck Data Puller blocked on Stripe API rate limits. CoS investigating.',ts:'Mar 7'},{tag:'note',text:'RFP Response Drafter rewrite rate trending down \u2014 25% \u2192 22% after prompt tuning.',ts:'Mar 6'},{tag:'progress',text:'Expense Policy Checker pilot started. Controller reviewing first batch.',ts:'Mar 5'},{tag:'reuse',text:'SOW Clause Extractor adopted by Legal for contract review pipeline.',ts:'Mar 4'}];
+  function seedKhoj(){document.getElementById('khojFeed').innerHTML=khojSeed.map(k=>'<div class="khoj-item"><span class="khoj-tag khoj-tag-'+k.tag+'">#'+k.tag+'</span><div class="khoj-text">'+esc(k.text)+'</div><div class="khoj-ts">'+k.ts+'</div></div>').join('')}
+  document.getElementById('khojInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim()){const q=e.target.value.trim();const feed=document.getElementById('khojFeed');const item=document.createElement('div');item.className='khoj-item';item.innerHTML='<span class="khoj-tag khoj-tag-note">#query</span><div class="khoj-text" style="color:var(--tx)">\u2192 '+esc(q)+'</div><div class="khoj-ts">Just now \u00B7 Khoj MCP not connected</div>';feed.prepend(item);e.target.value=''}});
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No workflows match filters.</td></tr>';
-      return;
-    }
+  const actPool=[{c:'var(--teal)',t:'Deal Summary Generator saved 2.5 hrs this week'},{c:'var(--slate)',t:'Support Ticket Classifier routed 142 tickets'},{c:'var(--plum)',t:'Customer Health Score Digest reused by Product'},{c:'var(--gold)',t:'Weekly Metrics Narrator rewrite rate: 18%'},{c:'var(--teal)',t:'RFP Response Drafter completed 3 drafts today'},{c:'var(--rust)',t:'Board Deck Data Puller \u2014 pilot at 30%'},{c:'var(--plum)',t:'Contract Renewal Risk Scorer reused by Finance'},{c:'var(--slate)',t:'Competitive Intel Summarizer flagged 4 changes'},{c:'var(--teal)',t:'Onboarding Checklist Generator \u2014 85% complete'},{c:'var(--gold)',t:'Expense Policy Checker flagged 2 violations'},{c:'var(--plum)',t:'SOW Clause Extractor reused by Legal'},{c:'var(--teal)',t:'Invoice Discrepancy Flagger caught $12k variance'}];
+  let actIdx=0;
+  function seedActivity(){const el=document.getElementById('activityFeed');el.innerHTML=actPool.slice(0,5).map(a=>'<div class="activity-item"><span class="activity-dot" style="background:'+a.c+'"></span><div><div class="activity-text">'+esc(a.t)+'</div><div class="activity-ts">Just now</div></div></div>').join('');actIdx=5}
+  function startActivityTicker(){setInterval(()=>{const feed=document.getElementById('activityFeed');const a=actPool[actIdx%actPool.length];actIdx++;const item=document.createElement('div');item.className='activity-item';item.style.cssText='opacity:0;transform:translateY(-4px)';item.innerHTML='<span class="activity-dot" style="background:'+a.c+'"></span><div><div class="activity-text">'+esc(a.t)+'</div><div class="activity-ts">Just now</div></div>';feed.prepend(item);requestAnimationFrame(()=>{item.style.transition='opacity .3s var(--ease),transform .3s var(--ease)';item.style.opacity='1';item.style.transform='translateY(0)'});while(feed.children.length>12)feed.removeChild(feed.lastChild)},8000)}
 
-    let html = '';
-    filtered.forEach(w => {
-      const isExpanded = expandedId === w.id;
-      const statusClass = w.status === 'Live' ? 'badge-live' : 'badge-pilot';
-      const riskClass = w.risk === 'Low' ? 'badge-risk-low' : 'badge-risk-medium';
+  document.getElementById('btnExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(workflows,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='registry.json';a.click();URL.revokeObjectURL(url)});
 
-      html += `<tr class="${isExpanded ? 'expanded' : ''}" data-id="${w.id}">
-        <td><span class="expand-icon">▶</span></td>
-        <td>
-          <div class="wf-name">${esc(w.name)}</div>
-          <div class="wf-desc">${esc(w.desc)}</div>
-        </td>
-        <td><span class="bu-label">${esc(w.bu)}</span></td>
-        <td class="hide-mobile"><span class="badge badge-type">Type ${w.type}</span></td>
-        <td class="hide-mobile"><span class="badge ${riskClass}">${esc(w.risk)}</span></td>
-        <td><span class="badge ${statusClass}">${esc(w.status)}</span></td>
-        <td class="hide-mobile"><span class="saves-label">${esc(w.saves)}</span></td>
-      </tr>`;
+  const overlay=document.getElementById('modalOverlay');
+  document.getElementById('btnAdd').addEventListener('click',()=>overlay.classList.add('open'));
+  document.getElementById('modalClose').addEventListener('click',()=>overlay.classList.remove('open'));
+  document.getElementById('modalCancel').addEventListener('click',()=>overlay.classList.remove('open'));
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
-      if (isExpanded) {
-        const reuseTags = w.reused_by.length
-          ? w.reused_by.map(r => `<span class="reuse-tag">${esc(r)}</span>`).join('')
-          : '<span style="color:var(--text-muted)">—</span>';
-
-        html += `<tr class="detail-row">
-          <td colspan="7">
-            <div class="detail-content">
-              <div class="detail-section">
-                <h4>Prompt / Pipeline</h4>
-                <p>${esc(w.prompt_summary)}</p>
-              </div>
-              <div class="detail-section">
-                <h4>Review & Reuse</h4>
-                <div class="detail-meta">
-                  <div class="detail-meta-item">
-                    <span class="detail-meta-label">Reviewer</span>
-                    <span class="detail-meta-value">${esc(w.reviewer)}</span>
-                  </div>
-                  <div class="detail-meta-item">
-                    <span class="detail-meta-label">Rewrite Rate</span>
-                    <span class="detail-meta-value">${esc(w.rewrite_rate)}</span>
-                  </div>
-                  <div class="detail-meta-item">
-                    <span class="detail-meta-label">Type</span>
-                    <span class="detail-meta-value">Type ${w.type} — ${w.type === 1 ? 'Deterministic' : 'Generative'}</span>
-                  </div>
-                </div>
-                <div style="margin-top:12px">
-                  <span class="detail-meta-label">Reused by</span>
-                  <div style="margin-top:4px">${reuseTags}</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>`;
-      }
-    });
-
-    tbody.innerHTML = html;
-
-    // Update sort headers
-    document.querySelectorAll('thead th[data-sort]').forEach(th => {
-      th.classList.toggle('sorted', th.dataset.sort === sortCol);
-      const arrow = th.querySelector('.sort-arrow');
-      if (arrow) arrow.textContent = (th.dataset.sort === sortCol && !sortAsc) ? '▼' : '▲';
-    });
-  }
-
-  function esc(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  // Event: row click → expand
-  document.getElementById('tableBody').addEventListener('click', e => {
-    const row = e.target.closest('tr[data-id]');
-    if (!row) return;
-    const id = parseInt(row.dataset.id);
-    expandedId = expandedId === id ? null : id;
-    render();
-  });
-
-  // Event: sort
-  document.querySelectorAll('thead th[data-sort]').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.sort;
-      if (sortCol === col) { sortAsc = !sortAsc; }
-      else { sortCol = col; sortAsc = true; }
-      render();
-    });
-  });
-
-  // Event: filters
-  ['searchInput', 'filterBU', 'filterStatus', 'filterRisk', 'filterType'].forEach(id => {
-    document.getElementById(id).addEventListener('input', render);
-    document.getElementById(id).addEventListener('change', render);
+  document.getElementById('modalSubmit').addEventListener('click',async()=>{
+    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),details=document.getElementById('fDetails').value.trim(),type=parseInt(document.getElementById('fType').value),risk=document.getElementById('fRisk').value,reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
+    if(!name||!bu||!desc){alert('Name, BU, and Description are required.');return}
+    const genEl=document.getElementById('generating');let promptSummary='';
+    if(details){genEl.classList.add('show');try{const apiKey=localStorage.getItem('ANTHROPIC_API_KEY')||'';if(apiKey){const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:'Write a prompt_summary for an AI workflow registry entry. Format: [What it ingests]. [What AI logic/rules it applies and outputs]. [Who reviews before action].\n\nNever start with "This workflow". Be specific.\n\nWorkflow: '+name+'\nBU: '+bu+'\nDetails: '+details+'\nReviewer: '+reviewer+'\n\nWrite ONLY the prompt_summary. 2-3 sentences.'}]})});const data=await resp.json();promptSummary=data.content[0].text}else{promptSummary=details}}catch(e){promptSummary=details}genEl.classList.remove('show')}else{promptSummary='Workflow details pending. Human reviewer required before any action.'}
+    const maxId=Math.max(...workflows.map(w=>w.id)),maxDay=Math.max(...workflows.map(w=>w.day));
+    const nw={id:maxId+1,name,desc,bu,type,risk,status:'Pilot',saves:'\u2014',day:maxDay+5,prompt_summary:promptSummary,reused_by:[],reviewer,rewrite_rate:'\u2014%'};
+    workflows.push(nw);PROGRESS[nw.id]=0;PROGRESS_TS[nw.id]='Today';
+    ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fBU').selectedIndex=0;overlay.classList.remove('open');
+    computeStats();computeSpotlight();computeReuseMap();render();
+    const feed=document.getElementById('activityFeed');const item=document.createElement('div');item.className='activity-item';item.innerHTML='<span class="activity-dot" style="background:var(--teal)"></span><div><div class="activity-text"><strong>'+esc(name)+'</strong> added as Pilot</div><div class="activity-ts">Just now</div></div>';feed.prepend(item);
   });
 })();
 </script>
