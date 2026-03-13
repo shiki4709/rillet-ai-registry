@@ -601,36 +601,76 @@
   .rq-submitted-text { font-size:.8125rem; color:var(--tx); font-weight:600; }
   .rq-submitted-sub { font-size:.6875rem; color:var(--tx-3); margin-top:4px; }
 
-  /* Block detail popover */
-  .block-popover {
-    position:fixed; z-index:250;
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:var(--r); width:320px;
-    box-shadow:0 12px 40px rgba(44,42,37,.12),0 2px 8px rgba(44,42,37,.06);
-    opacity:0; transform:translateY(4px);
-    transition:opacity 150ms var(--ease),transform 150ms var(--ease);
-    pointer-events:none;
+  /* Block detail drawer (right sidebar) */
+  .block-drawer {
+    position:fixed; top:0; right:0; bottom:0; z-index:250;
+    width:340px; max-width:90vw;
+    background:var(--surface); border-left:1px solid var(--border);
+    box-shadow:-8px 0 32px rgba(44,42,37,.08);
+    transform:translateX(100%);
+    transition:transform 250ms var(--ease);
+    overflow-y:auto; overflow-x:hidden;
   }
-  .block-popover.open { opacity:1; transform:translateY(0); pointer-events:auto; }
-  .bp-head { padding:12px 16px; border-bottom:1px solid var(--border-dim); display:flex; align-items:center; gap:8px; }
-  .bp-head-info { flex:1; min-width:0; }
-  .bp-head-name { font-size:.8125rem; font-weight:700; color:var(--tx); }
-  .bp-head-api { font-size:.625rem; color:var(--tx-3); }
-  .bp-body { padding:12px 16px; }
-  .bp-section { margin-bottom:12px; }
-  .bp-section:last-child { margin-bottom:0; }
-  .bp-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
-  .bp-desc { font-size:.75rem; color:var(--tx-2); line-height:1.5; }
-  .bp-owner { display:flex; align-items:center; gap:6px; font-size:.75rem; color:var(--tx); }
-  .health-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .health-item {}
-  .health-val { font-size:.8125rem; font-weight:600; color:var(--tx); font-variant-numeric:tabular-nums; }
+  .block-drawer.open { transform:translateX(0); }
+  .block-drawer::-webkit-scrollbar { width:3px; }
+  .block-drawer::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .bd-head {
+    padding:16px 20px; border-bottom:1px solid var(--border-dim);
+    display:flex; align-items:center; gap:10px;
+    position:sticky; top:0; background:var(--surface); z-index:1;
+  }
+  .bd-head-info { flex:1; min-width:0; }
+  .bd-head-name { font-size:.875rem; font-weight:700; color:var(--tx); }
+  .bd-head-api { font-size:.6875rem; color:var(--tx-3); }
+  .bd-close {
+    background:var(--surface-2); border:1px solid var(--border);
+    color:var(--tx-2); font-size:.875rem; cursor:pointer;
+    width:28px; height:28px; border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 120ms;
+  }
+  .bd-close:hover { background:var(--surface-3); color:var(--tx); }
+  .bd-body { padding:16px 20px; }
+  .bd-section { margin-bottom:16px; }
+  .bd-section:last-child { margin-bottom:0; }
+  .bd-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+  .bd-desc { font-size:.8125rem; color:var(--tx-2); line-height:1.6; }
+  .bd-owner { display:flex; align-items:center; gap:8px; font-size:.8125rem; color:var(--tx); }
+  .health-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .health-item { padding:8px; background:var(--bg); border-radius:var(--r-sm); }
+  .health-val { font-size:.875rem; font-weight:700; color:var(--tx); font-variant-numeric:tabular-nums; }
   .health-val.health-good { color:var(--green); }
   .health-val.health-warn { color:var(--amber); }
   .health-val.health-bad { color:var(--red); }
-  .health-lbl { font-size:.5625rem; color:var(--tx-3); }
-  .bp-wf-list { display:flex; flex-wrap:wrap; gap:4px; }
-  .bp-wf-chip { font-size:.5625rem; font-weight:500; padding:2px 7px; border-radius:3px; color:var(--teal); background:var(--teal-bg); }
+  .health-lbl { font-size:.5625rem; color:var(--tx-3); margin-top:2px; }
+  .bd-wf-list { display:flex; flex-direction:column; gap:6px; }
+  .bd-wf-item {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 10px; border-radius:var(--r-sm);
+    background:var(--bg); cursor:pointer; transition:background 100ms;
+  }
+  .bd-wf-item:hover { background:var(--surface-2); }
+  .bd-wf-name { font-size:.75rem; font-weight:600; color:var(--tx); }
+  .bd-wf-bu { font-size:.625rem; color:var(--tx-3); }
+  .bd-wf-status { font-size:.5625rem; font-weight:600; padding:1px 6px; border-radius:3px; margin-left:auto; }
+  /* Data flow section */
+  .bd-flow { display:flex; flex-direction:column; gap:6px; }
+  .bd-flow-stage { display:flex; align-items:center; gap:8px; }
+  .bd-flow-arrow { color:var(--tx-3); font-size:.625rem; padding-left:14px; }
+  .bd-flow-block {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 10px; border-radius:var(--r-sm);
+    border:1px solid var(--border-dim); background:var(--surface);
+    font-size:.6875rem; flex:1;
+  }
+  .bd-flow-block.bd-flow-current { border-color:var(--teal); background:var(--teal-bg); }
+  .bd-flow-block-name { font-weight:600; color:var(--tx); }
+  .bd-flow-block-api { font-size:.5625rem; color:var(--tx-3); margin-left:auto; }
+
+  /* Block highlight on flow inspection */
+  .block-card.dimmed { opacity:.3; }
+  .block-card.highlighted { border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-bg); }
+  .block-arrow.dimmed { opacity:.3; }
 
   /* Block health dot on cards */
   .block-health-dot {
@@ -824,7 +864,7 @@
   </div>
 </div>
 
-<div class="block-popover" id="blockPopover"></div>
+<div class="block-drawer" id="blockDrawer"></div>
 <div class="toast" id="toast"></div>
 
 <!-- Request Workflow Modal -->
@@ -1205,51 +1245,130 @@
   // Export
   document.getElementById('btnExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(workflows,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='registry.json';a.click();URL.revokeObjectURL(url)});
 
-  // ── Block Popover ──
-  const popover=document.getElementById('blockPopover');
-  let popoverOpen=false;
-  function renderBlockPopover(blockId){
+  // ── Block Detail Drawer ──
+  const drawer=document.getElementById('blockDrawer');
+  let drawerOpen=false,activeBlockId=null,activeWfId=null;
+
+  function renderDrawerContent(blockId){
     const b=BLOCKS[blockId];if(!b)return'';
     const h=BLOCK_HEALTH[blockId]||{};
     const owner=BLOCK_OWNERS[blockId]||'TBD';
+    const hCls=v=>{const n=parseFloat(v);if(isNaN(n))return'';return n<=0.5?'health-good':n<=1.5?'health-warn':'health-bad'};
     // Find workflows using this block
     const usedIn=[];Object.entries(WORKFLOW_BLOCKS).forEach(([wid,bids])=>{if(bids.includes(blockId)){const w=workflows.find(x=>x.id===parseInt(wid));if(w)usedIn.push(w)}});
-    const hCls=v=>{const n=parseFloat(v);if(isNaN(n))return'';return n<=0.5?'health-good':n<=1.5?'health-warn':'health-bad'};
-    return '<div class="bp-head"><span class="block-dot block-dot-'+b.type+'" style="width:8px;height:8px"></span><div class="bp-head-info"><div class="bp-head-name">'+esc(b.name)+'</div><div class="bp-head-api">'+esc(b.api)+' \u00B7 '+esc(b.type)+'</div></div></div>'
-      +'<div class="bp-body">'
-      +'<div class="bp-section"><div class="bp-label">Description</div><div class="bp-desc">'+esc(b.desc)+'</div></div>'
-      +'<div class="bp-section"><div class="bp-label">Owner</div><div class="bp-owner">'+renderAvatar(owner,24)+' '+esc(PEOPLE[owner]?PEOPLE[owner].name:owner)+'</div></div>'
-      +'<div class="bp-section"><div class="bp-label">Health</div><div class="health-grid">'
-      +'<div class="health-item"><div class="health-val '+(h.uptime&&parseFloat(h.uptime)>=99.5?'health-good':h.uptime?'health-warn':'')+'">'+esc(h.uptime||'—')+'</div><div class="health-lbl">Uptime</div></div>'
+    // Data flow: show the block in context of a workflow
+    let flowHtml='';
+    const contextWf=activeWfId?workflows.find(w=>w.id===activeWfId):usedIn[0];
+    if(contextWf){
+      const wfBlocks=WORKFLOW_BLOCKS[contextWf.id]||[];
+      flowHtml='<div class="bd-section"><div class="bd-label">Data Flow in '+esc(contextWf.name)+'</div><div class="bd-flow">';
+      wfBlocks.forEach((bid,i)=>{
+        const bl=BLOCKS[bid];if(!bl)return;
+        if(i>0)flowHtml+='<div class="bd-flow-arrow">\u2193</div>';
+        const isCurrent=bid===blockId;
+        flowHtml+='<div class="bd-flow-block'+(isCurrent?' bd-flow-current':'')+'"><span class="block-dot block-dot-'+bl.type+'"></span><span class="bd-flow-block-name">'+esc(bl.name)+'</span><span class="bd-flow-block-api">'+esc(bl.api)+'</span></div>';
+      });
+      flowHtml+='</div></div>';
+    }
+
+    return '<div class="bd-head">'
+      +'<span class="block-dot block-dot-'+b.type+'" style="width:10px;height:10px"></span>'
+      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api">'+esc(b.api)+' \u00B7 '+b.type+'</div></div>'
+      +'<button class="bd-close" id="drawerClose">&times;</button></div>'
+      +'<div class="bd-body">'
+      +'<div class="bd-section"><div class="bd-label">Description</div><div class="bd-desc">'+esc(b.desc)+'</div></div>'
+      +'<div class="bd-section"><div class="bd-label">Owner</div><div class="bd-owner">'+renderAvatar(owner,28)+' <div><div style="font-weight:600">'+esc(PEOPLE[owner]?PEOPLE[owner].name:owner)+'</div><div style="font-size:.625rem;color:var(--tx-3)">'+esc(owner)+'</div></div></div></div>'
+      +'<div class="bd-section"><div class="bd-label">Health Monitor</div><div class="health-grid">'
+      +'<div class="health-item"><div class="health-val '+(h.uptime&&parseFloat(h.uptime)>=99.5?'health-good':'health-warn')+'">'+esc(h.uptime||'—')+'</div><div class="health-lbl">Uptime</div></div>'
       +'<div class="health-item"><div class="health-val '+hCls(h.errorRate)+'">'+esc(h.errorRate||'—')+'</div><div class="health-lbl">Error Rate</div></div>'
       +'<div class="health-item"><div class="health-val">'+esc(h.latency||'—')+'</div><div class="health-lbl">Avg Latency</div></div>'
       +'<div class="health-item"><div class="health-val">'+esc(h.lastRun||'—')+'</div><div class="health-lbl">Last Run</div></div>'
       +'</div></div>'
-      +(usedIn.length?'<div class="bp-section"><div class="bp-label">Used in '+usedIn.length+' workflow'+(usedIn.length>1?'s':'')+'</div><div class="bp-wf-list">'+usedIn.map(w=>'<span class="bp-wf-chip">'+esc(w.name)+'</span>').join('')+'</div></div>':'')
+      +flowHtml
+      +(usedIn.length?'<div class="bd-section"><div class="bd-label">Used in '+usedIn.length+' workflow'+(usedIn.length>1?'s':'')+'</div><div class="bd-wf-list">'+usedIn.map(w=>{
+        const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+        const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+        return '<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:.5rem">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.bu)+'</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
+      }).join('')+'</div></div>':'')
       +'</div>';
   }
-  function showBlockPopover(blockId,anchor){
-    popover.innerHTML=renderBlockPopover(blockId);
-    const rect=anchor.getBoundingClientRect();
-    let top=rect.bottom+6,left=rect.left;
-    if(top+300>window.innerHeight)top=rect.top-306;
-    if(left+320>window.innerWidth)left=window.innerWidth-328;
-    if(left<8)left=8;
-    popover.style.top=top+'px';popover.style.left=left+'px';
-    popover.classList.add('open');popoverOpen=true;
+
+  function highlightBlockFlow(blockId,wfId){
+    // Find the expanded detail row and highlight connected blocks
+    document.querySelectorAll('.block-card').forEach(card=>{
+      const bid=card.dataset.block;
+      if(!bid)return;
+      // Check if this card is in the same workflow context
+      const detailRow=card.closest('.detail-inner');
+      if(!detailRow)return;
+      const wfBlocks=WORKFLOW_BLOCKS[wfId]||[];
+      if(wfBlocks.includes(bid)){
+        card.classList.remove('dimmed');
+        card.classList.toggle('highlighted',bid===blockId);
+      }else{
+        card.classList.add('dimmed');
+        card.classList.remove('highlighted');
+      }
+    });
   }
-  function hideBlockPopover(){popover.classList.remove('open');popoverOpen=false}
-  // Click block cards in pipeline or sidebar
+
+  function clearHighlights(){
+    document.querySelectorAll('.block-card.dimmed,.block-card.highlighted').forEach(c=>{c.classList.remove('dimmed','highlighted')});
+  }
+
+  function openDrawer(blockId,wfContext){
+    activeBlockId=blockId;
+    activeWfId=wfContext||null;
+    drawer.innerHTML=renderDrawerContent(blockId);
+    drawer.classList.add('open');
+    drawerOpen=true;
+    // Set up close button
+    const closeBtn=document.getElementById('drawerClose');
+    if(closeBtn)closeBtn.addEventListener('click',closeDrawer);
+    // Set up workflow navigation
+    drawer.querySelectorAll('[data-wf-nav]').forEach(el=>{
+      el.addEventListener('click',()=>{
+        const navId=parseInt(el.dataset.wfNav);
+        closeDrawer();
+        // Expand the workflow row
+        expandedId=navId;
+        render();
+        // Scroll to it
+        setTimeout(()=>{const row=document.querySelector('tr.data-row[data-id="'+navId+'"]');if(row)row.scrollIntoView({behavior:'smooth',block:'center'})},100);
+      });
+    });
+    // Highlight flow if in a workflow context
+    if(wfContext)highlightBlockFlow(blockId,wfContext);
+  }
+
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    drawerOpen=false;
+    activeBlockId=null;
+    activeWfId=null;
+    clearHighlights();
+  }
+
+  // Click block cards — detect workflow context from detail row
   document.addEventListener('click',e=>{
     const card=e.target.closest('[data-block]');
     if(card&&!card.closest('.composer-catalog')&&!card.closest('.composer-flow')){
       e.stopPropagation();
       const bid=card.dataset.block;
-      if(popoverOpen){hideBlockPopover();setTimeout(()=>showBlockPopover(bid,card),50)}
-      else showBlockPopover(bid,card);
+      // Detect workflow context from expanded row
+      let wfCtx=null;
+      const detailInner=card.closest('.detail-inner');
+      if(detailInner){
+        const detailRow=detailInner.closest('tr.detail-row');
+        if(detailRow){const dataRow=detailRow.previousElementSibling;if(dataRow)wfCtx=parseInt(dataRow.dataset.id)}
+      }
+      if(drawerOpen&&activeBlockId===bid){closeDrawer();return}
+      openDrawer(bid,wfCtx);
       return;
     }
-    if(popoverOpen&&!e.target.closest('.block-popover'))hideBlockPopover();
+    // Don't close drawer on clicks inside it
+    if(e.target.closest('.block-drawer'))return;
+    if(drawerOpen&&!e.target.closest('[data-block]'))closeDrawer();
   });
 
   // Prevent block clicks from toggling row expand
@@ -1433,7 +1552,7 @@
   });
 
   // Escape key closes modals
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideBlockPopover();overlay.classList.remove('open');reqOv.classList.remove('open')}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();overlay.classList.remove('open');reqOv.classList.remove('open')}});
 })();
 </script>
 </body>
