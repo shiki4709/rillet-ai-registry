@@ -765,6 +765,27 @@
   }
   .composer-block:hover .cb-remove { opacity:1; }
   .composer-hint { font-size:.625rem; color:var(--tx-3); line-height:1.5; }
+  .composer-meta { display:flex; flex-wrap:wrap; gap:8px; }
+  .composer-meta-item {
+    display:flex; align-items:center; gap:4px;
+    font-size:.5625rem; color:var(--tx-2); padding:3px 8px;
+    background:var(--bg); border-radius:var(--r-sm); border:1px solid var(--border-dim);
+  }
+  .composer-meta-label { font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; }
+
+  /* Review summary in step 3 */
+  .review-card {
+    background:var(--bg); border:1px solid var(--border-dim); border-radius:var(--r);
+    padding:16px; margin-bottom:16px;
+  }
+  .review-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .review-row:last-child { margin-bottom:0; }
+  .review-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; width:72px; flex-shrink:0; }
+  .review-value { font-size:.8125rem; color:var(--tx); }
+  .review-pipeline { margin-top:12px; padding-top:12px; border-top:1px solid var(--border-dim); }
+  .review-pipeline-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+  .review-creds { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+  .review-models { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
 
   /* ====== RESPONSIVE ====== */
   @media(max-width:1100px) { .side-col{display:none} .main-col{border-right:none} }
@@ -865,17 +886,19 @@
 </div>
 </div>
 
-<!-- Add Workflow Modal (2-step) -->
+<!-- Add Workflow Modal (3-step) -->
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
   <div class="modal" id="addModal">
     <div class="modal-head">
-      <h2>Add Workflow</h2>
+      <h2 id="modalTitle">Add Workflow</h2>
       <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
     </div>
     <div class="composer-steps" id="stepDots">
       <span class="step-dot active" data-step="1"></span>
       <span class="step-dot" data-step="2"></span>
+      <span class="step-dot" data-step="3"></span>
     </div>
+    <!-- Step 1: Describe -->
     <div class="composer-step active" id="composerStep1">
       <div class="modal-body">
         <div class="field-group">
@@ -885,32 +908,26 @@
           <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
         </div>
         <div class="field-group">
-          <div class="field-group-label">Classification</div>
-          <div class="field-row">
-            <div class="field"><label for="fType">Type</label><select id="fType"><option value="1">Type 1 — Deterministic</option><option value="2">Type 2 — Generative</option></select></div>
-            <div class="field"><label for="fRisk">Risk</label><select id="fRisk"><option value="Low">Low</option><option value="Medium">Medium</option></select></div>
-          </div>
-          <div class="field"><label for="fReviewer">Reviewer</label><input id="fReviewer" placeholder="e.g. VP Sales"><div class="field-hint">Role title of human reviewer. Defaults to TBD.</div></div>
-        </div>
-        <div class="field-group">
-          <div class="field-group-label">Prompt Details</div>
-          <div class="field"><label for="fDetails">Details</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs, and who reviews."></textarea><div class="field-hint">Claude generates the prompt_summary from this. Leave blank to add later.</div></div>
-          <div class="generating" id="generating"><span class="spin"></span>Generating prompt summary...</div>
+          <div class="field-group-label">Governance</div>
+          <div class="field"><label for="fReviewer">Reviewer <span class="req">*</span></label><input id="fReviewer" placeholder="e.g. VP Sales" aria-required="true" aria-describedby="errReviewer"><div class="field-error-msg" id="errReviewer">Reviewer is required for governance</div><div class="field-hint">Role title of human reviewer. Every workflow needs a review gate.</div></div>
+          <div class="field"><label for="fRisk">Risk Level</label><select id="fRisk"><option value="Low">Low — informational, no direct action</option><option value="Medium">Medium — triggers consequential action</option></select></div>
         </div>
       </div>
       <div class="modal-foot">
         <button class="btn" id="modalCancel">Cancel</button>
-        <button class="btn btn-accent" id="modalNext">Next: Configure Blocks</button>
+        <button class="btn btn-accent" id="modalNext">Next: Compose Blocks</button>
       </div>
     </div>
+    <!-- Step 2: Compose Blocks -->
     <div class="composer-step" id="composerStep2">
       <div class="modal-body">
         <div class="composer-picker">
           <div class="composer-catalog" id="composerCatalog"></div>
           <div class="composer-canvas">
-            <div class="field-group-label">Assembled Pipeline</div>
+            <div class="field-group-label">Pipeline</div>
             <div class="composer-flow" id="composerFlow"><span class="composer-flow-empty">Click blocks from the catalog to add them here</span></div>
-            <div class="composer-hint">Click blocks on the left to add. Click the X to remove. Blocks auto-group by type. Credentials are pulled from the vault automatically.</div>
+            <div id="composerMeta" style="margin-top:8px"></div>
+            <div class="composer-hint">Credentials are resolved from the vault automatically. Type is auto-detected from your blocks.</div>
             <button class="btn btn-sm" id="composerGenerate" style="margin-top:8px;display:flex;align-items:center;gap:6px"><span class="block-dot block-dot-ai" style="width:6px;height:6px"></span>Generate Code with Agent</button>
             <div id="composerCodePreview" style="display:none"></div>
           </div>
@@ -918,7 +935,22 @@
       </div>
       <div class="modal-foot">
         <button class="btn" id="composerBack">Back</button>
-        <button class="btn btn-accent" id="modalSubmit">Add as Pilot</button>
+        <button class="btn btn-accent" id="composerNext2">Next: Review</button>
+      </div>
+    </div>
+    <!-- Step 3: Review & Launch -->
+    <div class="composer-step" id="composerStep3">
+      <div class="modal-body">
+        <div id="reviewSummary"></div>
+        <div class="field-group" style="margin-top:16px">
+          <div class="field-group-label">Prompt Details (optional)</div>
+          <div class="field"><label for="fDetails">Details</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs. Claude auto-generates the prompt_summary if you fill this in."></textarea><div class="field-hint">Leave blank to auto-generate from your block composition.</div></div>
+          <div class="generating" id="generating"><span class="spin"></span>Generating prompt summary...</div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="reviewBack">Back</button>
+        <button class="btn btn-accent" id="modalSubmit">Launch as Pilot</button>
       </div>
     </div>
   </div>
@@ -1549,14 +1581,22 @@
       if(!blocks.length)return;
       html+='<div class="catalog-group-label" style="color:'+colors[type]+'">'+labels[type]+'</div>';
       blocks.forEach(([id,b])=>{
-        html+='<div class="catalog-block" data-catalog="'+id+'"><span class="block-dot block-dot-'+type+'"></span><span class="catalog-block-name">'+esc(b.name)+'</span><span class="catalog-block-api">'+esc(b.api)+'</span></div>';
+        const credId=BLOCK_CREDS[id];const cred=credId?CREDENTIALS[credId]:null;
+        const credDot=cred?'<span style="width:4px;height:4px;border-radius:50%;background:'+(cred.status==='active'?'var(--green)':'var(--amber)')+';flex-shrink:0"></span>':'';
+        const modelTag=b.model?'<span style="font-size:.5rem;color:var(--teal);margin-left:auto">'+(b.model.includes('sonnet')?'S4':b.model.includes('haiku')?'H4.5':'')+'</span>':'';
+        html+='<div class="catalog-block" data-catalog="'+id+'">'+credDot+'<span class="block-dot block-dot-'+type+'"></span><span class="catalog-block-name">'+esc(b.name)+'</span>'+modelTag+'</div>';
       });
     });
     document.getElementById('composerCatalog').innerHTML=html;
   }
   function renderComposerFlow(){
     const flow=document.getElementById('composerFlow');
-    if(!composerBlocks.length){flow.innerHTML='<span class="composer-flow-empty">Click blocks from the catalog to add them here</span>';return}
+    const metaEl=document.getElementById('composerMeta');
+    if(!composerBlocks.length){
+      flow.innerHTML='<span class="composer-flow-empty">Click blocks from the catalog to add them here</span>';
+      if(metaEl)metaEl.innerHTML='';
+      return;
+    }
     // Group by type preserving order
     const order=['source','transform','ai','output','gate'];
     const groups={};composerBlocks.forEach((bid,i)=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push({bid,idx:i})});
@@ -1567,10 +1607,28 @@
       first=false;
       groups[type].forEach(({bid,idx})=>{
         const b=BLOCKS[bid];
-        html+='<div class="composer-block"><span class="block-dot block-dot-'+b.type+'"></span><span class="cb-name">'+esc(b.name)+'</span><button class="cb-remove" data-idx="'+idx+'">&times;</button></div>';
+        const credId=BLOCK_CREDS[bid];const cred=credId?CREDENTIALS[credId]:null;
+        const credDot=cred?'<span style="width:4px;height:4px;border-radius:50%;background:'+(cred.status==='active'?'var(--green)':'var(--amber)')+';flex-shrink:0"></span>':'';
+        const modelTag=b.model?'<span style="font-size:.5rem;color:var(--teal)">'+(b.model.includes('sonnet')?'S4':b.model.includes('haiku')?'H4.5':'')+'</span>':'';
+        html+='<div class="composer-block">'+credDot+'<span class="block-dot block-dot-'+b.type+'"></span><span class="cb-name">'+esc(b.name)+'</span>'+modelTag+'<button class="cb-remove" data-idx="'+idx+'">&times;</button></div>';
       });
     });
     flow.innerHTML=html;
+    // Compute metadata summary
+    if(metaEl){
+      const hasAI=composerBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
+      const models=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.model).filter(Boolean))];
+      const creds=[...new Set(composerBlocks.map(bid=>BLOCK_CREDS[bid]).filter(Boolean))];
+      const apis=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.api).filter(Boolean).filter(a=>a!=='Internal'&&a!=='Custom'&&a!=='Rule Engine'))];
+      let meta='<div class="composer-meta">';
+      meta+='<div class="composer-meta-item"><span class="composer-meta-label">Type</span> '+(hasAI?'Generative':'Deterministic')+'</div>';
+      meta+='<div class="composer-meta-item"><span class="composer-meta-label">Blocks</span> '+composerBlocks.length+'</div>';
+      meta+='<div class="composer-meta-item"><span class="composer-meta-label">APIs</span> '+apis.length+'</div>';
+      meta+='<div class="composer-meta-item"><span class="composer-meta-label">Credentials</span> '+creds.length+'</div>';
+      if(models.length)meta+='<div class="composer-meta-item"><span class="composer-meta-label">Models</span> '+models.map(m=>m.includes('sonnet')?'Sonnet 4':m.includes('haiku')?'Haiku 4.5':m).join(', ')+'</div>';
+      meta+='</div>';
+      metaEl.innerHTML=meta;
+    }
   }
   // Catalog click → add block
   document.getElementById('composerCatalog').addEventListener('click',e=>{
@@ -1585,40 +1643,95 @@
     renderComposerFlow();
   });
 
-  // ── Add Workflow Modal (2-step) ──
+  // ── Add Workflow Modal (3-step) ──
   const overlay=document.getElementById('modalOverlay');
   const addModal=document.getElementById('addModal');
+  const stepLabels={1:'Describe',2:'Compose',3:'Review & Launch'};
   let modalStep=1;
   function setModalStep(step){
     modalStep=step;
     document.getElementById('composerStep1').classList.toggle('active',step===1);
     document.getElementById('composerStep2').classList.toggle('active',step===2);
+    document.getElementById('composerStep3').classList.toggle('active',step===3);
     document.querySelectorAll('#stepDots .step-dot').forEach(d=>d.classList.toggle('active',parseInt(d.dataset.step)<=step));
-    addModal.classList.toggle('modal-wide',step===2);
+    addModal.classList.toggle('modal-wide',step>=2);
+    document.getElementById('modalTitle').textContent=step===1?'Add Workflow':stepLabels[step];
+  }
+  function renderReviewSummary(){
+    const name=document.getElementById('fName').value.trim();
+    const bu=document.getElementById('fBU').value;
+    const desc=document.getElementById('fDesc').value.trim();
+    const reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
+    const risk=document.getElementById('fRisk').value;
+    const hasAI=composerBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
+    const typeLabel=hasAI?'Type 2 — Generative':'Type 1 — Deterministic';
+    // Models
+    const models=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.model).filter(Boolean))];
+    const modelChips=models.map(m=>{const short=m.includes('sonnet')?'Sonnet 4':m.includes('haiku')?'Haiku 4.5':m;return '<span class="model-badge">'+esc(short)+'</span>'}).join('');
+    // Credentials
+    const credIds=[...new Set(composerBlocks.map(bid=>BLOCK_CREDS[bid]).filter(Boolean))];
+    const credChips=credIds.map(cid=>{const c=CREDENTIALS[cid];if(!c)return'';const stColor=c.status==='active'?'var(--green)':'var(--amber)';return '<div class="cred-badge"><span class="cred-badge-status" style="background:'+stColor+'"></span><span class="cred-badge-name">'+esc(c.name)+'</span><span class="cred-badge-key">'+esc(c.maskedKey)+'</span></div>'}).join('');
+    // Pipeline preview
+    const order=['source','transform','ai','output','gate'];
+    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Review Gate'};
+    const groups={};composerBlocks.forEach(bid=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push(bid)});
+    let pipeHtml='<div class="block-flow" style="margin-top:0">';
+    let pfirst=true;
+    order.forEach(type=>{
+      if(!groups[type])return;
+      if(!pfirst)pipeHtml+='<span class="block-arrow">\u2192</span>';
+      pfirst=false;
+      pipeHtml+='<div class="block-stage"><div class="block-stage-label block-stage-label-'+type+'">'+labels[type]+'</div><div class="block-stage-cards">';
+      groups[type].forEach(bid=>pipeHtml+=renderBlockCard(bid));
+      pipeHtml+='</div></div>';
+    });
+    pipeHtml+='</div>';
+
+    let html='<div class="review-card">';
+    html+='<div class="review-row"><span class="review-label">Name</span><span class="review-value" style="font-weight:700">'+esc(name)+'</span></div>';
+    html+='<div class="review-row"><span class="review-label">BU</span><span class="review-value">'+esc(bu)+'</span></div>';
+    html+='<div class="review-row"><span class="review-label">Description</span><span class="review-value" style="font-size:.75rem;color:var(--tx-2)">'+esc(desc)+'</span></div>';
+    html+='<div class="review-row"><span class="review-label">Reviewer</span><span class="review-value" style="display:flex;align-items:center;gap:6px">'+renderAvatar(reviewer,22)+esc(reviewer)+'</span></div>';
+    html+='<div class="review-row"><span class="review-label">Type</span><span class="review-value"><span class="badge badge-type">'+esc(typeLabel)+'</span></span></div>';
+    html+='<div class="review-row"><span class="review-label">Risk</span><span class="review-value"><span class="badge '+(risk==='Low'?'badge-risk-low':'badge-risk-medium')+'">'+esc(risk)+'</span></span></div>';
+    if(models.length)html+='<div class="review-row"><span class="review-label">Models</span><span class="review-value review-models">'+modelChips+'</span></div>';
+    if(credIds.length)html+='<div class="review-row"><span class="review-label">Credentials</span><span class="review-value review-creds" style="flex-wrap:wrap;display:flex;gap:4px">'+credChips+'</span></div>';
+    html+='<div class="review-pipeline"><div class="review-pipeline-label">Pipeline ('+composerBlocks.length+' blocks)</div>'+pipeHtml+'</div>';
+    html+='</div>';
+    document.getElementById('reviewSummary').innerHTML=html;
   }
   function resetModal(){
     setModalStep(1);composerBlocks=[];renderComposerFlow();
     ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('fBU').selectedIndex=0;
+    document.getElementById('composerCodePreview').style.display='none';
     const submitBtn=document.getElementById('modalSubmit');
-    submitBtn.disabled=false;submitBtn.textContent='Add as Pilot';
+    submitBtn.disabled=false;submitBtn.textContent='Launch as Pilot';
   }
   document.getElementById('btnAdd').addEventListener('click',()=>{resetModal();renderComposerCatalog();overlay.classList.add('open');document.getElementById('fName').focus()});
   document.getElementById('modalClose').addEventListener('click',()=>{overlay.classList.remove('open')});
   document.getElementById('modalCancel').addEventListener('click',()=>{overlay.classList.remove('open')});
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
-  // Step navigation
+  // Step 1 → 2
   document.getElementById('modalNext').addEventListener('click',()=>{
-    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim();
+    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),reviewer=document.getElementById('fReviewer').value.trim();
     let valid=true;
     if(!name){showFieldError('fName','errName');valid=false}else{clearFieldError('fName','errName')}
     if(!bu){showFieldError('fBU','errBU');valid=false}else{clearFieldError('fBU','errBU')}
     if(!desc){showFieldError('fDesc','errDesc');valid=false}else{clearFieldError('fDesc','errDesc')}
+    if(!reviewer){showFieldError('fReviewer','errReviewer');valid=false}else{clearFieldError('fReviewer','errReviewer')}
     if(!valid){document.querySelector('.field-error')?.focus();return}
     setModalStep(2);
   });
+  // Step 2 → 3
+  document.getElementById('composerNext2').addEventListener('click',()=>{
+    if(!composerBlocks.length){showToast('Add at least one block');return}
+    renderReviewSummary();
+    setModalStep(3);
+  });
   document.getElementById('composerBack').addEventListener('click',()=>setModalStep(1));
+  document.getElementById('reviewBack').addEventListener('click',()=>setModalStep(2));
 
   // Generate Code with Agent
   document.getElementById('composerGenerate').addEventListener('click',function(){
@@ -1648,23 +1761,36 @@
   function clearFieldError(inputId,errId){document.getElementById(inputId).classList.remove('field-error');const e=document.getElementById(errId);if(e)e.classList.remove('show')}
   function showFieldError(inputId,errId){document.getElementById(inputId).classList.add('field-error');const e=document.getElementById(errId);if(e)e.classList.add('show')}
   // Clear errors on input
-  ['fName','fBU','fDesc'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',()=>clearFieldError(id,'err'+id.slice(1)));el.addEventListener('change',()=>clearFieldError(id,'err'+id.slice(1)))});
+  ['fName','fBU','fDesc','fReviewer'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',()=>clearFieldError(id,'err'+id.slice(1)));el.addEventListener('change',()=>clearFieldError(id,'err'+id.slice(1)))});
   // Toast helper
   function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
 
   const submitBtn=document.getElementById('modalSubmit');
   submitBtn.addEventListener('click',async()=>{
-    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),details=document.getElementById('fDetails').value.trim(),type=parseInt(document.getElementById('fType').value),risk=document.getElementById('fRisk').value,reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
-    // Inline validation
-    let valid=true;
-    if(!name){showFieldError('fName','errName');valid=false}else{clearFieldError('fName','errName')}
-    if(!bu){showFieldError('fBU','errBU');valid=false}else{clearFieldError('fBU','errBU')}
-    if(!desc){showFieldError('fDesc','errDesc');valid=false}else{clearFieldError('fDesc','errDesc')}
-    if(!valid){document.querySelector('.field-error')?.focus();return}
+    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),details=document.getElementById('fDetails').value.trim(),risk=document.getElementById('fRisk').value,reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
+    // Auto-detect type from blocks
+    const hasAI=composerBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
+    const type=hasAI?2:1;
     // Disable submit during generation
-    submitBtn.disabled=true;submitBtn.textContent='Adding...';
+    submitBtn.disabled=true;submitBtn.textContent='Launching...';
     const genEl=document.getElementById('generating');let promptSummary='';
-    if(details){genEl.classList.add('show');try{const apiKey=localStorage.getItem('ANTHROPIC_API_KEY')||'';if(apiKey){const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:'Write a prompt_summary for an AI workflow registry entry. Format: [What it ingests]. [What AI logic/rules it applies and outputs]. [Who reviews before action].\n\nNever start with "This workflow". Be specific.\n\nWorkflow: '+name+'\nBU: '+bu+'\nDetails: '+details+'\nReviewer: '+reviewer+'\n\nWrite ONLY the prompt_summary. 2-3 sentences.'}]})});const data=await resp.json();promptSummary=data.content[0].text}else{promptSummary=details}}catch(e){promptSummary=details}genEl.classList.remove('show')}else{promptSummary='Workflow details pending. Human reviewer required before any action.'}
+    if(details){
+      genEl.classList.add('show');
+      try{
+        const apiKey=localStorage.getItem('ANTHROPIC_API_KEY')||'';
+        if(apiKey){
+          const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:'Write a prompt_summary for an AI workflow registry entry. Format: [What it ingests]. [What AI logic/rules it applies and outputs]. [Who reviews before action].\n\nNever start with "This workflow". Be specific.\n\nWorkflow: '+name+'\nBU: '+bu+'\nBlocks: '+composerBlocks.map(bid=>BLOCKS[bid]?.name).filter(Boolean).join(', ')+'\nDetails: '+details+'\nReviewer: '+reviewer+'\n\nWrite ONLY the prompt_summary. 2-3 sentences.'}]})});
+          const data=await resp.json();promptSummary=data.content[0].text;
+        }else{promptSummary=details}
+      }catch(e){promptSummary=details}
+      genEl.classList.remove('show');
+    }else{
+      // Auto-generate summary from blocks
+      const srcBlocks=composerBlocks.filter(bid=>BLOCKS[bid]?.type==='source').map(bid=>BLOCKS[bid].name);
+      const aiBlocks=composerBlocks.filter(bid=>BLOCKS[bid]?.type==='ai').map(bid=>BLOCKS[bid].name);
+      const outBlocks=composerBlocks.filter(bid=>BLOCKS[bid]?.type==='output').map(bid=>BLOCKS[bid].name);
+      promptSummary='Ingests data from '+(srcBlocks.length?srcBlocks.join(', '):'configured sources')+'. '+(aiBlocks.length?'Processes via '+aiBlocks.join(', ')+'. ':'Applies rule-based transforms. ')+'Outputs to '+(outBlocks.length?outBlocks.join(', '):'configured destinations')+'. '+reviewer+' reviews before any action.';
+    }
     const maxId=Math.max(...workflows.map(w=>w.id)),maxDay=Math.max(...workflows.map(w=>w.day));
     const nw={id:maxId+1,name,desc,bu,type,risk,status:'Pilot',saves:'\u2014',day:maxDay+5,prompt_summary:promptSummary,reused_by:[],reviewer,rewrite_rate:'\u2014%'};
     workflows.push(nw);
@@ -1674,9 +1800,15 @@
     // Derive stack from blocks
     const stack=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.api).filter(Boolean).filter(a=>a!=='Internal'&&a!=='Custom'&&a!=='Rule Engine'))];
     REUSE_INTEL[nw.id]={stack,reusable:[],specific:[],readiness:'Low',days_to_live:null,reuse_days:null,risks:['New workflow — reuse assessment pending']};
+    // Auto-generate quality + icons
+    WF_QUALITY[nw.id]={design:'Modular',output:'Informational',designNote:'Block-composed pipeline',outputNote:'New — output utility pending assessment'};
+    WF_ICONS[nw.id]={abbr:name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase(),bg:'#4e6378'};
+    COMMENTS[nw.id]=[];USE_CASES[nw.id]=[];
+    // Add to execution log
+    EXEC_LOG.unshift({wfId:nw.id,status:'success',startedAt:'Just now',duration:'—',blocksRun:composerBlocks.length,trigger:'Manual',note:'Pilot created'});
     overlay.classList.remove('open');resetModal();
-    computeStats();computeReuseMap();renderBlockLibrary();render();
-    showToast('Added "'+name+'" as Pilot');
+    computeStats();computeReuseMap();renderBlockLibrary();renderExecPanel();render();
+    showToast('Launched "'+name+'" as Pilot');
   });
 
   // Log reuse note to Studio
