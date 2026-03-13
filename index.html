@@ -672,6 +672,54 @@
   .block-card.highlighted { border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-bg); }
   .block-arrow.dimmed { opacity:.3; }
 
+  /* Credential vault items */
+  .vault-item {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 0; border-bottom:1px solid var(--border-dim);
+  }
+  .vault-item:last-child { border-bottom:none; }
+  .vault-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .vault-dot-active { background:var(--green); }
+  .vault-dot-rotating { background:var(--amber); }
+  .vault-dot-expired { background:var(--red); }
+  .vault-info { flex:1; min-width:0; }
+  .vault-name { font-size:.6875rem; font-weight:600; color:var(--tx); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .vault-key { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); }
+  .vault-count { font-size:.5625rem; font-weight:600; color:var(--tx-3); background:var(--surface-2); padding:1px 6px; border-radius:3px; }
+
+  /* Execution monitor */
+  .exec-item {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 0; border-bottom:1px solid var(--border-dim);
+  }
+  .exec-item:last-child { border-bottom:none; }
+  .exec-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .exec-dot-success { background:var(--green); }
+  .exec-dot-warning { background:var(--amber); }
+  .exec-dot-error { background:var(--red); }
+  .exec-info { flex:1; min-width:0; }
+  .exec-name { font-size:.6875rem; font-weight:600; color:var(--tx); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .exec-meta { font-size:.5625rem; color:var(--tx-3); }
+  .exec-duration { font-family:var(--mono); font-size:.5625rem; font-weight:600; color:var(--tx-2); }
+  .exec-note { font-size:.5625rem; color:var(--amber); margin-top:1px; }
+
+  /* Model badge in drawer and detail row */
+  .model-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    font-family:var(--mono); font-size:.5625rem; font-weight:500;
+    padding:2px 8px; border-radius:3px;
+    color:var(--teal); background:var(--teal-bg);
+  }
+  /* Credential badge in drawer */
+  .cred-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:.625rem; padding:4px 8px; border-radius:var(--r-sm);
+    background:var(--bg); border:1px solid var(--border-dim);
+  }
+  .cred-badge-key { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); }
+  .cred-badge-name { font-weight:600; color:var(--tx); }
+  .cred-badge-status { width:5px; height:5px; border-radius:50%; }
+
   /* Block health dot on cards */
   .block-health-dot {
     width:5px; height:5px; border-radius:50%; flex-shrink:0;
@@ -795,6 +843,16 @@
   </div>
 
   <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--gold)"></span>Credentials Vault</div>
+    <div class="panel-body" id="vaultPanel"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--green)"></span>Execution Monitor</div>
+    <div class="panel-body" id="execPanel"></div>
+  </div>
+
+  <div class="panel">
     <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Top Shared Workflows</div>
     <div class="panel-body" id="reuseMap"></div>
   </div>
@@ -852,7 +910,9 @@
           <div class="composer-canvas">
             <div class="field-group-label">Assembled Pipeline</div>
             <div class="composer-flow" id="composerFlow"><span class="composer-flow-empty">Click blocks from the catalog to add them here</span></div>
-            <div class="composer-hint">Click blocks on the left to add. Click the X to remove. Blocks are grouped by type automatically.</div>
+            <div class="composer-hint">Click blocks on the left to add. Click the X to remove. Blocks auto-group by type. Credentials are pulled from the vault automatically.</div>
+            <button class="btn btn-sm" id="composerGenerate" style="margin-top:8px;display:flex;align-items:center;gap:6px"><span class="block-dot block-dot-ai" style="width:6px;height:6px"></span>Generate Code with Agent</button>
+            <div id="composerCodePreview" style="display:none"></div>
           </div>
         </div>
       </div>
@@ -1004,12 +1064,12 @@
     'regex-extract':{name:'Regex Extractor',type:'transform',api:'Rule Engine',desc:'Extract patterns from text'},
     'policy-validator':{name:'Policy Validator',type:'transform',api:'Rule Engine',desc:'Validate against policy rules'},
     'signal-aggregator':{name:'Signal Aggregator',type:'transform',api:'Custom',desc:'Merge signals from multiple sources'},
-    // AI
-    'claude-summarize':{name:'Claude Summarizer',type:'ai',api:'Anthropic',desc:'Summarize text with Claude'},
-    'claude-classify':{name:'Claude Classifier',type:'ai',api:'Anthropic',desc:'LLM-based classification and scoring'},
-    'claude-draft':{name:'Claude Drafter',type:'ai',api:'Anthropic',desc:'Generate content drafts with Claude'},
-    'claude-extract':{name:'Claude Extractor',type:'ai',api:'Anthropic',desc:'Extract structured data from text'},
-    'claude-narrator':{name:'Claude Narrator',type:'ai',api:'Anthropic',desc:'Generate plain-language narratives'},
+    // AI (with model info)
+    'claude-summarize':{name:'Claude Summarizer',type:'ai',api:'Anthropic',desc:'Summarize text with Claude',model:'claude-sonnet-4-20250514'},
+    'claude-classify':{name:'Claude Classifier',type:'ai',api:'Anthropic',desc:'LLM-based classification and scoring',model:'claude-haiku-4-5-20251001'},
+    'claude-draft':{name:'Claude Drafter',type:'ai',api:'Anthropic',desc:'Generate content drafts with Claude',model:'claude-sonnet-4-20250514'},
+    'claude-extract':{name:'Claude Extractor',type:'ai',api:'Anthropic',desc:'Extract structured data from text',model:'claude-haiku-4-5-20251001'},
+    'claude-narrator':{name:'Claude Narrator',type:'ai',api:'Anthropic',desc:'Generate plain-language narratives',model:'claude-sonnet-4-20250514'},
     // Outputs
     'slack-notify':{name:'Slack Alert',type:'output',api:'Slack',desc:'Send notification to channel'},
     'sheets-write':{name:'Sheets Update',type:'output',api:'Google Sheets',desc:'Write results to spreadsheet'},
@@ -1118,6 +1178,48 @@
     'dual-review':{status:'healthy',uptime:'100%',errorRate:'0%',lastRun:'—',latency:'—'}
   };
 
+  // ── Credentials Vault — shared API keys (secure, masked) ──
+  const CREDENTIALS={
+    'cred-anthropic':{name:'Anthropic API',service:'Anthropic',maskedKey:'sk-ant-...7x4m',status:'active',addedBy:'Chief of Staff',addedOn:'Feb 15',expiresOn:'—',usedBy:['claude-summarize','claude-classify','claude-draft','claude-extract','claude-narrator']},
+    'cred-hubspot':{name:'HubSpot CRM',service:'HubSpot',maskedKey:'pat-na1-...e9f2',status:'active',addedBy:'VP Sales',addedOn:'Jan 20',expiresOn:'Jan 2027',usedBy:['hubspot-pull']},
+    'cred-zendesk':{name:'Zendesk Support',service:'Zendesk',maskedKey:'dG9rZW4...3kx',status:'active',addedBy:'Support Lead',addedOn:'Feb 1',expiresOn:'—',usedBy:['zendesk-stream','zendesk-update']},
+    'cred-stripe':{name:'Stripe Finance',service:'Stripe',maskedKey:'sk_live_...pQ8n',status:'active',addedBy:'Controller',addedOn:'Jan 10',expiresOn:'—',usedBy:['stripe-feed']},
+    'cred-textract':{name:'AWS Textract',service:'AWS Textract',maskedKey:'AKIA...W4KD',status:'active',addedBy:'Controller',addedOn:'Feb 5',expiresOn:'Mar 2027',usedBy:['ocr-ingest']},
+    'cred-sheets':{name:'Google Workspace',service:'Google Sheets',maskedKey:'gcp-sa-...json',status:'active',addedBy:'Chief of Staff',addedOn:'Jan 5',expiresOn:'—',usedBy:['sheets-import','sheets-write','drive-scan']},
+    'cred-slack':{name:'Slack Bot',service:'Slack',maskedKey:'xoxb-...g8Ry',status:'active',addedBy:'Chief of Staff',addedOn:'Jan 15',expiresOn:'—',usedBy:['slack-notify']},
+    'cred-sendgrid':{name:'SendGrid Email',service:'SendGrid',maskedKey:'SG....kL9w',status:'active',addedBy:'Head of CS',addedOn:'Feb 10',expiresOn:'—',usedBy:['sendgrid-email']},
+    'cred-mixpanel':{name:'Mixpanel Analytics',service:'Mixpanel',maskedKey:'mp-...4f2a',status:'active',addedBy:'Head of CS',addedOn:'Jan 25',expiresOn:'—',usedBy:['mixpanel-pull']},
+    'cred-bamboo':{name:'BambooHR',service:'BambooHR',maskedKey:'bhr-...n8kp',status:'active',addedBy:'People Ops Lead',addedOn:'Feb 20',expiresOn:'—',usedBy:['bamboo-pull']},
+    'cred-delighted':{name:'Delighted NPS',service:'Delighted',maskedKey:'dlt-...x3mq',status:'active',addedBy:'Head of CS',addedOn:'Feb 8',expiresOn:'—',usedBy:['delighted-pull']},
+    'cred-notion':{name:'Notion Workspace',service:'Notion',maskedKey:'ntn_...w9z2',status:'active',addedBy:'People Ops Lead',addedOn:'Jan 30',expiresOn:'—',usedBy:['knowledge-base','notion-write']},
+    'cred-salesforce':{name:'Salesforce CRM',service:'Salesforce',maskedKey:'sf-...hK4p',status:'rotating',addedBy:'VP Sales',addedOn:'Mar 1',expiresOn:'Apr 2026',usedBy:['salesforce-update']}
+  };
+
+  // Block → Credential mapping (which vault key each block uses)
+  const BLOCK_CREDS={
+    'hubspot-pull':'cred-hubspot','zendesk-stream':'cred-zendesk','sheets-import':'cred-sheets',
+    'stripe-feed':'cred-stripe','ocr-ingest':'cred-textract','drive-scan':'cred-sheets',
+    'bamboo-pull':'cred-bamboo','mixpanel-pull':'cred-mixpanel','delighted-pull':'cred-delighted',
+    'knowledge-base':'cred-notion','claude-summarize':'cred-anthropic','claude-classify':'cred-anthropic',
+    'claude-draft':'cred-anthropic','claude-extract':'cred-anthropic','claude-narrator':'cred-anthropic',
+    'slack-notify':'cred-slack','sheets-write':'cred-sheets','sendgrid-email':'cred-sendgrid',
+    'notion-write':'cred-notion','zendesk-update':'cred-zendesk','salesforce-update':'cred-salesforce'
+  };
+
+  // ── Execution Monitor — recent workflow runs ──
+  const EXEC_LOG=[
+    {wfId:1,status:'success',startedAt:'Mar 13, 2:12 PM',duration:'4.2s',blocksRun:4,trigger:'Webhook'},
+    {wfId:6,status:'success',startedAt:'Mar 13, 2:08 PM',duration:'1.1s',blocksRun:4,trigger:'Zendesk event'},
+    {wfId:12,status:'success',startedAt:'Mar 13, 2:01 PM',duration:'6.8s',blocksRun:6,trigger:'Scheduled'},
+    {wfId:3,status:'success',startedAt:'Mar 13, 1:45 PM',duration:'5.3s',blocksRun:7,trigger:'Scheduled'},
+    {wfId:2,status:'success',startedAt:'Mar 13, 1:30 PM',duration:'3.9s',blocksRun:6,trigger:'Upload'},
+    {wfId:11,status:'warning',startedAt:'Mar 13, 1:15 PM',duration:'12.1s',blocksRun:5,trigger:'Manual',note:'High rewrite rate on 3 responses'},
+    {wfId:7,status:'success',startedAt:'Mar 13, 12:00 PM',duration:'8.5s',blocksRun:5,trigger:'Cron (daily)'},
+    {wfId:10,status:'error',startedAt:'Mar 13, 11:30 AM',duration:'2.1s',blocksRun:2,trigger:'Manual',note:'Stripe API rate limit hit on block 2'},
+    {wfId:9,status:'success',startedAt:'Mar 13, 10:00 AM',duration:'3.7s',blocksRun:5,trigger:'New hire event'},
+    {wfId:4,status:'success',startedAt:'Mar 13, 9:15 AM',duration:'7.2s',blocksRun:5,trigger:'Upload'}
+  ];
+
   let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
   const chevSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
 
@@ -1144,7 +1246,27 @@
     document.getElementById('blockLibrary').innerHTML=html;
   }
 
-  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();seedKhoj();render()}
+  function renderVaultPanel(){
+    let html='';
+    Object.entries(CREDENTIALS).forEach(([id,c])=>{
+      const dotCls='vault-dot-'+c.status;
+      html+='<div class="vault-item"><span class="vault-dot '+dotCls+'"></span><div class="vault-info"><div class="vault-name">'+esc(c.name)+'</div><div class="vault-key">'+esc(c.maskedKey)+'</div></div><span class="vault-count">'+c.usedBy.length+'</span></div>';
+    });
+    document.getElementById('vaultPanel').innerHTML=html;
+  }
+
+  function renderExecPanel(){
+    let html='';
+    EXEC_LOG.forEach(ex=>{
+      const w=workflows.find(x=>x.id===ex.wfId);
+      if(!w)return;
+      const dotCls='exec-dot-'+ex.status;
+      html+='<div class="exec-item"><span class="exec-dot '+dotCls+'"></span><div class="exec-info"><div class="exec-name">'+esc(w.name)+'</div><div class="exec-meta">'+esc(ex.startedAt)+' \u00B7 '+esc(ex.trigger)+'</div>'+(ex.note?'<div class="exec-note">'+esc(ex.note)+'</div>':'')+'</div><span class="exec-duration">'+esc(ex.duration)+'</span></div>';
+    });
+    document.getElementById('execPanel').innerHTML=html;
+  }
+
+  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();renderVaultPanel();renderExecPanel();seedKhoj();render()}
   function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
   function parseSaves(s){const m=s.match(/([\d.]+)/);return m?parseFloat(m[1]):0}
 
@@ -1271,13 +1393,46 @@
       flowHtml+='</div></div>';
     }
 
+    // Model info (AI blocks only)
+    let modelHtml='';
+    if(b.model){
+      const modelShort=b.model.includes('sonnet')?'Sonnet 4':b.model.includes('haiku')?'Haiku 4.5':b.model.includes('opus')?'Opus 4':'Custom';
+      modelHtml='<div class="bd-section"><div class="bd-label">Model</div><div class="model-badge">'+esc(modelShort)+'</div><div style="font-family:var(--mono);font-size:.5625rem;color:var(--tx-3);margin-top:4px">'+esc(b.model)+'</div></div>';
+    }
+
+    // Credential info
+    let credHtml='';
+    const credId=BLOCK_CREDS[blockId];
+    if(credId){
+      const cred=CREDENTIALS[credId];
+      if(cred){
+        const stColor=cred.status==='active'?'var(--green)':cred.status==='rotating'?'var(--amber)':'var(--red)';
+        credHtml='<div class="bd-section"><div class="bd-label">Credential</div><div class="cred-badge"><span class="cred-badge-status" style="background:'+stColor+'"></span><span class="cred-badge-name">'+esc(cred.name)+'</span><span class="cred-badge-key">'+esc(cred.maskedKey)+'</span></div><div style="font-size:.5625rem;color:var(--tx-3);margin-top:4px">Added by '+esc(cred.addedBy)+' \u00B7 '+esc(cred.addedOn)+(cred.expiresOn!=='—'?' \u00B7 Expires '+esc(cred.expiresOn):'')+'</div></div>';
+      }
+    }
+
+    // Recent executions involving this block
+    let execHtml='';
+    const blockExecs=EXEC_LOG.filter(ex=>{const bids=WORKFLOW_BLOCKS[ex.wfId];return bids&&bids.includes(blockId)}).slice(0,3);
+    if(blockExecs.length){
+      execHtml='<div class="bd-section"><div class="bd-label">Recent Executions</div>';
+      blockExecs.forEach(ex=>{
+        const w=workflows.find(x=>x.id===ex.wfId);if(!w)return;
+        const dotCls='exec-dot-'+ex.status;
+        execHtml+='<div class="exec-item"><span class="exec-dot '+dotCls+'"></span><div class="exec-info"><div class="exec-name">'+esc(w.name)+'</div><div class="exec-meta">'+esc(ex.startedAt)+'</div>'+(ex.note?'<div class="exec-note">'+esc(ex.note)+'</div>':'')+'</div><span class="exec-duration">'+esc(ex.duration)+'</span></div>';
+      });
+      execHtml+='</div>';
+    }
+
     return '<div class="bd-head">'
       +'<span class="block-dot block-dot-'+b.type+'" style="width:10px;height:10px"></span>'
       +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api">'+esc(b.api)+' \u00B7 '+b.type+'</div></div>'
       +'<button class="bd-close" id="drawerClose">&times;</button></div>'
       +'<div class="bd-body">'
       +'<div class="bd-section"><div class="bd-label">Description</div><div class="bd-desc">'+esc(b.desc)+'</div></div>'
+      +modelHtml
       +'<div class="bd-section"><div class="bd-label">Owner</div><div class="bd-owner">'+renderAvatar(owner,28)+' <div><div style="font-weight:600">'+esc(PEOPLE[owner]?PEOPLE[owner].name:owner)+'</div><div style="font-size:.625rem;color:var(--tx-3)">'+esc(owner)+'</div></div></div></div>'
+      +credHtml
       +'<div class="bd-section"><div class="bd-label">Health Monitor</div><div class="health-grid">'
       +'<div class="health-item"><div class="health-val '+(h.uptime&&parseFloat(h.uptime)>=99.5?'health-good':'health-warn')+'">'+esc(h.uptime||'—')+'</div><div class="health-lbl">Uptime</div></div>'
       +'<div class="health-item"><div class="health-val '+hCls(h.errorRate)+'">'+esc(h.errorRate||'—')+'</div><div class="health-lbl">Error Rate</div></div>'
@@ -1285,6 +1440,7 @@
       +'<div class="health-item"><div class="health-val">'+esc(h.lastRun||'—')+'</div><div class="health-lbl">Last Run</div></div>'
       +'</div></div>'
       +flowHtml
+      +execHtml
       +(usedIn.length?'<div class="bd-section"><div class="bd-label">Used in '+usedIn.length+' workflow'+(usedIn.length>1?'s':'')+'</div><div class="bd-wf-list">'+usedIn.map(w=>{
         const stCls=w.status==='Live'?'badge-live':'badge-pilot';
         const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
@@ -1463,6 +1619,30 @@
     setModalStep(2);
   });
   document.getElementById('composerBack').addEventListener('click',()=>setModalStep(1));
+
+  // Generate Code with Agent
+  document.getElementById('composerGenerate').addEventListener('click',function(){
+    if(!composerBlocks.length){showToast('Add blocks first');return}
+    const btn=this;btn.disabled=true;btn.innerHTML='<span class="spin"></span> Generating...';
+    const preview=document.getElementById('composerCodePreview');
+    // Simulate agent code generation
+    setTimeout(()=>{
+      const name=document.getElementById('fName').value.trim()||'workflow';
+      const blocks=composerBlocks.map(bid=>{const bl=BLOCKS[bid];return bl?{id:bid,name:bl.name,api:bl.api,type:bl.type,model:bl.model||null,cred:BLOCK_CREDS[bid]?CREDENTIALS[BLOCK_CREDS[bid]]?.maskedKey:null}:null}).filter(Boolean);
+      let code='# Auto-generated by AI Agent\n# Workflow: '+esc(name)+'\n# Blocks: '+blocks.length+'\n\n';
+      blocks.forEach((bl,i)=>{
+        code+='# Step '+(i+1)+': '+bl.name+' ('+bl.api+')\n';
+        if(bl.type==='source')code+='data_'+i+' = '+bl.api.toLowerCase().replace(/\s/g,'_')+'.fetch(credentials=vault["'+esc(bl.cred||'...')+'"])\n\n';
+        else if(bl.type==='transform')code+='data_'+i+' = transform(data_'+(i-1)+', rules=config)\n\n';
+        else if(bl.type==='ai')code+='data_'+i+' = claude.run(\n  model="'+esc(bl.model||'claude-sonnet-4-20250514')+'",\n  input=data_'+(i-1)+',\n  credentials=vault["'+esc(bl.cred||'...')+'"])\n\n';
+        else if(bl.type==='output')code+=''+bl.api.toLowerCase().replace(/\s/g,'_')+'.send(data_'+(i-1)+', credentials=vault["'+esc(bl.cred||'...')+'"])\n\n';
+        else if(bl.type==='gate')code+='await review_gate(reviewer=config.reviewer, data=data_'+(i-1)+')\n\n';
+      });
+      preview.style.display='block';
+      preview.innerHTML='<div class="field-group-label" style="margin-top:12px">Generated Code Preview</div><pre style="font-family:var(--mono);font-size:.625rem;color:var(--tx-2);background:var(--surface-2);padding:12px;border-radius:var(--r-sm);line-height:1.6;overflow-x:auto;max-height:200px">'+code+'</pre><div style="font-size:.5625rem;color:var(--tx-3);margin-top:4px">Credentials pulled from vault automatically. No keys in code.</div>';
+      btn.disabled=false;btn.innerHTML='<span class="block-dot block-dot-ai" style="width:6px;height:6px"></span> Generate Code with Agent';
+    },1500);
+  });
 
   // Inline validation helpers
   function clearFieldError(inputId,errId){document.getElementById(inputId).classList.remove('field-error');const e=document.getElementById(errId);if(e)e.classList.remove('show')}
