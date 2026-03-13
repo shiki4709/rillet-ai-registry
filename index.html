@@ -145,36 +145,10 @@
   .btn-sm:hover { background:var(--surface-2); color:var(--tx); }
   .btn-sm:focus-visible { box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--teal); }
 
-  /* ====== DISCOVERY BANNER ====== */
-  .discovery-banner {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 18px;
-    background: var(--teal-bg);
-    border: 1px solid rgba(26,138,122,.15);
-    border-radius: var(--r);
-    margin-bottom: 20px;
-  }
-  .discovery-icon { font-size: 1.1rem; flex-shrink: 0; line-height: 1; }
-  .discovery-text { flex: 1; min-width: 0; }
-  .discovery-title { font-size: .8125rem; font-weight: 700; color: var(--teal-deep); }
-  .discovery-sub { font-size: .6875rem; color: var(--tx-2); margin-top: 2px; line-height: 1.5; }
-  .discovery-cta {
-    font-family: var(--sans);
-    font-size: .6875rem; font-weight: 600;
-    padding: 6px 14px; border-radius: 4px;
-    border: 1px solid var(--teal);
-    background: var(--surface);
-    color: var(--teal);
-    cursor: pointer; white-space: nowrap;
-    transition: all 150ms var(--ease); outline: none;
-  }
-  .discovery-cta:hover { background: var(--teal); color: #fff; }
-  .discovery-cta:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--teal); }
-
   /* ====== STATS ====== */
   .stats {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 0;
     margin-bottom: 24px;
     padding: 0 4px;
@@ -190,8 +164,6 @@
   .stat:nth-child(1) { animation-delay: 0ms; }
   .stat:nth-child(2) { animation-delay: 50ms; }
   .stat:nth-child(3) { animation-delay: 100ms; }
-  .stat:nth-child(4) { animation-delay: 150ms; }
-  .stat:nth-child(5) { animation-delay: 200ms; }
   @keyframes stat-in { to { opacity:1; transform:translateY(0); } }
 
   .stat::before {
@@ -229,19 +201,6 @@
   }
 
   /* ====== SPOTLIGHT ====== */
-  .spotlight {
-    display: flex; align-items: center; gap: 8px;
-    padding: 0 0 12px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--border-dim);
-    font-size: .8125rem;
-  }
-  .spotlight-icon { color: var(--plum); font-size: .75rem; }
-  .spotlight-label { color: var(--tx-3); font-weight: 500; }
-  .spotlight-name { color: var(--tx); font-weight: 700; }
-  .spotlight-flow { color: var(--tx-3); font-family: var(--mono); font-size: .6875rem; }
-  .spotlight-flow .arrow { color: var(--plum); margin: 0 3px; }
-
   /* ====== CONTROLS ====== */
   .controls { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
 
@@ -332,14 +291,11 @@
     font-variant-numeric:tabular-nums;
   }
 
-  .progress-cell { display:flex; align-items:center; gap:7px; white-space:nowrap; }
-  .progress-bar { width:48px; height:4px; background:var(--surface-3); border-radius:2px; overflow:hidden; }
-  .progress-fill { height:100%; border-radius:2px; }
-  .progress-pct { font-family:var(--mono); font-size:.625rem; color:var(--tx-3); font-variant-numeric:tabular-nums; }
+  .readiness-badge { font-size:.5625rem; font-weight:600; padding:2px 7px; border-radius:3px; white-space:nowrap; }
+  .readiness-high { color:var(--teal); background:var(--teal-bg); }
+  .readiness-medium { color:var(--gold); background:var(--gold-bg); }
+  .readiness-low { color:var(--tx-3); background:var(--surface-3); }
 
-  .reuse-dots { display:flex; align-items:center; gap:3px; }
-  .reuse-dot { width:6px; height:6px; border-radius:50%; background:var(--plum); }
-  .reuse-count { font-family:var(--mono); font-size:.625rem; color:var(--tx-3); margin-left:3px; }
 
   .expand-cell { width:28px; text-align:center; }
   .chv { display:inline-block; width:14px; height:14px; color:var(--tx-3); transition:transform 200ms var(--ease),color 120ms; }
@@ -370,7 +326,7 @@
     letter-spacing:.07em; margin-bottom:8px;
   }
   .detail-cols {
-    display: grid; grid-template-columns: 1.1fr .8fr .5fr;
+    display: grid; grid-template-columns: 1fr 1fr;
     gap: 24px;
   }
   .detail-section h4 {
@@ -385,10 +341,14 @@
   .meta-item .mv { font-size:.8125rem; color:var(--tx); margin-top:3px; font-variant-numeric:tabular-nums; }
   .reuse-tag { display:inline-block; font-size:.625rem; font-weight:600; color:var(--plum); background:var(--plum-bg); padding:2px 8px; border-radius:4px; margin:2px 3px 2px 0; }
 
-  .build-pct { font-family:var(--mono); font-size:1.125rem; font-weight:500; font-variant-numeric:tabular-nums; line-height:1; }
-  .build-bar { width:100%; height:5px; background:var(--surface-3); border-radius:3px; overflow:hidden; margin:8px 0; }
-  .build-fill { height:100%; border-radius:3px; }
-  .build-ts { font-size:.625rem; color:var(--tx-3); }
+  /* Reuse Intelligence in detail row */
+  .intel-section h4 { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+  .intel-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+  .intel-chip { font-size:.5625rem; font-weight:500; padding:2px 7px; border-radius:3px; }
+  .intel-chip-stack { color:var(--slate); background:var(--slate-bg); }
+  .intel-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; }
+  .intel-risk-item { font-size:.6875rem; color:var(--tx-2); line-height:1.5; padding-left:12px; position:relative; }
+  .intel-risk-item::before { content:'\2022'; position:absolute; left:0; color:var(--rust); }
 
   .empty-state { text-align:center; padding:48px 16px; color:var(--tx-3); font-size:.8125rem; }
 
@@ -456,67 +416,6 @@
   .panel-body::-webkit-scrollbar-track { background:transparent; }
   .panel-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
-  /* Studio Score */
-  .score-ring-wrap { display:flex; flex-direction:column; align-items:center; padding:16px 0 12px; }
-  .score-ring {
-    width:72px; height:72px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    /* Proper donut via mask — no inner div hack */
-    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff calc(100% - 7px));
-    mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff calc(100% - 7px));
-  }
-  .score-center {
-    /* Overlaid on top of the ring */
-    position:absolute;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-  }
-  .score-ring-outer {
-    position:relative; width:72px; height:72px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .score-ring-val {
-    font-family:var(--mono); font-size:1.125rem; font-weight:700;
-    color:var(--tx); line-height:1;
-  }
-  .score-ring-sub { font-size:.45rem; color:var(--tx-3); margin-top:1px; }
-  .score-ring-label { font-size:.5625rem; color:var(--tx-3); margin-top:6px; }
-  .score-dims { width:100%; padding:4px 0; }
-  .score-dim {
-    display:flex; align-items:center; gap:8px;
-    padding:4px 0; font-size:.625rem;
-  }
-  .score-dim-label { width:74px; color:var(--tx-2); font-weight:500; flex-shrink:0; }
-  .score-dim-bar { flex:1; height:4px; background:var(--surface-3); border-radius:2px; overflow:hidden; }
-  .score-dim-fill { height:100%; border-radius:2px; transition: width 600ms var(--ease); }
-  .score-dim-val { width:28px; text-align:right; font-family:var(--mono); font-size:.5625rem; color:var(--tx-2); }
-
-  /* Shadow AI Signals */
-  .signal-item {
-    padding:8px 8px 8px 12px;
-    border-bottom:1px solid var(--border-dim);
-    border-left:3px solid transparent;
-  }
-  .signal-item:last-child { border-bottom:none; }
-  .signal-item[data-sev="high"] { border-left-color:var(--amber); }
-  .signal-item[data-sev="med"]  { border-left-color:var(--blue); }
-  .signal-head { display:flex; align-items:center; gap:6px; margin-bottom:3px; }
-  .signal-sev {
-    font-size:.5rem; font-weight:700; text-transform:uppercase;
-    letter-spacing:.06em;
-    padding:1px 5px; border-radius:3px;
-  }
-  .signal-sev-high { color:var(--amber); background:var(--amber-bg); }
-  .signal-sev-med  { color:var(--blue); background:var(--blue-bg); }
-  .signal-ch { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); }
-  .signal-text { font-size:.6875rem; color:var(--tx-2); line-height:1.45; margin-top:2px; }
-  .signal-btn {
-    font-family:var(--sans); font-size:.5625rem; font-weight:600;
-    color:var(--teal); background:none; border:none;
-    cursor:pointer; padding:3px 0; margin-top:4px;
-    transition:color 120ms; outline:none;
-  }
-  .signal-btn:hover { color:var(--teal-deep); text-decoration:underline; }
-  .signal-btn:focus-visible { outline:2px solid var(--teal); outline-offset:2px; border-radius:2px; }
 
   /* Studio Library */
   .khoj-item { padding:7px 0; border-bottom:1px solid var(--border-dim); }
@@ -548,12 +447,6 @@
   .rmap-dst { display:flex; flex-wrap:wrap; gap:3px; }
   .rmap-chip { font-size:.5625rem; font-weight:600; color:var(--plum); background:var(--plum-bg); padding:2px 7px; border-radius:3px; }
 
-  /* Activity */
-  .activity-item { padding:6px 0; border-bottom:1px solid var(--border-dim); display:flex; gap:8px; align-items:flex-start; }
-  .activity-item:last-child { border-bottom:none; }
-  .activity-dot { width:5px; height:5px; border-radius:50%; margin-top:5px; flex-shrink:0; }
-  .activity-text { font-size:.6875rem; color:var(--tx-2); line-height:1.45; }
-  .activity-ts { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); }
 
   /* ====== MODALS ====== */
   .modal-overlay {
@@ -572,7 +465,7 @@
   }
   .modal-wide { width:620px; }
   .modal-head {
-    padding:18px 22px; border-bottom:1px solid var(--border-dim);
+    padding:16px 24px; border-bottom:1px solid var(--border-dim);
     display:flex; justify-content:space-between; align-items:center;
     position:sticky; top:0; background:var(--surface);
     border-radius:14px 14px 0 0; z-index:1;
@@ -587,9 +480,15 @@
   }
   .modal-close:hover { background:var(--surface-3); color:var(--tx); }
   .modal-close:focus-visible { box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--teal); }
-  .modal-body { padding:22px; }
-  .field { margin-bottom:14px; }
+  .modal-body { padding:24px; }
+  .field-group { margin-bottom:24px; }
+  .field-group:last-child { margin-bottom:0; }
+  .field-group-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field { margin-bottom:12px; }
+  .field:last-child { margin-bottom:0; }
   .field label { display:block; font-size:.625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; }
+  .field label .req { color:var(--rust); margin-left:2px; }
   .field input,.field select,.field textarea {
     width:100%; background:var(--bg); border:1px solid var(--border);
     border-radius:var(--r-sm); padding:9px 12px;
@@ -597,6 +496,9 @@
     outline:none; transition:border-color 150ms,box-shadow 150ms;
   }
   .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-bg); }
+  .field input.field-error,.field select.field-error,.field textarea.field-error { border-color:var(--red); box-shadow:0 0 0 3px var(--red-bg); }
+  .field-error-msg { font-size:.625rem; color:var(--red); margin-top:4px; display:none; }
+  .field-error-msg.show { display:block; }
   .field textarea { resize:vertical; min-height:72px; line-height:1.5; }
   .field select {
     appearance:none; -webkit-appearance:none; cursor:pointer;
@@ -604,9 +506,13 @@
     background-repeat:no-repeat; background-position:right 10px center;
     padding-right:28px;
   }
-  .modal-foot { padding:14px 22px; border-top:1px solid var(--border-dim); display:flex; justify-content:flex-end; gap:8px; }
+  .field-hint { font-size:.5625rem; color:var(--tx-3); margin-top:3px; line-height:1.4; }
+  .modal-foot { padding:16px 24px; border-top:1px solid var(--border-dim); display:flex; justify-content:flex-end; gap:8px; }
+  .btn:disabled,.btn-accent:disabled { opacity:.5; cursor:not-allowed; pointer-events:none; }
   .generating { display:none; align-items:center; gap:8px; padding:8px 0; font-size:.75rem; color:var(--teal); }
   .generating.show { display:flex; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(12px); background:var(--tx); color:#fff; font-size:.8125rem; font-weight:500; padding:10px 20px; border-radius:8px; opacity:0; transition:all 300ms var(--ease); z-index:300; pointer-events:none; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
   .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:var(--teal); border-radius:50%; animation:spin .6s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
@@ -678,30 +584,18 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn" id="btnProtocol">Discovery Protocol</button>
       <button class="btn" id="btnExport">Export JSON</button>
       <button class="btn btn-accent" id="btnAdd">+ Add Workflow</button>
     </div>
   </div>
   <p class="subtitle">Shared AI workflow library. Discover, govern, and reuse automations across every business unit.</p>
 
-  <div class="discovery-banner">
-    <span class="discovery-icon">&#128269;</span>
-    <div class="discovery-text">
-      <div class="discovery-title">3-Layer Discovery Protocol active</div>
-      <div class="discovery-sub">Slack signal search &rarr; async intake form &rarr; targeted follow-ups. D1 completes in 48 hrs, no scheduling overhead.</div>
-    </div>
-    <button class="discovery-cta" id="btnProtocol">View protocol &rarr;</button>
-  </div>
-
   <div class="stats">
     <div class="stat" data-c="teal"><div class="stat-val" id="statTotal">&mdash;</div><div class="stat-lbl">Workflows</div></div>
-    <div class="stat" data-c="slate"><div class="stat-val" id="statLive">&mdash;</div><div class="stat-lbl">Live</div></div>
-    <div class="stat" data-c="plum"><div class="stat-val" id="statBUs">&mdash;</div><div class="stat-lbl">Business Units</div></div>
     <div class="stat" data-c="gold"><div class="stat-val" id="statHours">&mdash;</div><div class="stat-lbl">Hrs Saved / Wk</div></div>
     <div class="stat" data-c="red"><div class="stat-val" id="statGov">&mdash;</div><div class="stat-lbl">Governance</div><div class="stat-sub">named reviewer</div></div>
   </div>
-
-  <div class="spotlight" id="spotlight"></div>
 
   <div class="controls">
     <input type="text" class="search-input" id="searchInput" placeholder="Search workflows...">
@@ -719,8 +613,6 @@
         <th data-sort="type" class="hide-sm">Type <span class="sort-arrow">&#9650;</span></th>
         <th data-sort="status">Status <span class="sort-arrow">&#9650;</span></th>
         <th data-sort="saves" class="hide-sm">Saves <span class="sort-arrow">&#9650;</span></th>
-        <th class="hide-sm">Progress</th>
-        <th class="hide-sm">Reused</th>
       </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
@@ -729,83 +621,14 @@
 
 <div class="side-col">
   <div class="panel">
-    <div class="panel-head">
-      <span class="dot" style="background:var(--teal)"></span>AI Studio Score
-      <span class="panel-badge" style="color:var(--blue);background:var(--blue-bg)">PwC 2026</span>
-    </div>
-    <div class="panel-body" style="max-height:none;overflow:visible">
-      <div class="score-ring-wrap">
-        <div class="score-ring-outer">
-          <div class="score-ring" style="background:conic-gradient(var(--teal) 0deg, var(--teal) 244.8deg, var(--surface-3) 244.8deg)"></div>
-          <div class="score-center">
-            <span class="score-ring-val">68</span>
-            <span class="score-ring-sub">/100</span>
-          </div>
-        </div>
-      </div>
-      <div class="score-dims">
-        <div class="score-dim">
-          <span class="score-dim-label">Visibility</span>
-          <div class="score-dim-bar"><div class="score-dim-fill" style="width:85%;background:var(--green)"></div></div>
-          <span class="score-dim-val">85%</span>
-        </div>
-        <div class="score-dim">
-          <span class="score-dim-label">Governance</span>
-          <div class="score-dim-bar"><div class="score-dim-fill" style="width:72%;background:var(--blue)"></div></div>
-          <span class="score-dim-val">72%</span>
-        </div>
-        <div class="score-dim">
-          <span class="score-dim-label">Reuse</span>
-          <div class="score-dim-bar"><div class="score-dim-fill" style="width:60%;background:var(--plum)"></div></div>
-          <span class="score-dim-val">60%</span>
-        </div>
-        <div class="score-dim">
-          <span class="score-dim-label">Measurement</span>
-          <div class="score-dim-bar"><div class="score-dim-fill" style="width:55%;background:var(--amber)"></div></div>
-          <span class="score-dim-val">55%</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head">
-      <span class="dot" style="background:var(--amber)"></span>Shadow AI Signals
-      <span class="panel-badge" style="color:var(--slate);background:var(--slate-bg)">Slack</span>
-    </div>
-    <div class="panel-body" id="shadowSignals" style="padding-left:6px;padding-right:10px">
-      <div class="signal-item" data-sev="high">
-        <div class="signal-head"><span class="signal-sev signal-sev-high">HIGH</span><span class="signal-ch">#implementation</span></div>
-        <div class="signal-text">&ldquo;I&rsquo;ve been using GPT for NDA clause extraction &mdash; same as SOW extractor?&rdquo;</div>
-        <button class="signal-btn" onclick="alert('Signal added to AI Studio intake queue.')">→ Add to Studio</button>
-      </div>
-      <div class="signal-item" data-sev="high">
-        <div class="signal-head"><span class="signal-sev signal-sev-high">HIGH</span><span class="signal-ch">#people-ops</span></div>
-        <div class="signal-text">&ldquo;Anyone have a prompt for writing job descriptions? I keep making my own&rdquo;</div>
-        <button class="signal-btn" onclick="alert('Signal added to AI Studio intake queue.')">→ Add to Studio</button>
-      </div>
-      <div class="signal-item" data-sev="med">
-        <div class="signal-head"><span class="signal-sev signal-sev-med">MED</span><span class="signal-ch">#cs-team</span></div>
-        <div class="signal-text">&ldquo;Using Claude for renewal outreach drafts &mdash; not sure if this should be official&rdquo;</div>
-        <button class="signal-btn" onclick="alert('Signal added to AI Studio intake queue.')">→ Add to Studio</button>
-      </div>
-    </div>
+    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Cross-BU Reuse Map</div>
+    <div class="panel-body" id="reuseMap"></div>
   </div>
 
   <div class="panel">
     <div class="panel-head"><span class="dot" style="background:var(--teal)"></span>AI Studio Library</div>
     <div class="panel-body" id="khojFeed"></div>
     <div class="khoj-input-wrap"><input class="khoj-input" id="khojInput" placeholder="Query Studio library..."></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Cross-BU Reuse Map</div>
-    <div class="panel-body" id="reuseMap"></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--slate)"></span>Activity</div>
-    <div class="panel-body" id="activityFeed"></div>
   </div>
 </div>
 </div>
@@ -818,14 +641,25 @@
       <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="field"><label>Workflow Name</label><input id="fName" placeholder="e.g. Invoice Matcher"></div>
-      <div class="field"><label>Business Unit</label><select id="fBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
-      <div class="field"><label>Description</label><input id="fDesc" placeholder="One-sentence summary"></div>
-      <div class="field"><label>Details (for prompt generation)</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs, and reviewer. Claude generates the prompt_summary from this."></textarea></div>
-      <div class="field"><label>Type</label><select id="fType"><option value="1">Type 1 — Deterministic</option><option value="2">Type 2 — Generative</option></select></div>
-      <div class="field"><label>Risk</label><select id="fRisk"><option value="Low">Low</option><option value="Medium">Medium</option></select></div>
-      <div class="field"><label>Reviewer</label><input id="fReviewer" placeholder="e.g. VP Sales"></div>
-      <div class="generating" id="generating"><span class="spin"></span>Claude generating prompt_summary...</div>
+      <div class="field-group">
+        <div class="field-group-label">Workflow</div>
+        <div class="field"><label for="fName">Name <span class="req">*</span></label><input id="fName" placeholder="e.g. Invoice Matcher" aria-required="true" aria-describedby="errName"><div class="field-error-msg" id="errName">Workflow name is required</div></div>
+        <div class="field"><label for="fBU">Business Unit <span class="req">*</span></label><select id="fBU" aria-required="true" aria-describedby="errBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select><div class="field-error-msg" id="errBU">Select a business unit</div></div>
+        <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-label">Classification</div>
+        <div class="field-row">
+          <div class="field"><label for="fType">Type</label><select id="fType"><option value="1">Type 1 — Deterministic</option><option value="2">Type 2 — Generative</option></select></div>
+          <div class="field"><label for="fRisk">Risk</label><select id="fRisk"><option value="Low">Low</option><option value="Medium">Medium</option></select></div>
+        </div>
+        <div class="field"><label for="fReviewer">Reviewer</label><input id="fReviewer" placeholder="e.g. VP Sales"><div class="field-hint">Role title of human reviewer. Defaults to TBD.</div></div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-label">Prompt Details</div>
+        <div class="field"><label for="fDetails">Details</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs, and who reviews."></textarea><div class="field-hint">Claude generates the prompt_summary from this. Leave blank to add later.</div></div>
+        <div class="generating" id="generating"><span class="spin"></span>Generating prompt summary...</div>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="btn" id="modalCancel">Cancel</button>
@@ -833,6 +667,8 @@
     </div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <!-- Discovery Protocol Modal -->
 <div class="modal-overlay" id="protoOverlay" role="dialog" aria-modal="true">
@@ -891,8 +727,21 @@
 (function(){
   const REGISTRY_DATA=[{"id":1,"name":"Deal Summary Generator","desc":"Auto-generates structured deal summaries from CRM notes and call transcripts for weekly pipeline reviews.","bu":"GTM / Sales","type":2,"risk":"Low","status":"Live","saves":"2.5 hrs/wk","day":1,"prompt_summary":"Extracts key deal metadata (stage, ARR, next steps, blockers) from unstructured CRM notes. Outputs a standardized one-page summary with confidence scores for each field. Runs on HubSpot webhook trigger.","reused_by":["Implementation","Customer Success"],"reviewer":"VP Sales","rewrite_rate":"8%"},{"id":2,"name":"Invoice Discrepancy Flagger","desc":"Compares vendor invoices against PO terms and flags mismatches above threshold for AP review.","bu":"Finance","type":1,"risk":"Medium","status":"Live","saves":"4 hrs/wk","day":3,"prompt_summary":"Parses PDF invoices via OCR, extracts line items, and cross-references against approved PO database. Flags unit price variance >2%, quantity mismatches, and unapproved line items. Human reviewer required before any AP action.","reused_by":["Procurement"],"reviewer":"Controller","rewrite_rate":"5%"},{"id":3,"name":"Customer Health Score Digest","desc":"Synthesizes product usage, support tickets, and NPS data into a weekly health score digest per account.","bu":"Customer Success","type":2,"risk":"Low","status":"Live","saves":"3 hrs/wk","day":5,"prompt_summary":"Aggregates signals from Mixpanel (usage trends), Zendesk (ticket volume/sentiment), and Delighted (NPS). Produces a red/yellow/green health classification with plain-language reasoning. CSMs review before client outreach.","reused_by":["GTM / Sales","Product"],"reviewer":"Head of CS","rewrite_rate":"12%"},{"id":4,"name":"SOW Clause Extractor","desc":"Pulls key commercial and delivery terms from signed SOWs into structured fields for the project tracker.","bu":"Implementation","type":1,"risk":"Medium","status":"Live","saves":"1.5 hrs/wk","day":7,"prompt_summary":"Identifies and extracts: payment milestones, SLA commitments, scope boundaries, change order terms, and termination clauses from uploaded SOW PDFs. Outputs structured JSON for downstream project management tooling.","reused_by":["Finance","Legal"],"reviewer":"Dir. of Impl.","rewrite_rate":"15%"},{"id":5,"name":"Weekly Metrics Narrator","desc":"Converts raw KPI exports into a plain-English narrative for the Monday all-hands update.","bu":"Chief of Staff","type":2,"risk":"Low","status":"Live","saves":"2 hrs/wk","day":10,"prompt_summary":"Ingests weekly KPI spreadsheet (revenue, burn, headcount, pipeline). Generates a 3-paragraph narrative highlighting WoW changes, anomalies, and items needing exec attention. Tone-matched to existing company update style.","reused_by":[],"reviewer":"Chief of Staff","rewrite_rate":"18%"},{"id":6,"name":"Support Ticket Classifier","desc":"Auto-tags incoming Zendesk tickets by product area, severity, and suggested routing.","bu":"Customer Success","type":1,"risk":"Low","status":"Live","saves":"5 hrs/wk","day":14,"prompt_summary":"Classifies inbound tickets into product taxonomy (Billing, Integrations, Core Platform, Admin). Assigns severity (P1-P4) based on keyword detection and customer tier. Suggests routing to appropriate engineering pod. Agent reviews classification before routing.","reused_by":["Product"],"reviewer":"Support Lead","rewrite_rate":"6%"},{"id":7,"name":"Competitive Intel Summarizer","desc":"Monitors competitor changelog and blog feeds, produces a weekly competitive digest for GTM.","bu":"GTM / Sales","type":2,"risk":"Low","status":"Live","saves":"3 hrs/wk","day":18,"prompt_summary":"Scrapes RSS feeds and changelog pages for tracked competitors. Summarizes new features, pricing changes, and positioning shifts. Highlights items relevant to active deals. Sales team reviews for accuracy before distribution.","reused_by":["Product","Marketing"],"reviewer":"VP Sales","rewrite_rate":"10%"},{"id":8,"name":"Expense Policy Checker","desc":"Reviews submitted expense reports against company policy and flags violations before AP approval.","bu":"Finance","type":1,"risk":"Medium","status":"Pilot","saves":"2 hrs/wk","day":22,"prompt_summary":"Parses expense report line items and validates against policy rules: per-diem limits, approved vendor list, receipt requirements, manager approval chain. Flags violations with specific policy section references. AP team makes final determination.","reused_by":[],"reviewer":"Controller","rewrite_rate":"9%"},{"id":9,"name":"Onboarding Checklist Generator","desc":"Generates role-specific onboarding checklists from job description and team context.","bu":"People Ops","type":2,"risk":"Low","status":"Live","saves":"1.5 hrs/wk","day":25,"prompt_summary":"Takes job title, department, and manager as inputs. Generates a 30/60/90-day onboarding checklist with system access requests, training modules, and intro meeting suggestions. HR reviews and customizes before sending to new hire.","reused_by":["Implementation"],"reviewer":"People Ops Lead","rewrite_rate":"20%"},{"id":10,"name":"Board Deck Data Puller","desc":"Aggregates cross-functional metrics into a pre-formatted board deck data appendix.","bu":"Chief of Staff","type":2,"risk":"Medium","status":"Pilot","saves":"6 hrs/mo","day":30,"prompt_summary":"Pulls data from finance (Stripe MRR, burn), sales (HubSpot pipeline), product (feature velocity), and CS (health scores). Formats into standardized board deck appendix tables. CoS reviews all numbers against source systems before inclusion.","reused_by":["Finance"],"reviewer":"Chief of Staff","rewrite_rate":"22%"},{"id":11,"name":"RFP Response Drafter","desc":"Generates first-draft RFP responses by matching questions against an internal knowledge base.","bu":"GTM / Sales","type":2,"risk":"Medium","status":"Live","saves":"8 hrs/wk","day":35,"prompt_summary":"Ingests RFP questions, searches internal knowledge base (past responses, product docs, security questionnaires) for relevant content. Generates draft answers with source citations. Sales engineer reviews and edits every response before submission.","reused_by":["Customer Success","Implementation"],"reviewer":"Head of SE","rewrite_rate":"25%"},{"id":12,"name":"Contract Renewal Risk Scorer","desc":"Scores upcoming renewals by churn risk using usage, support, and engagement signals.","bu":"Customer Success","type":1,"risk":"Medium","status":"Live","saves":"3 hrs/wk","day":40,"prompt_summary":"Analyzes accounts 90 days from renewal: product usage trends, support ticket sentiment, exec sponsor engagement, payment history. Produces a 0-100 risk score with top 3 contributing factors. CS reviews scores weekly and adjusts outreach strategy.","reused_by":["GTM / Sales","Finance"],"reviewer":"Head of CS","rewrite_rate":"11%"}];
 
-  const PROGRESS={1:100,2:100,3:95,4:100,5:88,6:100,7:92,8:45,9:85,10:30,11:100,12:90};
-  const PROGRESS_TS={1:'Mar 1',2:'Mar 3',3:'Mar 8',4:'Mar 5',5:'Mar 7',6:'Mar 6',7:'Mar 9',8:'Mar 11',9:'Mar 4',10:'Mar 10',11:'Mar 2',12:'Mar 8'};
+  // Reuse Intelligence: what's reusable, what's BU-specific, risks, stack, velocity
+  const REUSE_INTEL={
+    1:{stack:['HubSpot API','Claude','Webhook trigger'],reusable:['Prompt template','Summary format','Confidence scoring'],specific:['CRM field mapping','Pipeline stage definitions'],readiness:'High',days_to_live:12,reuse_days:5,risks:['Requires CRM field mapping per BU','Deal stage taxonomy may differ','Webhook setup needed per instance']},
+    2:{stack:['OCR engine','PO database','Rule engine'],reusable:['Invoice parsing logic','Variance detection rules','Flag format'],specific:['PO database schema','Vendor list','Threshold config'],readiness:'Medium',days_to_live:18,reuse_days:14,risks:['PO schema differs across BUs','Threshold tuning required per category','OCR accuracy varies by invoice format']},
+    3:{stack:['Mixpanel API','Zendesk API','Delighted API','Claude'],reusable:['Signal aggregation pattern','R/Y/G classification','Digest template'],specific:['Account segmentation logic','Health weight config'],readiness:'High',days_to_live:10,reuse_days:7,risks:['Requires API credentials per BU','Health weights need calibration','Account tier definitions vary']},
+    4:{stack:['PDF parser','Claude','JSON schema'],reusable:['Clause extraction prompts','JSON output schema','SLA mapping'],specific:['SOW template assumptions','Field mapping to PM tool'],readiness:'Medium',days_to_live:14,reuse_days:10,risks:['SOW formats vary significantly','Legal terminology differs by jurisdiction','PM tool integration is BU-specific']},
+    5:{stack:['Google Sheets API','Claude'],reusable:['Narrative generation prompt','Anomaly detection logic','Tone matching'],specific:['KPI definitions','Company update style guide'],readiness:'Low',days_to_live:8,reuse_days:null,risks:['Heavily tied to company-specific KPI definitions','Tone/voice must be recalibrated','Metric sources differ per org']},
+    6:{stack:['Zendesk API','Rule engine','Keyword classifier'],reusable:['Classification taxonomy','Severity logic','Routing rules engine'],specific:['Product area taxonomy','Team routing map'],readiness:'High',days_to_live:7,reuse_days:4,risks:['Product taxonomy must be remapped','Routing targets differ per BU','Severity thresholds may need tuning']},
+    7:{stack:['RSS scraper','Claude','Cron scheduler'],reusable:['Feed scraping pipeline','Summarization prompt','Digest format'],specific:['Competitor list','Deal relevance matching'],readiness:'High',days_to_live:15,reuse_days:3,risks:['Competitor list is BU-specific','Feed URLs change frequently','Deal matching requires CRM access']},
+    8:{stack:['Expense parser','Rule engine','Policy DB'],reusable:['Policy rule engine','Violation flagging','Receipt validation'],specific:['Company expense policy','Vendor approved list','Per-diem limits'],readiness:'Medium',days_to_live:null,reuse_days:null,risks:['Expense policies are company-specific','Vendor lists must be maintained per BU','Approval chain logic varies']},
+    9:{stack:['Claude','HR system API'],reusable:['Checklist generation prompt','30/60/90 framework','Access request template'],specific:['Training module catalog','Team-specific intro meetings'],readiness:'High',days_to_live:10,reuse_days:6,risks:['Training catalogs differ per department','System access varies by role','Manager meeting cadence is team-specific']},
+    10:{stack:['Stripe API','HubSpot API','Mixpanel API','Claude'],reusable:['Multi-source data pull pattern','Table formatting','Validation checks'],specific:['Board deck template','Metric definitions','Data source credentials'],readiness:'Low',days_to_live:null,reuse_days:null,risks:['Deeply tied to specific data sources','Board format is org-specific','Credential management across 4+ APIs']},
+    11:{stack:['Knowledge base search','Claude','Citation engine'],reusable:['Question-answer matching','Citation generation','Draft formatting'],specific:['Internal KB content','Past response archive','Security questionnaire DB'],readiness:'Medium',days_to_live:20,reuse_days:8,risks:['Knowledge base content is BU-specific','Response tone/style varies by audience','Security answers need legal review per BU']},
+    12:{stack:['Usage analytics','Zendesk sentiment','Payment system','Claude'],reusable:['Multi-signal scoring model','Factor ranking logic','Risk threshold framework'],specific:['Account tier definitions','Renewal terms structure','Engagement benchmarks'],readiness:'High',days_to_live:16,reuse_days:7,risks:['Engagement benchmarks vary by segment','Payment system integration is BU-specific','Risk thresholds need calibration per portfolio']}
+  };
 
   // Pipeline data: sources → AI logic → outputs → review gate
   const PIPELINES={
@@ -915,7 +764,7 @@
 
   fetch('./data/registry.json').then(r=>r.json()).then(boot).catch(()=>boot(REGISTRY_DATA));
 
-  function boot(d){workflows=d;populateBUFilter();computeStats();computeSpotlight();computeReuseMap();seedKhoj();seedActivity();render();startActivityTicker()}
+  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();seedKhoj();render()}
   function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
   function parseSaves(s){const m=s.match(/([\d.]+)/);return m?parseFloat(m[1]):0}
 
@@ -923,8 +772,6 @@
 
   function computeStats(){
     document.getElementById('statTotal').textContent=workflows.length;
-    document.getElementById('statLive').textContent=workflows.filter(w=>w.status==='Live').length;
-    document.getElementById('statBUs').textContent=new Set(workflows.map(w=>w.bu)).size;
     let h=0;workflows.forEach(w=>{const m=w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);if(m){let v=parseFloat(m[1]);if(m[2]==='mo')v/=4.33;h+=v}});
     document.getElementById('statHours').textContent=h.toFixed(1);
     const withReviewer=workflows.filter(w=>w.reviewer&&w.reviewer!=='TBD'&&w.reviewer!=='').length;
@@ -932,16 +779,8 @@
     document.getElementById('statGov').textContent=govPct+'%';
   }
 
-  function computeSpotlight(){
-    let best=null,mx=0;workflows.forEach(w=>{if(w.reused_by.length>mx){mx=w.reused_by.length;best=w}});if(!best)return;
-    const el=document.getElementById('spotlight');
-    const dsts=best.reused_by.map(b=>'<span>'+esc(b)+'</span>').join('<span class="arrow">\u2192</span>');
-    el.innerHTML='<span class="spotlight-icon">\u25C6</span><span class="spotlight-label">Most reused:</span><span class="spotlight-name">'+esc(best.name)+'</span><span class="spotlight-flow">'+esc(best.bu)+' <span class="arrow">\u2192</span> '+dsts+'</span>';
-  }
-
   function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
   function getSorted(list){return[...list].sort((a,b)=>{let va=a[sortCol],vb=b[sortCol];if(sortCol==='saves'){va=parseSaves(va);vb=parseSaves(vb)}if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase()}if(va<vb)return sortAsc?-1:1;if(va>vb)return sortAsc?1:-1;return 0})}
-  function pColor(pct){if(pct>=90)return'var(--teal)';if(pct>=60)return'var(--gold)';return'var(--rust)'}
   const pipeArrow='<span class="pipe-arrow">\u2192</span>';
   function renderPipeline(id){
     const p=PIPELINES[id];if(!p)return'';
@@ -961,16 +800,20 @@
 
   function render(){
     const filtered=getSorted(getFiltered());const tbody=document.getElementById('tableBody');
-    if(!filtered.length){tbody.innerHTML='<tr><td colspan="8" class="empty-state">No workflows match current filters.</td></tr>';return}
+    if(!filtered.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state">No workflows match current filters.</td></tr>';return}
     let html='';
     filtered.forEach((w,i)=>{
-      const ex=expandedId===w.id,stCls=w.status==='Live'?'badge-live':'badge-pilot',pct=PROGRESS[w.id]||0,rc=w.reused_by.length,delay=Math.min(i*20,200);
-      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td><td class="hide-sm"><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;background:'+pColor(pct)+'"></div></div><span class="progress-pct">'+pct+'%</span></div></td><td class="hide-sm"><div class="reuse-dots">';
-      for(let d=0;d<rc;d++)html+='<span class="reuse-dot"></span>';
-      if(rc)html+='<span class="reuse-count">'+rc+'</span>';
-      html+='</div></td></tr>';
-      const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>',ts=PROGRESS_TS[w.id]||'\u2014';
-      html+='<tr class="detail-row"><td colspan="8"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Pipeline</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Prompt / Pipeline</h4><p>'+esc(w.prompt_summary)+'</p></div><div class="detail-section"><h4>Review &amp; Reuse</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Rewrite Rate</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div></div><div class="meta-item"><div class="ml">Classification</div><div class="mv">Type '+w.type+' \u2014 '+(w.type===1?'Deterministic':'Generative')+'</div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Build Progress</h4><div class="build-pct" style="color:'+pColor(pct)+'">'+pct+'%</div><div class="build-bar"><div class="build-fill" style="width:'+pct+'%;background:'+pColor(pct)+'"></div></div><div class="build-ts">Updated '+ts+'</div><button class="btn-sm" onclick="event.stopPropagation();logStudioNote('+w.id+')">\u2192 Log progress note to Studio</button></div></div></div></div></div></td></tr>';
+      const ex=expandedId===w.id,stCls=w.status==='Live'?'badge-live':'badge-pilot',delay=Math.min(i*20,200);
+      const intel=REUSE_INTEL[w.id]||{readiness:'—'};
+      const rdCls=intel.readiness==='High'?'readiness-high':intel.readiness==='Medium'?'readiness-medium':'readiness-low';
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
+      const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>';
+      // Reuse Intelligence detail section
+      const stackChips=(intel.stack||[]).map(s=>'<span class="intel-chip intel-chip-stack">'+esc(s)+'</span>').join('');
+      const topRisk=(intel.risks&&intel.risks[0])?esc(intel.risks[0]):'—';
+      const dtl=intel.days_to_live?intel.days_to_live+'d':'—';
+      const dtr=intel.reuse_days?intel.reuse_days+'d':'—';
+      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Pipeline</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="meta-row"><div class="meta-item"><div class="ml">Readiness</div><div class="mv"><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div></div><div class="meta-item"><div class="ml">Build</div><div class="mv">'+dtl+'</div></div><div class="meta-item"><div class="ml">Reuse</div><div class="mv">'+dtr+'</div></div></div><div class="intel-label" style="margin-top:8px">Stack</div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:8px">'+topRisk+'</div></div></div></div></div></div></td></tr>';
     });
     tbody.innerHTML=html;
     document.querySelectorAll('thead th[data-sort]').forEach(th=>{const a=th.dataset.sort===sortCol;th.classList.toggle('sorted',a);const ar=th.querySelector('.sort-arrow');if(ar)ar.textContent=(a&&!sortAsc)?'\u25BC':'\u25B2'});
@@ -987,11 +830,6 @@
   function seedKhoj(){document.getElementById('khojFeed').innerHTML=khojSeed.map(k=>'<div class="khoj-item"><span class="khoj-tag khoj-tag-'+k.tag+'">#'+k.tag+'</span><div class="khoj-text">'+esc(k.text)+'</div><div class="khoj-ts">'+k.ts+'</div></div>').join('')}
   document.getElementById('khojInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim()){const q=e.target.value.trim();const feed=document.getElementById('khojFeed');const item=document.createElement('div');item.className='khoj-item';item.innerHTML='<span class="khoj-tag khoj-tag-note">#query</span><div class="khoj-text" style="color:var(--tx)">\u2192 '+esc(q)+'</div><div class="khoj-ts">Just now \u00B7 Studio library not connected</div>';feed.prepend(item);e.target.value=''}});
 
-  const actPool=[{c:'var(--teal)',t:'Deal Summary Generator saved 2.5 hrs this week'},{c:'var(--slate)',t:'Support Ticket Classifier routed 142 tickets'},{c:'var(--plum)',t:'Customer Health Score Digest reused by Product'},{c:'var(--gold)',t:'Weekly Metrics Narrator rewrite rate: 18%'},{c:'var(--teal)',t:'RFP Response Drafter completed 3 drafts today'},{c:'var(--rust)',t:'Board Deck Data Puller \u2014 pilot at 30%'},{c:'var(--plum)',t:'Contract Renewal Risk Scorer reused by Finance'},{c:'var(--slate)',t:'Competitive Intel Summarizer flagged 4 changes'},{c:'var(--teal)',t:'Onboarding Checklist Generator \u2014 85% complete'},{c:'var(--gold)',t:'Expense Policy Checker flagged 2 violations'},{c:'var(--plum)',t:'SOW Clause Extractor reused by Legal'},{c:'var(--teal)',t:'Invoice Discrepancy Flagger caught $12k variance'}];
-  let actIdx=0;
-  function seedActivity(){const el=document.getElementById('activityFeed');el.innerHTML=actPool.slice(0,5).map(a=>'<div class="activity-item"><span class="activity-dot" style="background:'+a.c+'"></span><div><div class="activity-text">'+esc(a.t)+'</div><div class="activity-ts">Just now</div></div></div>').join('');actIdx=5}
-  function startActivityTicker(){setInterval(()=>{const feed=document.getElementById('activityFeed');const a=actPool[actIdx%actPool.length];actIdx++;const item=document.createElement('div');item.className='activity-item';item.style.cssText='opacity:0;transform:translateY(-4px)';item.innerHTML='<span class="activity-dot" style="background:'+a.c+'"></span><div><div class="activity-text">'+esc(a.t)+'</div><div class="activity-ts">Just now</div></div>';feed.prepend(item);requestAnimationFrame(()=>{item.style.transition='opacity .3s var(--ease),transform .3s var(--ease)';item.style.opacity='1';item.style.transform='translateY(0)'});while(feed.children.length>12)feed.removeChild(feed.lastChild)},8000)}
-
   // Export
   document.getElementById('btnExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(workflows,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='registry.json';a.click();URL.revokeObjectURL(url)});
 
@@ -1002,32 +840,45 @@
   document.getElementById('modalCancel').addEventListener('click',()=>overlay.classList.remove('open'));
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
-  document.getElementById('modalSubmit').addEventListener('click',async()=>{
+  // Inline validation helpers
+  function clearFieldError(inputId,errId){document.getElementById(inputId).classList.remove('field-error');const e=document.getElementById(errId);if(e)e.classList.remove('show')}
+  function showFieldError(inputId,errId){document.getElementById(inputId).classList.add('field-error');const e=document.getElementById(errId);if(e)e.classList.add('show')}
+  // Clear errors on input
+  ['fName','fBU','fDesc'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',()=>clearFieldError(id,'err'+id.slice(1)));el.addEventListener('change',()=>clearFieldError(id,'err'+id.slice(1)))});
+  // Toast helper
+  function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+
+  const submitBtn=document.getElementById('modalSubmit');
+  submitBtn.addEventListener('click',async()=>{
     const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),details=document.getElementById('fDetails').value.trim(),type=parseInt(document.getElementById('fType').value),risk=document.getElementById('fRisk').value,reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
-    if(!name||!bu||!desc){alert('Name, BU, and Description are required.');return}
+    // Inline validation
+    let valid=true;
+    if(!name){showFieldError('fName','errName');valid=false}else{clearFieldError('fName','errName')}
+    if(!bu){showFieldError('fBU','errBU');valid=false}else{clearFieldError('fBU','errBU')}
+    if(!desc){showFieldError('fDesc','errDesc');valid=false}else{clearFieldError('fDesc','errDesc')}
+    if(!valid){document.querySelector('.field-error')?.focus();return}
+    // Disable submit during generation
+    submitBtn.disabled=true;submitBtn.textContent='Adding...';
     const genEl=document.getElementById('generating');let promptSummary='';
     if(details){genEl.classList.add('show');try{const apiKey=localStorage.getItem('ANTHROPIC_API_KEY')||'';if(apiKey){const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:'Write a prompt_summary for an AI workflow registry entry. Format: [What it ingests]. [What AI logic/rules it applies and outputs]. [Who reviews before action].\n\nNever start with "This workflow". Be specific.\n\nWorkflow: '+name+'\nBU: '+bu+'\nDetails: '+details+'\nReviewer: '+reviewer+'\n\nWrite ONLY the prompt_summary. 2-3 sentences.'}]})});const data=await resp.json();promptSummary=data.content[0].text}else{promptSummary=details}}catch(e){promptSummary=details}genEl.classList.remove('show')}else{promptSummary='Workflow details pending. Human reviewer required before any action.'}
     const maxId=Math.max(...workflows.map(w=>w.id)),maxDay=Math.max(...workflows.map(w=>w.day));
     const nw={id:maxId+1,name,desc,bu,type,risk,status:'Pilot',saves:'\u2014',day:maxDay+5,prompt_summary:promptSummary,reused_by:[],reviewer,rewrite_rate:'\u2014%'};
-    workflows.push(nw);PROGRESS[nw.id]=0;PROGRESS_TS[nw.id]='Today';
+    workflows.push(nw);REUSE_INTEL[nw.id]={stack:[],reusable:[],specific:[],readiness:'Low',days_to_live:null,reuse_days:null,risks:['New workflow — reuse assessment pending']};
     ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('fBU').selectedIndex=0;overlay.classList.remove('open');
-    computeStats();computeSpotlight();computeReuseMap();render();
-    const feed=document.getElementById('activityFeed');const item=document.createElement('div');item.className='activity-item';item.innerHTML='<span class="activity-dot" style="background:var(--teal)"></span><div><div class="activity-text"><strong>'+esc(name)+'</strong> added as Pilot</div><div class="activity-ts">Just now</div></div>';feed.prepend(item);
+    submitBtn.disabled=false;submitBtn.textContent='Add as Pilot';
+    computeStats();computeReuseMap();render();
+    showToast('Added "'+name+'" as Pilot');
   });
 
-  // Log progress note to Studio
+  // Log reuse note to Studio
   window.logStudioNote=function(id){
     const w=workflows.find(x=>x.id===id);if(!w)return;
-    const pct=PROGRESS[id]||0;
+    const intel=REUSE_INTEL[id]||{readiness:'—'};
     const feed=document.getElementById('khojFeed');
     const item=document.createElement('div');item.className='khoj-item';
-    item.innerHTML='<span class="khoj-tag khoj-tag-progress">#progress</span><div class="khoj-text">'+esc(w.name)+' \u2014 '+pct+'% complete. '+esc(w.status)+' in '+esc(w.bu)+'.</div><div class="khoj-ts">Just now</div>';
+    item.innerHTML='<span class="khoj-tag khoj-tag-reuse">#reuse</span><div class="khoj-text">'+esc(w.name)+' \u2014 readiness: '+esc(intel.readiness)+'. '+esc(w.status)+' in '+esc(w.bu)+'. Reused by '+w.reused_by.length+' BUs.</div><div class="khoj-ts">Just now</div>';
     feed.prepend(item);
-    const actFeed=document.getElementById('activityFeed');
-    const actItem=document.createElement('div');actItem.className='activity-item';
-    actItem.innerHTML='<span class="activity-dot" style="background:var(--teal)"></span><div><div class="activity-text">Progress note logged for <strong>'+esc(w.name)+'</strong></div><div class="activity-ts">Just now</div></div>';
-    actFeed.prepend(actItem);
   };
 
   // Discovery Protocol Modal
