@@ -545,38 +545,21 @@
   .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:var(--teal); border-radius:50%; animation:spin .6s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  /* Discovery Protocol Modal */
-  .proto-section { margin-bottom:22px; }
-  .proto-section:last-child { margin-bottom:0; }
-  .proto-label {
-    font-family:var(--mono); font-size:.5625rem; font-weight:500;
-    color:var(--teal); text-transform:uppercase; letter-spacing:.05em;
-    margin-bottom:4px;
+  /* Request match suggestion */
+  .rq-match {
+    margin-top:12px; padding:12px; border-radius:var(--r-sm);
+    background:var(--teal-bg); border:1px solid rgba(26,138,122,.15);
   }
-  .proto-title { font-size:.875rem; font-weight:700; color:var(--tx); margin-bottom:6px; }
-  .proto-desc { font-size:.8125rem; color:var(--tx-2); line-height:1.6; margin-bottom:10px; }
-  .proto-card {
-    background:var(--surface-2); border:1px solid var(--border-dim);
-    border-radius:var(--r-sm); padding:10px 12px;
-    margin-bottom:6px; border-left:3px solid var(--amber);
+  .rq-match-title { font-size:.625rem; font-weight:600; color:var(--teal); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+  .rq-match-item { font-size:.8125rem; color:var(--tx); font-weight:600; }
+  .rq-match-bu { font-size:.6875rem; color:var(--tx-2); font-weight:400; }
+  .rq-match-desc { font-size:.6875rem; color:var(--tx-2); margin-top:2px; line-height:1.4; }
+  .rq-submitted {
+    text-align:center; padding:24px 16px;
   }
-  .proto-card-ch { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); margin-bottom:2px; }
-  .proto-card-text { font-size:.75rem; color:var(--tx); line-height:1.5; }
-  .proto-note { font-size:.625rem; color:var(--tx-3); margin-top:8px; font-style:italic; }
-  .proto-q {
-    font-family:var(--mono); font-size:.75rem;
-    background:var(--surface-2); border:1px solid var(--border-dim);
-    border-radius:var(--r-sm); padding:10px 12px;
-    margin-bottom:6px; color:var(--tx); line-height:1.5;
-  }
-  .proto-q-amber { border-left:3px solid var(--amber); }
-  .proto-q-amber-note { font-family:var(--sans); font-size:.5625rem; color:var(--amber); font-weight:600; margin-top:4px; }
-  .proto-callout {
-    background:var(--teal-bg); border:1px solid rgba(26,138,122,.2);
-    border-radius:var(--r-sm); padding:14px 16px;
-    margin-top:14px;
-  }
-  .proto-callout-text { font-size:.75rem; color:var(--teal-deep); line-height:1.6; }
+  .rq-submitted-icon { font-size:1.5rem; color:var(--teal); margin-bottom:8px; }
+  .rq-submitted-text { font-size:.8125rem; color:var(--tx); font-weight:600; }
+  .rq-submitted-sub { font-size:.6875rem; color:var(--tx-3); margin-top:4px; }
 
   /* ====== RESPONSIVE ====== */
   @media(max-width:1100px) { .side-col{display:none} .main-col{border-right:none} }
@@ -613,7 +596,7 @@
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn" id="btnProtocol">Discovery Protocol</button>
+      <button class="btn" id="btnRequest">Request Workflow</button>
       <button class="btn" id="btnExport">Export JSON</button>
       <button class="btn btn-accent" id="btnAdd">+ Add Workflow</button>
     </div>
@@ -699,55 +682,24 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Discovery Protocol Modal -->
-<div class="modal-overlay" id="protoOverlay" role="dialog" aria-modal="true">
-  <div class="modal modal-wide">
+<!-- Request Workflow Modal -->
+<div class="modal-overlay" id="requestOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
     <div class="modal-head">
-      <h2>3-Layer Discovery Protocol</h2>
-      <button class="modal-close" id="protoClose" aria-label="Close">&times;</button>
+      <h2>Request a Workflow</h2>
+      <button class="modal-close" id="requestClose" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="proto-section">
-        <div class="proto-label">Layer 1 &middot; Day 1 &middot; 20 min</div>
-        <div class="proto-title">Slack Signal Search</div>
-        <div class="proto-desc">Search Rillet&rsquo;s Slack for AI signal terms before talking to anyone.</div>
-        <div class="proto-card">
-          <div class="proto-card-ch">#gtm-ops</div>
-          <div class="proto-card-text">&ldquo;Anyone have the Claude prompt we use for deal summaries?&rdquo;</div>
-        </div>
-        <div class="proto-card">
-          <div class="proto-card-ch">#finance-ops</div>
-          <div class="proto-card-text">&ldquo;Reminder: the invoice automation flags anything over $500&rdquo;</div>
-        </div>
-        <div class="proto-card">
-          <div class="proto-card-ch">#implementation</div>
-          <div class="proto-card-text">&ldquo;I built a GPT workflow for SOW extraction &mdash; DM me if you want the prompt&rdquo;</div>
-        </div>
-        <div class="proto-note">Search terms: GPT &middot; Claude &middot; Anthropic &middot; prompt &middot; automated &middot; workflow &middot; AI draft &middot; summarize</div>
-      </div>
-
-      <div class="proto-section">
-        <div class="proto-label">Layer 2 &middot; Day 1&ndash;2 &middot; 8 min per person</div>
-        <div class="proto-title">Async Intake Form</div>
-        <div class="proto-desc">Sent to all 6 team leads. 5 questions. Takes 8 minutes.</div>
-        <div class="proto-q">1. What&rsquo;s the most repetitive thing your team does that feels automatable?</div>
-        <div class="proto-q">2. Are you already using any AI tools or prompts &mdash; even informal ones?</div>
-        <div class="proto-q">3. What&rsquo;s the highest-stakes manual step in your workflow?</div>
-        <div class="proto-q">4. If you had one automation this month, what would it be?</div>
-        <div class="proto-q proto-q-amber">
-          5. Who on your team would know the most about this?
-          <div class="proto-q-amber-note">routes to the real builder</div>
-        </div>
-      </div>
-
-      <div class="proto-section">
-        <div class="proto-label">Layer 3 &middot; Day 2&ndash;3 &middot; 15 min each</div>
-        <div class="proto-title">Targeted Follow-ups (2&ndash;3 people max)</div>
-        <div class="proto-desc">Only with the highest-signal respondents from Layer 2. Not a rep from every team &mdash; the actual builders.</div>
-        <div class="proto-callout">
-          <div class="proto-callout-text"><strong>vs. 1:1 interviews only:</strong> 6 &times; 30 min = 3+ hrs scheduling + inconsistent data. This protocol = 48 hrs, better coverage, finds the actual builders, not just the leads.</div>
-        </div>
-      </div>
+      <p style="font-size:.8125rem;color:var(--tx-2);line-height:1.6;margin-bottom:16px">Describe a repetitive task your team does. We'll assess if it can be automated and whether an existing workflow can be reused.</p>
+      <div class="field"><label for="rqBU">Your Business Unit <span class="req">*</span></label><select id="rqBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
+      <div class="field"><label for="rqTask">What task do you want automated? <span class="req">*</span></label><textarea id="rqTask" placeholder="e.g. Every week I manually pull data from 3 sources to build a report..." style="min-height:64px"></textarea></div>
+      <div class="field"><label for="rqTime">How much time does this take?</label><input id="rqTime" placeholder="e.g. 3 hrs/wk"></div>
+      <div class="field"><label for="rqUrgency">Urgency</label><select id="rqUrgency"><option value="Normal">Normal</option><option value="High">High — blocking other work</option></select></div>
+      <div id="rqMatch" style="display:none"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="requestCancel">Cancel</button>
+      <button class="btn btn-accent" id="requestSubmit">Submit Request</button>
     </div>
   </div>
 </div>
@@ -979,14 +931,50 @@
     feed.prepend(item);
   };
 
-  // Discovery Protocol Modal
-  const protoOv=document.getElementById('protoOverlay');
-  document.getElementById('btnProtocol').addEventListener('click',()=>protoOv.classList.add('open'));
-  document.getElementById('protoClose').addEventListener('click',()=>protoOv.classList.remove('open'));
-  protoOv.addEventListener('click',e=>{if(e.target===protoOv)protoOv.classList.remove('open')});
+  // Request Workflow Modal
+  const reqOv=document.getElementById('requestOverlay');
+  document.getElementById('btnRequest').addEventListener('click',()=>{reqOv.classList.add('open')});
+  document.getElementById('requestClose').addEventListener('click',()=>reqOv.classList.remove('open'));
+  document.getElementById('requestCancel').addEventListener('click',()=>reqOv.classList.remove('open'));
+  reqOv.addEventListener('click',e=>{if(e.target===reqOv)reqOv.classList.remove('open')});
+
+  // Match existing workflows on task input blur
+  document.getElementById('rqTask').addEventListener('blur',function(){
+    const text=this.value.toLowerCase();if(!text||text.length<10)return;
+    const matchEl=document.getElementById('rqMatch');
+    // Simple keyword matching against existing workflows
+    const matches=workflows.filter(w=>{
+      const words=w.name.toLowerCase()+' '+w.desc.toLowerCase()+' '+w.prompt_summary.toLowerCase();
+      const terms=text.split(/\s+/).filter(t=>t.length>3);
+      return terms.some(t=>words.includes(t));
+    }).slice(0,2);
+    if(matches.length){
+      matchEl.style.display='block';
+      matchEl.innerHTML='<div class="rq-match"><div class="rq-match-title">Existing workflows that might fit</div>'+matches.map(m=>'<div style="margin-bottom:6px"><div class="rq-match-item">'+esc(m.name)+' <span class="rq-match-bu">'+esc(m.bu)+'</span></div><div class="rq-match-desc">'+esc(m.desc)+'</div></div>').join('')+'</div>';
+    }else{matchEl.style.display='none'}
+  });
+
+  // Submit request
+  document.getElementById('requestSubmit').addEventListener('click',function(){
+    const bu=document.getElementById('rqBU').value,task=document.getElementById('rqTask').value.trim();
+    if(!bu||!task){showToast('BU and task description required');return}
+    const time=document.getElementById('rqTime').value.trim()||'—';
+    const urgency=document.getElementById('rqUrgency').value;
+    // Add to Studio Library
+    const feed=document.getElementById('khojFeed');
+    const item=document.createElement('div');item.className='khoj-item';
+    item.innerHTML='<span class="khoj-tag khoj-tag-note">#request</span><div class="khoj-text"><strong>'+esc(bu)+'</strong>: '+esc(task)+' ('+esc(time)+', '+esc(urgency)+')</div><div class="khoj-ts">Just now</div>';
+    feed.prepend(item);
+    // Show confirmation in modal
+    document.querySelector('#requestOverlay .modal-body').innerHTML='<div class="rq-submitted"><div class="rq-submitted-icon">&check;</div><div class="rq-submitted-text">Request submitted</div><div class="rq-submitted-sub">Added to Studio Library. The team will assess feasibility and check for existing workflows that can be reused.</div></div>';
+    setTimeout(()=>{reqOv.classList.remove('open');
+      // Reset form after close
+      setTimeout(()=>{document.querySelector('#requestOverlay .modal-body').innerHTML='<p style="font-size:.8125rem;color:var(--tx-2);line-height:1.6;margin-bottom:16px">Describe a repetitive task your team does. We will assess if it can be automated and whether an existing workflow can be reused.</p><div class="field"><label for="rqBU">Your Business Unit <span class="req">*</span></label><select id="rqBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div><div class="field"><label for="rqTask">What task do you want automated? <span class="req">*</span></label><textarea id="rqTask" placeholder="e.g. Every week I manually pull data from 3 sources to build a report..." style="min-height:64px"></textarea></div><div class="field"><label for="rqTime">How much time does this take?</label><input id="rqTime" placeholder="e.g. 3 hrs/wk"></div><div class="field"><label for="rqUrgency">Urgency</label><select id="rqUrgency"><option value="Normal">Normal</option><option value="High">High — blocking other work</option></select></div><div id="rqMatch" style="display:none"></div>'},400)},1800);
+    showToast('Request submitted to Studio Library');
+  });
 
   // Escape key closes modals
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){overlay.classList.remove('open');protoOv.classList.remove('open')}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){overlay.classList.remove('open');reqOv.classList.remove('open')}});
 })();
 </script>
 </body>
