@@ -382,39 +382,71 @@
   .empty-state { text-align:center; padding:48px 16px; color:var(--tx-3); font-size:.8125rem; }
 
   /* ====== PIPELINE VISUALIZATION ====== */
-  .pipeline {
-    display: flex; align-items: flex-start; gap: 0;
-    margin-top: 8px;
+  /* Block-based pipeline */
+  .block-flow {
+    display: flex; align-items: flex-start; gap: 4px;
+    margin-top: 8px; flex-wrap: wrap;
   }
-  .pipe-stage {
-    flex: 1; min-width: 0;
-    text-align: left;
-    padding: 0 8px 0 0;
+  .block-card {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px; border-radius: var(--r-sm);
+    border: 1px solid var(--border-dim);
+    background: var(--surface);
+    min-width: 0; max-width: 180px;
+    transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+    cursor: default;
   }
-  .pipe-stage-label {
+  .block-card:hover { border-color: var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .block-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .block-dot-source { background: var(--slate); }
+  .block-dot-transform { background: var(--amber); }
+  .block-dot-ai { background: var(--teal); }
+  .block-dot-output { background: var(--plum); }
+  .block-dot-gate { background: var(--gold); }
+  .block-label {
+    font-size: .625rem; font-weight: 600; color: var(--tx);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .block-api {
+    font-size: .5rem; color: var(--tx-3); font-weight: 400;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .block-arrow {
+    color: var(--border); font-size: .625rem;
+    flex-shrink: 0; padding: 0 2px; margin-top: 2px;
+  }
+  .block-stage-label {
     font-size: .5rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: .06em;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
-  .pipe-stage-label-source { color: var(--slate); }
-  .pipe-stage-label-ai     { color: var(--teal); }
-  .pipe-stage-label-output { color: var(--plum); }
-  .pipe-stage-label-gate   { color: var(--gold); }
+  .block-stage-label-source { color: var(--slate); }
+  .block-stage-label-transform { color: var(--amber); }
+  .block-stage-label-ai { color: var(--teal); }
+  .block-stage-label-output { color: var(--plum); }
+  .block-stage-label-gate { color: var(--gold); }
+  .block-stage { flex: 1; min-width: 0; }
+  .block-stage-cards { display: flex; flex-wrap: wrap; gap: 4px; }
 
-  .pipe-items { display: flex; flex-wrap: wrap; gap: 3px; }
-  .pipe-chip {
-    font-size: .5625rem; font-weight: 500;
-    padding: 2px 7px; border-radius: 3px;
+  /* Block library sidebar */
+  .blib-group { margin-bottom: 12px; }
+  .blib-group:last-child { margin-bottom: 0; }
+  .blib-group-label {
+    font-size: .5rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 6px;
   }
-  .pipe-chip-source { color: var(--slate); background: var(--slate-bg); }
-  .pipe-chip-ai     { color: var(--teal); background: var(--teal-bg); }
-  .pipe-chip-output { color: var(--plum); background: var(--plum-bg); }
-  .pipe-chip-gate   { color: var(--gold); background: var(--gold-bg); }
-
-  .pipe-arrow {
-    color: var(--border); font-size: .5rem;
-    padding: 0 4px; margin-top: 16px;
-    flex-shrink: 0;
+  .blib-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 0; font-size: .6875rem;
+  }
+  .blib-name { font-weight: 500; color: var(--tx); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .blib-count {
+    font-size: .5625rem; font-weight: 600; color: var(--tx-3);
+    background: var(--surface-2); padding: 1px 6px; border-radius: 3px;
   }
 
   /* ====== SIDE PANELS ====== */
@@ -468,13 +500,13 @@
   .khoj-input::placeholder { color:var(--tx-3); }
   .khoj-input:focus { border-color:var(--teal); }
 
-  /* Reuse map */
-  .rmap-row { display:flex; align-items:center; gap:7px; padding:6px 0; border-bottom:1px solid var(--border-dim); font-size:.6875rem; }
-  .rmap-row:last-child { border-bottom:none; }
-  .rmap-src { color:var(--tx); font-weight:600; min-width:68px; font-size:.625rem; }
-  .rmap-arrow { color:var(--tx-3); font-size:.625rem; }
-  .rmap-dst { display:flex; flex-wrap:wrap; gap:3px; }
-  .rmap-chip { font-size:.5625rem; font-weight:600; color:var(--plum); background:var(--plum-bg); padding:2px 7px; border-radius:3px; }
+  /* Shared workflows */
+  .shared-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-dim); }
+  .shared-row:last-child { border-bottom:none; }
+  .shared-count { min-width:24px; height:24px; display:flex; align-items:center; justify-content:center; background:var(--plum-bg); color:var(--plum); font-size:.6875rem; font-weight:700; border-radius:6px; }
+  .shared-info { flex:1; min-width:0; }
+  .shared-name { font-size:.75rem; font-weight:600; color:var(--tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .shared-bus { font-size:.625rem; color:var(--tx-3); margin-top:2px; }
 
 
   /* ====== MODALS ====== */
@@ -570,8 +602,8 @@
     .hide-sm{display:none}
     .detail-cols{grid-template-columns:1fr}
     .detail-content{padding-left:16px}
-    .pipeline{flex-wrap:wrap;gap:8px}
-    .pipe-arrow{margin-top:0}
+    .block-flow{gap:4px}
+    .block-card{max-width:140px}
     .header{flex-direction:column;align-items:flex-start;gap:12px}
     .header-left{flex-wrap:wrap}
     .header-divider{display:none}
@@ -633,7 +665,12 @@
 
 <div class="side-col">
   <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Cross-BU Reuse Map</div>
+    <div class="panel-head"><span class="dot" style="background:var(--slate)"></span>Block Library</div>
+    <div class="panel-body" id="blockLibrary"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Top Shared Workflows</div>
     <div class="panel-body" id="reuseMap"></div>
   </div>
 
@@ -798,12 +835,90 @@
     12:{sources:['Usage Data','Ticket Sentiment','Payment History'],ai:['Analyze 90-day signals','Score 0-100','Rank factors'],outputs:['Risk Score','Top 3 Factors'],gate:'Head of CS'}
   };
 
+  // ── Block Catalog — real APIs Rillet uses ──
+  const BLOCKS={
+    // Sources
+    'hubspot-pull':{name:'HubSpot CRM',type:'source',api:'HubSpot',desc:'Pull deals, contacts, pipeline data'},
+    'zendesk-stream':{name:'Zendesk Tickets',type:'source',api:'Zendesk',desc:'Ingest support tickets and metadata'},
+    'sheets-import':{name:'Google Sheets',type:'source',api:'Google Sheets',desc:'Read spreadsheet data'},
+    'stripe-feed':{name:'Stripe Data',type:'source',api:'Stripe',desc:'Payment and invoice transaction data'},
+    'ocr-ingest':{name:'PDF / OCR',type:'source',api:'AWS Textract',desc:'Extract text from PDF documents'},
+    'drive-scan':{name:'Google Drive',type:'source',api:'Google Drive',desc:'Scan files and folders'},
+    'bamboo-pull':{name:'BambooHR',type:'source',api:'BambooHR',desc:'Employee records and org data'},
+    'rss-feed':{name:'RSS Monitor',type:'source',api:'Custom',desc:'Monitor RSS and changelog feeds'},
+    'mixpanel-pull':{name:'Mixpanel Events',type:'source',api:'Mixpanel',desc:'Product usage and event data'},
+    'delighted-pull':{name:'Delighted NPS',type:'source',api:'Delighted',desc:'NPS scores and feedback'},
+    'knowledge-base':{name:'Knowledge Base',type:'source',api:'Notion',desc:'Internal docs and past responses'},
+    // Transforms
+    'keyword-classify':{name:'Keyword Classifier',type:'transform',api:'Rule Engine',desc:'Categorize by keyword matching'},
+    'threshold-check':{name:'Threshold Checker',type:'transform',api:'Rule Engine',desc:'Flag values outside thresholds'},
+    'schema-map':{name:'Schema Mapper',type:'transform',api:'Custom',desc:'Map fields between systems'},
+    'regex-extract':{name:'Regex Extractor',type:'transform',api:'Rule Engine',desc:'Extract patterns from text'},
+    'policy-validator':{name:'Policy Validator',type:'transform',api:'Rule Engine',desc:'Validate against policy rules'},
+    'signal-aggregator':{name:'Signal Aggregator',type:'transform',api:'Custom',desc:'Merge signals from multiple sources'},
+    // AI
+    'claude-summarize':{name:'Claude Summarizer',type:'ai',api:'Anthropic',desc:'Summarize text with Claude'},
+    'claude-classify':{name:'Claude Classifier',type:'ai',api:'Anthropic',desc:'LLM-based classification and scoring'},
+    'claude-draft':{name:'Claude Drafter',type:'ai',api:'Anthropic',desc:'Generate content drafts with Claude'},
+    'claude-extract':{name:'Claude Extractor',type:'ai',api:'Anthropic',desc:'Extract structured data from text'},
+    'claude-narrator':{name:'Claude Narrator',type:'ai',api:'Anthropic',desc:'Generate plain-language narratives'},
+    // Outputs
+    'slack-notify':{name:'Slack Alert',type:'output',api:'Slack',desc:'Send notification to channel'},
+    'sheets-write':{name:'Sheets Update',type:'output',api:'Google Sheets',desc:'Write results to spreadsheet'},
+    'sendgrid-email':{name:'Email Send',type:'output',api:'SendGrid',desc:'Send formatted email'},
+    'pdf-report':{name:'PDF Report',type:'output',api:'Custom',desc:'Generate PDF document'},
+    'notion-write':{name:'Notion Page',type:'output',api:'Notion',desc:'Create or update Notion page'},
+    'zendesk-update':{name:'Zendesk Update',type:'output',api:'Zendesk',desc:'Update ticket fields and routing'},
+    'salesforce-update':{name:'Salesforce Update',type:'output',api:'Salesforce',desc:'Update CRM records'},
+    'json-export':{name:'Structured JSON',type:'output',api:'Custom',desc:'Output structured data as JSON'},
+    // Gates
+    'manager-approve':{name:'Manager Review',type:'gate',api:'Internal',desc:'Requires manager sign-off'},
+    'confidence-gate':{name:'Confidence Gate',type:'gate',api:'Internal',desc:'Auto-approve above threshold'},
+    'dual-review':{name:'Dual Review',type:'gate',api:'Internal',desc:'Requires two reviewers'}
+  };
+
+  // Which blocks compose each workflow (ordered left→right)
+  const WORKFLOW_BLOCKS={
+    1:['hubspot-pull','claude-summarize','pdf-report','manager-approve'],
+    2:['ocr-ingest','sheets-import','threshold-check','regex-extract','slack-notify','manager-approve'],
+    3:['mixpanel-pull','zendesk-stream','delighted-pull','signal-aggregator','claude-classify','sendgrid-email','manager-approve'],
+    4:['ocr-ingest','claude-extract','regex-extract','json-export','manager-approve'],
+    5:['sheets-import','claude-narrator','notion-write','manager-approve'],
+    6:['zendesk-stream','keyword-classify','zendesk-update','confidence-gate'],
+    7:['rss-feed','drive-scan','claude-summarize','slack-notify','manager-approve'],
+    8:['ocr-ingest','policy-validator','threshold-check','sheets-write','manager-approve'],
+    9:['bamboo-pull','schema-map','claude-draft','notion-write','manager-approve'],
+    10:['stripe-feed','hubspot-pull','mixpanel-pull','sheets-import','schema-map','sheets-write','manager-approve'],
+    11:['drive-scan','knowledge-base','claude-draft','pdf-report','dual-review'],
+    12:['hubspot-pull','zendesk-stream','sheets-import','claude-classify','slack-notify','manager-approve']
+  };
+
   let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
   const chevSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
 
   fetch('./data/registry.json').then(r=>r.json()).then(boot).catch(()=>boot(REGISTRY_DATA));
 
-  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();seedKhoj();render()}
+  function renderBlockLibrary(){
+    // Count how many workflows use each block
+    const counts={};Object.values(WORKFLOW_BLOCKS).forEach(bids=>bids.forEach(bid=>{counts[bid]=(counts[bid]||0)+1}));
+    const order=['source','transform','ai','output','gate'];
+    const labels={source:'Sources',transform:'Transform',ai:'AI',output:'Outputs',gate:'Gates'};
+    const colors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
+    let html='';
+    order.forEach(type=>{
+      const blocks=Object.entries(BLOCKS).filter(([,b])=>b.type===type).sort((a,b)=>(counts[b[0]]||0)-(counts[a[0]]||0));
+      if(!blocks.length)return;
+      html+='<div class="blib-group"><div class="blib-group-label" style="color:'+colors[type]+'">'+labels[type]+'</div>';
+      blocks.forEach(([id,b])=>{
+        const c=counts[id]||0;
+        html+='<div class="blib-item"><span class="block-dot block-dot-'+type+'"></span><span class="blib-name" title="'+esc(b.desc)+'">'+esc(b.name)+'</span>'+(c?'<span class="blib-count">'+c+'</span>':'')+'</div>';
+      });
+      html+='</div>';
+    });
+    document.getElementById('blockLibrary').innerHTML=html;
+  }
+
+  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();seedKhoj();render()}
   function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
   function parseSaves(s){const m=s.match(/([\d.]+)/);return m?parseFloat(m[1]):0}
 
@@ -820,21 +935,32 @@
 
   function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
   function getSorted(list){return[...list].sort((a,b)=>{let va=a[sortCol],vb=b[sortCol];if(sortCol==='saves'){va=parseSaves(va);vb=parseSaves(vb)}if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase()}if(va<vb)return sortAsc?-1:1;if(va>vb)return sortAsc?1:-1;return 0})}
-  const pipeArrow='<span class="pipe-arrow">\u2192</span>';
+  function renderBlockCard(blockId){
+    const b=BLOCKS[blockId];if(!b)return'';
+    return '<div class="block-card" title="'+esc(b.desc)+'">'
+      +'<span class="block-dot block-dot-'+b.type+'"></span>'
+      +'<div><div class="block-label">'+esc(b.name)+'</div>'
+      +'<div class="block-api">'+esc(b.api)+'</div></div></div>';
+  }
   function renderPipeline(id){
-    const p=PIPELINES[id];if(!p)return'';
-    const srcChips=p.sources.map(s=>'<span class="pipe-chip pipe-chip-source">'+esc(s)+'</span>').join('');
-    const aiChips=p.ai.map(s=>'<span class="pipe-chip pipe-chip-ai">'+esc(s)+'</span>').join('');
-    const outChips=p.outputs.map(s=>'<span class="pipe-chip pipe-chip-output">'+esc(s)+'</span>').join('');
-    return '<div class="pipeline">'
-      +'<div class="pipe-stage"><div class="pipe-stage-label pipe-stage-label-source">Sources</div><div class="pipe-items">'+srcChips+'</div></div>'
-      +pipeArrow
-      +'<div class="pipe-stage"><div class="pipe-stage-label pipe-stage-label-ai">AI Logic</div><div class="pipe-items">'+aiChips+'</div></div>'
-      +pipeArrow
-      +'<div class="pipe-stage"><div class="pipe-stage-label pipe-stage-label-output">Output</div><div class="pipe-items">'+outChips+'</div></div>'
-      +pipeArrow
-      +'<div class="pipe-stage"><div class="pipe-stage-label pipe-stage-label-gate">Review Gate</div><div class="pipe-items"><span class="pipe-chip pipe-chip-gate">'+esc(p.gate)+'</span></div></div>'
-      +'</div>';
+    const blockIds=WORKFLOW_BLOCKS[id];if(!blockIds)return'';
+    // Group blocks by type in order: source, transform, ai, output, gate
+    const order=['source','transform','ai','output','gate'];
+    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Review Gate'};
+    const groups={};
+    blockIds.forEach(bid=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push(bid)});
+    let html='<div class="block-flow">';
+    let first=true;
+    order.forEach(type=>{
+      if(!groups[type])return;
+      if(!first)html+='<span class="block-arrow">\u2192</span>';
+      first=false;
+      html+='<div class="block-stage"><div class="block-stage-label block-stage-label-'+type+'">'+labels[type]+'</div><div class="block-stage-cards">';
+      html+=groups[type].map(renderBlockCard).join('');
+      html+='</div></div>';
+    });
+    html+='</div>';
+    return html;
   }
 
   function render(){
@@ -861,7 +987,7 @@
       // Use cases
       const useCases=USE_CASES[w.id]||[];
       const useCaseHtml=useCases.map(u=>'<span class="usecase-chip">'+esc(u)+'</span>').join('');
-      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Pipeline</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="intel-badges"><div class="intel-badge-group"><span class="intel-badge-label">Ready</span><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Design</span><span class="quality-badge '+dCls+'">'+esc(qual.design)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Output</span><span class="quality-badge '+oCls+'">'+esc(qual.output)+'</span></div></div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:6px">'+topRisk+'</div></div></div><div class="detail-extras"><div><h4>Comments</h4><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div><div><h4>Other Use Cases</h4><div>'+useCaseHtml+'</div></div></div></div></div></div></td></tr>';
+      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Blocks</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv">'+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="intel-badges"><div class="intel-badge-group"><span class="intel-badge-label">Ready</span><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Design</span><span class="quality-badge '+dCls+'">'+esc(qual.design)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Output</span><span class="quality-badge '+oCls+'">'+esc(qual.output)+'</span></div></div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:6px">'+topRisk+'</div></div></div><div class="detail-extras"><div><h4>Comments</h4><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div><div><h4>Other Use Cases</h4><div>'+useCaseHtml+'</div></div></div></div></div></div></td></tr>';
     });
     tbody.innerHTML=html;
     document.querySelectorAll('thead th[data-sort]').forEach(th=>{const a=th.dataset.sort===sortCol;th.classList.toggle('sorted',a);const ar=th.querySelector('.sort-arrow');if(ar)ar.textContent=(a&&!sortAsc)?'\u25BC':'\u25B2'});
@@ -874,7 +1000,7 @@
   document.querySelectorAll('thead th[data-sort]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.sort;if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true}render()})});
   ['searchInput','filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',render);el.addEventListener('change',render)});
 
-  function computeReuseMap(){const map={};workflows.forEach(w=>{if(w.reused_by.length){if(!map[w.bu])map[w.bu]=new Set();w.reused_by.forEach(b=>map[w.bu].add(b))}});const el=document.getElementById('reuseMap');let h='';Object.keys(map).sort().forEach(src=>{const dsts=[...map[src]].sort();h+='<div class="rmap-row"><span class="rmap-src">'+esc(src)+'</span><span class="rmap-arrow">\u2192</span><div class="rmap-dst">'+dsts.map(d=>'<span class="rmap-chip">'+esc(d)+'</span>').join('')+'</div></div>'});el.innerHTML=h}
+  function computeReuseMap(){const shared=workflows.filter(w=>w.reused_by.length).sort((a,b)=>b.reused_by.length-a.reused_by.length);const el=document.getElementById('reuseMap');if(!shared.length){el.innerHTML='<div style="color:var(--tx-3);font-size:.75rem">No shared workflows yet</div>';return}el.innerHTML=shared.map(w=>'<div class="shared-row"><span class="shared-count">'+w.reused_by.length+'</span><div class="shared-info"><div class="shared-name">'+esc(w.name)+'</div><div class="shared-bus">'+w.reused_by.map(b=>esc(b)).join(', ')+'</div></div></div>').join('')}
 
   const khojSeed=[{tag:'progress',text:'Invoice Discrepancy Flagger \u2014 promoted Pilot \u2192 Live. Rewrite rate settled at 5%.',ts:'Mar 10'},{tag:'reuse',text:'Deal Summary Generator now reused by Customer Success for QBR prep.',ts:'Mar 9'},{tag:'shipped',text:'Support Ticket Classifier v2 deployed with P1-P4 severity routing.',ts:'Mar 8'},{tag:'context',text:'Board Deck Data Puller blocked on Stripe API rate limits. CoS investigating.',ts:'Mar 7'},{tag:'note',text:'RFP Response Drafter rewrite rate trending down \u2014 25% \u2192 22% after prompt tuning.',ts:'Mar 6'},{tag:'progress',text:'Expense Policy Checker pilot started. Controller reviewing first batch.',ts:'Mar 5'},{tag:'reuse',text:'SOW Clause Extractor adopted by Legal for contract review pipeline.',ts:'Mar 4'}];
   function seedKhoj(){document.getElementById('khojFeed').innerHTML=khojSeed.map(k=>'<div class="khoj-item"><span class="khoj-tag khoj-tag-'+k.tag+'">#'+k.tag+'</span><div class="khoj-text">'+esc(k.text)+'</div><div class="khoj-ts">'+k.ts+'</div></div>').join('')}
