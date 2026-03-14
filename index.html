@@ -581,20 +581,16 @@
   }
   .modal-chat-mode .modal-head { border-radius:0; background:var(--bg); border-bottom:1px solid var(--border-dim); }
   .modal-chat-mode .composer-steps { display:none; }
-  .modal-chat-mode #composerStep1 { flex:1; display:flex; flex-direction:column; }
-  .modal-chat-mode #composerStep1 .modal-body { flex:1; display:flex; flex-direction:column; padding:0; overflow:hidden; }
+  .modal-chat-mode #composerStep1 { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+  .modal-chat-mode #composerStep1 .modal-body { flex:1; display:flex; flex-direction:row; padding:0; min-height:0; }
   .modal-chat-mode #composerStep1 .modal-foot { display:none; }
-  /* Split view: chat left + workflow preview right */
-  .modal-chat-mode #composerStep1 .modal-body { flex-direction:row; }
-  .modal-chat-mode .goal-chat { flex:1; min-width:0; transition:flex 200ms var(--ease); }
-  .modal-chat-mode.has-preview .goal-chat { flex:1; }
+  .modal-chat-mode .goal-chat { flex:1; min-width:0; display:flex; flex-direction:column; }
   .wf-preview-panel {
     display:none; width:0; flex-shrink:0;
     border-left:1px solid var(--border-dim);
     background:var(--surface); overflow-y:auto;
-    transition:width 200ms var(--ease);
   }
-  .modal-chat-mode.has-preview .wf-preview-panel { display:flex; flex-direction:column; width:420px; }
+  .modal-chat-mode.has-preview .wf-preview-panel { display:flex; flex-direction:column; width:420px; min-height:0; height:100%; }
   .wf-preview-head {
     display:flex; align-items:center; gap:10px;
     padding:16px 20px; border-bottom:1px solid var(--border-dim);
@@ -1160,7 +1156,7 @@
         <div class="field-group">
           <div class="field-group-label">Workflow Details</div>
           <div class="field"><label for="fName">Name <span class="req">*</span></label><input id="fName" placeholder="e.g. Invoice Matcher" aria-required="true" aria-describedby="errName"><div class="field-error-msg" id="errName">Workflow name is required</div></div>
-          <div class="field"><label>Business Unit</label><div style="font-size:.8125rem;color:var(--tx);padding:6px 0" id="fBUDisplay"></div><select id="fBU" style="display:none"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
+          <div class="field"><label for="fBU">Business Unit <span class="req">*</span></label><div style="font-size:.8125rem;color:var(--tx);padding:6px 0;display:none" id="fBUDisplay"></div><select id="fBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
           <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
           <div class="field"><label for="fSaves">Time This Takes Manually <span class="req">*</span></label><input id="fSaves" placeholder="e.g. 3 hrs/wk or 5 hrs/mo" aria-required="true" aria-describedby="errSaves"><div class="field-error-msg" id="errSaves">Time estimate is required</div></div>
         </div>
@@ -1210,7 +1206,7 @@
     </div>
     <div class="modal-body">
       <p style="font-size:.8125rem;color:var(--tx-2);line-height:1.6;margin-bottom:16px">Describe a repetitive task your team does. We'll assess if it can be automated and whether an existing workflow can be reused.</p>
-      <div class="field"><label for="rqBU">Your Business Unit <span class="req">*</span></label><select id="rqBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
+      <div class="field"><label for="rqBU">Your Business Unit <span class="req">*</span></label><select id="rqBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
       <div class="field"><label for="rqTask">What task do you want automated? <span class="req">*</span></label><textarea id="rqTask" placeholder="e.g. Every week I manually pull data from 3 sources to build a report..." style="min-height:64px"></textarea></div>
       <div class="field"><label for="rqTime">How much time does this take?</label><input id="rqTime" placeholder="e.g. 3 hrs/wk"></div>
       <div class="field"><label for="rqUrgency">Urgency</label><select id="rqUrgency"><option value="Normal">Normal</option><option value="High">High — blocking other work</option></select></div>
@@ -1623,7 +1619,7 @@
 
   // ── API Comments ──
   const API_COMMENTS={
-    'Anthropic':[{author:'CK',text:'Token usage spiked last week from the RFP batch run. Might need to stagger.',ts:'Mar 12'},{author:'RB',text:'Can we get a second key for the Chief of Staff workflows? Want to track our usage separately.',ts:'Mar 10'}],
+    'Anthropic':[{author:'CK',text:'Token usage spiked last week from the RFP batch run. Might need to stagger.',ts:'Mar 12'},{author:'RB',text:'Can we get a second key for the exec ops workflows? Want to track usage separately.',ts:'Mar 10'}],
     'HubSpot':[{author:'JS',text:'Rate limits hitting us during pipeline sync. Moved to off-peak cron.',ts:'Mar 11'}],
     'Stripe':[{author:'MC',text:'Rate limit hit on Mar 13 — added retry logic to the Stripe Data block.',ts:'Mar 13'},{author:'RB',text:'Board deck pulls need to run before 9am ET to catch overnight transactions.',ts:'Mar 9'}],
     'Slack':[{author:'CK',text:'CEO prefers the standup digest in a DM, not the #exec channel.',ts:'Mar 12'}],
@@ -1647,10 +1643,10 @@
   ];
 
   // ── Logged-in user session ──
-  const SESSION_USER={name:'Haruka Takamori',initials:'HT',bu:'Chief of Staff',role:'Founders Associate'};
+  const SESSION_USER={name:'Haruka Takamori',initials:'HT',bu:'',role:'Founders Associate'};
   (function renderUserBadge(){
     const el=document.getElementById('userBadge');
-    el.innerHTML='<span class="user-badge-avatar">'+esc(SESSION_USER.initials)+'</span><span class="user-badge-info"><span class="user-badge-name">'+esc(SESSION_USER.name)+'</span><span class="user-badge-bu">'+esc(SESSION_USER.bu)+'</span></span>';
+    el.innerHTML='<span class="user-badge-avatar">'+esc(SESSION_USER.initials)+'</span><span class="user-badge-info"><span class="user-badge-name">'+esc(SESSION_USER.name)+'</span><span class="user-badge-bu">'+esc(SESSION_USER.role||SESSION_USER.bu)+'</span></span>';
   })();
 
   let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
@@ -1749,17 +1745,28 @@
     document.getElementById('execPanel').innerHTML=html;
   }
 
-  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();renderVaultPanel();renderExecPanel();seedKhoj();render()}
+  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();renderVaultPanel();renderExecPanel();seedKhoj();
+    // Default to "My team" if user has a BU, otherwise show all
+    if(SESSION_USER.bu){
+      document.getElementById('filterBU').value=SESSION_USER.bu;
+      document.getElementById('btnMyTeam').classList.add('btn-accent');
+    }else{
+      document.getElementById('btnMyTeam').style.display='none';
+    }
+    render();
+  }
   function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
   function parseSaves(s){const m=s.match(/([\d.]+)/);return m?parseFloat(m[1]):0}
 
   function populateBUFilter(){const bus=[...new Set(workflows.map(w=>w.bu))].sort();const sel=document.getElementById('filterBU');bus.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o)})}
 
   function computeStats(){
-    let h=0;workflows.forEach(w=>{const m=w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);if(m){let v=parseFloat(m[1]);if(m[2]==='mo')v/=4.33;h+=v}});
+    const buFilter=document.getElementById('filterBU').value;
+    const filtered=buFilter?workflows.filter(w=>w.bu===buFilter):workflows;
+    let h=0;filtered.forEach(w=>{const m=w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);if(m){let v=parseFloat(m[1]);if(m[2]==='mo')v/=4.33;h+=v}});
     document.getElementById('statHours').textContent=h.toFixed(1);
-    document.getElementById('statLive').textContent=workflows.filter(w=>w.status==='Live').length;
-    document.getElementById('statPilot').textContent=workflows.filter(w=>w.status==='Pilot').length;
+    document.getElementById('statLive').textContent=filtered.filter(w=>w.status==='Live').length;
+    document.getElementById('statPilot').textContent=filtered.filter(w=>w.status==='Pilot').length;
   }
 
   function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
@@ -1814,7 +1821,15 @@
       const posture=computeSecurityPosture(w.id);
       const healthColor=posture.score>=90?'var(--green)':posture.score>=75?'var(--teal)':posture.score>=60?'var(--amber)':'var(--red)';
       const healthTip=posture.issues.length?posture.issues.join(', '):'All good';
-      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
+      // Find last run for this workflow
+      const lastRun=EXEC_LOG.find(ex=>ex.wfId===w.id);
+      const lastRunText=lastRun?lastRun.startedAt:'—';
+      const lastRunDot=!lastRun?'var(--tx-3)':lastRun.status==='success'?'var(--green)':lastRun.status==='warning'?'var(--amber)':'var(--red)';
+      // Data sensitivity from pipeline credentials
+      const wfCredIds=[...new Set((WORKFLOW_BLOCKS[w.id]||[]).map(bid=>BLOCK_CREDS[bid]).filter(Boolean))];
+      const wfDataTypes=new Set();wfCredIds.forEach(cid=>{const edc=ENDPOINT_DATA_CLASS[cid];if(edc)edc.dataTypes.forEach(t=>wfDataTypes.add(t))});
+      const dataTags=[...wfDataTypes].filter(t=>t!=='internal');
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div>'+(dataTags.length?'<div style="display:flex;gap:3px;margin-top:3px">'+dataTags.map(t=>'<span class="sec-data-tag sec-data-'+t+'">'+t+'</span>').join('')+'</div>':'')+'</div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span><div style="display:flex;align-items:center;gap:3px;margin-top:3px"><span style="width:5px;height:5px;border-radius:50%;background:'+lastRunDot+'"></span><span style="font-size:var(--text-xs);color:var(--tx-3)">'+esc(lastRunText)+'</span></div></td><td><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
       const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>';
       // Reuse Intelligence detail section
       const stackChips=(intel.stack||[]).map(s=>'<span class="intel-chip intel-chip-stack">'+esc(s)+'</span>').join('');
@@ -1890,7 +1905,7 @@
     }else{
       buSel.value=SESSION_USER.bu;this.classList.add('btn-accent');
     }
-    render();
+    computeStats();render();
   });
 
   function computeReuseMap(){const shared=workflows.filter(w=>w.reused_by.length).sort((a,b)=>b.reused_by.length-a.reused_by.length);const el=document.getElementById('reuseMap');if(!shared.length){el.innerHTML='<div style="color:var(--tx-3);font-size:.75rem">No shared workflows yet</div>';return}el.innerHTML=shared.map(w=>'<div class="shared-row"><span class="shared-count">'+w.reused_by.length+'</span><div class="shared-info"><div class="shared-name">'+esc(w.name)+'</div><div class="shared-bus">'+w.reused_by.map(b=>esc(b)).join(', ')+'</div></div></div>').join('')}
@@ -2009,7 +2024,6 @@
           html+=otherBUs.length?esc(otherBUs.join(', '))+' already use'+(otherBUs.length===1?'s':'')+' this block. ':'';
           // Generate relevance hint based on block type + user BU
           const relevanceHints={
-            'Chief of Staff':{'source':'Pull cross-functional data for exec reporting and initiative tracking.','ai':'Draft investor updates, generate narratives for board decks, or summarize cross-team progress.','transform':'Aggregate metrics across BUs or validate data consistency.','output':'Push digests to CEO, generate board materials, or send investor updates.','gate':'Review gates for external communications.'},
             'Finance':{'source':'Pull financial data for reconciliation or reporting.','ai':'Automate analysis of invoices, expenses, or financial narratives.','transform':'Validate transactions against policies or flag anomalies.','output':'Push results to accounting systems or audit trails.','gate':'Add approval step for payment actions.'},
             'GTM / Sales':{'source':'Ingest pipeline data for deal tracking.','ai':'Generate deal summaries or score leads automatically.','transform':'Route or categorize incoming opportunities.','output':'Alert the team on deal changes or generate reports.','gate':'Gate outbound communications for review.'},
             'Customer Success':{'source':'Pull support tickets or health signals.','ai':'Summarize customer interactions or predict churn.','transform':'Aggregate signals across touchpoints.','output':'Notify CSMs or update dashboards.','gate':'Review escalations before action.'}
@@ -2427,11 +2441,16 @@
   function resetModal(){
     setModalStep(1);composerBlocks=[];resetGoalCtx();renderComposerFlow();closeWorkflowPreview();
     ['fName','fDesc','fDetails','fReviewer','fSaves'].forEach(id=>document.getElementById(id).value='');
-    // Pre-fill BU from session
+    // Pre-fill BU from session if user has one
     const buSel=document.getElementById('fBU');
-    for(let i=0;i<buSel.options.length;i++){if(buSel.options[i].value===SESSION_USER.bu){buSel.selectedIndex=i;break}}
-    document.getElementById('fBUDisplay').textContent=SESSION_USER.bu;
-    goalCtx.bu=SESSION_USER.bu;
+    const buDisplay=document.getElementById('fBUDisplay');
+    if(SESSION_USER.bu){
+      for(let i=0;i<buSel.options.length;i++){if(buSel.options[i].value===SESSION_USER.bu){buSel.selectedIndex=i;break}}
+      buDisplay.textContent=SESSION_USER.bu;buDisplay.style.display='';buSel.style.display='none';
+    }else{
+      buSel.selectedIndex=0;buDisplay.style.display='none';buSel.style.display='';
+    }
+    goalCtx.bu=SESSION_USER.bu||'';
     document.getElementById('goalMessages').innerHTML='<div class="chat-msg chat-msg-ai" style="margin-top:auto">Hi '+esc(SESSION_USER.name.split(' ')[0])+', what task do you want to automate?<br><br>I\'ll check if there\'s an existing workflow you can reuse, or help you build one from scratch. Just describe what you spend time on today.</div>';
     const submitBtn=document.getElementById('modalSubmit');
     submitBtn.disabled=false;submitBtn.textContent='Launch as Pilot';
@@ -2711,7 +2730,7 @@
   }
   // BU inference map
   const BU_HINTS={'sales':'GTM / Sales','deal':'GTM / Sales','crm':'GTM / Sales','pipeline':'GTM / Sales','prospect':'GTM / Sales','lead':'GTM / Sales','invoice':'Finance','expense':'Finance','payment':'Finance','billing':'Finance','revenue':'Finance','accounting':'Finance','ap ':'Finance','ar ':'Finance','support':'Customer Success','ticket':'Customer Success','nps':'Customer Success','churn':'Customer Success','csat':'Customer Success','onboarding':'Implementation','implementation':'Implementation','employee':'People Ops','hr':'People Ops','bamboo':'People Ops','hiring':'People Ops','roadmap':'Product','feature':'Product','bug':'Product','marketing':'Marketing','campaign':'Marketing','content':'Marketing','legal':'Legal','contract':'Legal','compliance':'Legal','procurement':'Procurement','vendor':'Procurement','purchase':'Procurement'};
-  const REVIEWER_HINTS={'GTM / Sales':'VP Sales','Finance':'Controller','Customer Success':'Head of CS','Implementation':'Head of Implementation','Chief of Staff':'Chief of Staff','People Ops':'VP People','Product':'VP Product','Marketing':'VP Marketing','Legal':'General Counsel','Procurement':'Head of Procurement'};
+  const REVIEWER_HINTS={'GTM / Sales':'VP Sales','Finance':'Controller','Customer Success':'Head of CS','Implementation':'Head of Implementation','People Ops':'VP People','Product':'VP Product','Marketing':'VP Marketing','Legal':'General Counsel','Procurement':'Head of Procurement'};
 
   // ── Work Lane Classification (Product / Product Ops / Ops) ──
   const PRODUCT_SIGNALS=['feature','product','ui','ux','interface','user experience','app','platform','dashboard','customer facing','end user','in the product','build into','should be a feature','native','core product'];
@@ -2827,6 +2846,8 @@
         break;
       }
     }
+    // Infer BU from keywords if not set
+    if(!goalCtx.bu){for(const[kw,bu] of Object.entries(BU_HINTS)){if(ql.includes(kw)){goalCtx.bu=bu;break}}}
     const matches=matchBlocks(ql);
     matches.forEach(bid=>{
       if(!goalCtx.blocks.includes(bid))goalCtx.blocks.push(bid);
@@ -3288,7 +3309,7 @@
     document.querySelector('#requestOverlay .modal-body').innerHTML='<div class="rq-submitted"><div class="rq-submitted-icon">&check;</div><div class="rq-submitted-text">Request submitted</div><div class="rq-submitted-sub">Added to Studio Library. The team will assess feasibility and check for existing workflows that can be reused.</div></div>';
     setTimeout(()=>{reqOv.classList.remove('open');
       // Reset form after close
-      setTimeout(()=>{document.querySelector('#requestOverlay .modal-body').innerHTML='<p style="font-size:.8125rem;color:var(--tx-2);line-height:1.6;margin-bottom:16px">Describe a repetitive task your team does. We will assess if it can be automated and whether an existing workflow can be reused.</p><div class="field"><label for="rqBU">Your Business Unit <span class="req">*</span></label><select id="rqBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div><div class="field"><label for="rqTask">What task do you want automated? <span class="req">*</span></label><textarea id="rqTask" placeholder="e.g. Every week I manually pull data from 3 sources to build a report..." style="min-height:64px"></textarea></div><div class="field"><label for="rqTime">How much time does this take?</label><input id="rqTime" placeholder="e.g. 3 hrs/wk"></div><div class="field"><label for="rqUrgency">Urgency</label><select id="rqUrgency"><option value="Normal">Normal</option><option value="High">High — blocking other work</option></select></div><div id="rqMatch" style="display:none"></div>'},400)},1800);
+      setTimeout(()=>{document.querySelector('#requestOverlay .modal-body').innerHTML='<p style="font-size:.8125rem;color:var(--tx-2);line-height:1.6;margin-bottom:16px">Describe a repetitive task your team does. We will assess if it can be automated and whether an existing workflow can be reused.</p><div class="field"><label for="rqBU">Your Business Unit <span class="req">*</span></label><select id="rqBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div><div class="field"><label for="rqTask">What task do you want automated? <span class="req">*</span></label><textarea id="rqTask" placeholder="e.g. Every week I manually pull data from 3 sources to build a report..." style="min-height:64px"></textarea></div><div class="field"><label for="rqTime">How much time does this take?</label><input id="rqTime" placeholder="e.g. 3 hrs/wk"></div><div class="field"><label for="rqUrgency">Urgency</label><select id="rqUrgency"><option value="Normal">Normal</option><option value="High">High — blocking other work</option></select></div><div id="rqMatch" style="display:none"></div>'},400)},1800);
     showToast('Request submitted to Studio Library');
   });
 
