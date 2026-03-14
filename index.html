@@ -2413,7 +2413,7 @@
 
   // ── API Detail View (in block drawer) ──
   function openApiDetail(apiName){
-    if(!apiName||apiName==='Internal'||apiName==='Custom'||apiName==='Rule Engine')return;
+    if(!apiName||apiName==='Internal'||apiName==='Custom'||apiName==='Rule Engine'||apiName==='Built-in')return;
     const apiCreds=Object.entries(CREDENTIALS).filter(([,c])=>c.service===apiName);
     const apiBlocks=Object.entries(BLOCKS).filter(([,b])=>b.api===apiName);
     const blockIds=apiBlocks.map(([id])=>id);
@@ -2524,7 +2524,7 @@
     const apiEl=e.target.closest('[data-api]');
     if(apiEl){
       const apiName=apiEl.dataset.api;
-      if(apiName&&apiName!=='Internal'&&apiName!=='Custom'&&apiName!=='Rule Engine'){
+      if(apiName&&apiName!=='Internal'&&apiName!=='Custom'&&apiName!=='Rule Engine'&&apiName!=='Built-in'){
         e.stopPropagation();
         openApiDetail(apiName);
         return;
@@ -2554,7 +2554,7 @@
   document.getElementById('tableBody').addEventListener('click',e=>{
     // API clicks inside blocks should open API detail, not the block
     const apiEl=e.target.closest('[data-api]');
-    if(apiEl){const an=apiEl.dataset.api;if(an&&an!=='Internal'&&an!=='Custom'&&an!=='Rule Engine'){e.stopPropagation();openApiDetail(an);return}}
+    if(apiEl){const an=apiEl.dataset.api;if(an&&an!=='Internal'&&an!=='Custom'&&an!=='Rule Engine'&&an!=='Built-in'){e.stopPropagation();openApiDetail(an);return}}
     if(e.target.closest('[data-block]')){e.stopPropagation();return}
     if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;
     const row=e.target.closest('tr.data-row');if(!row)return;
