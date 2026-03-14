@@ -2560,12 +2560,18 @@
     if(drawerOpen&&!e.target.closest('[data-block]'))closeDrawer();
   });
 
-  // Prevent block clicks from toggling row expand
+  // Prevent block clicks from toggling row expand — but let them bubble to document handler
   document.getElementById('tableBody').addEventListener('click',e=>{
-    // API clicks inside blocks should open API detail, not the block
-    const apiEl=e.target.closest('[data-api]');
-    if(apiEl&&e.target===apiEl){const an=apiEl.dataset.api;if(an&&an!=='Internal'&&an!=='Custom'&&an!=='Rule Engine'&&an!=='Built-in'){e.stopPropagation();openApiDetail(an);return}}
-    if(e.target.closest('[data-block]')){e.stopPropagation();return}
+    if(e.target.closest('[data-block]')){
+      // Open the block drawer directly here instead of relying on document handler
+      const card=e.target.closest('[data-block]');
+      const bid=card.dataset.block;
+      let wfCtx=null;
+      const detailInner=card.closest('.detail-inner');
+      if(detailInner){const detailRow=detailInner.closest('tr.detail-row');if(detailRow){const dataRow=detailRow.previousElementSibling;if(dataRow)wfCtx=parseInt(dataRow.dataset.id)}}
+      if(drawerOpen&&activeBlockId===bid){closeDrawer()}else{openDrawer(bid,wfCtx)}
+      return;
+    }
     if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;
     const row=e.target.closest('tr.data-row');if(!row)return;
     const id=parseInt(row.dataset.id);expandedId=expandedId===id?null:id;
