@@ -12,9 +12,68 @@
 
 **Companies need an AI operations control plane** to govern and reuse automation safely. Not another workflow builder — a registry that sits above the execution layer and answers: what exists, who owns it, does it work, and should we build something new or reuse what's already there?
 
-## What This Is
+## The Bigger Idea: AI Work Graph
 
-An AI operations control plane. It's a registry — a catalog and governance layer — not a runtime. It doesn't execute workflows. Code lives elsewhere (GitHub, n8n, internal tools). This platform tracks what exists, who owns it, how well it works, and whether something new needs to be built.
+The registry is stage one. But the system is quietly building something more powerful — **a structured map of how work actually happens in a company.**
+
+Each workflow describes a work path: where data comes from, how it's processed, where AI is applied, where the output goes, where humans intervene. One workflow is a recipe. Hundreds of workflows become a graph — a living model of how the company operates.
+
+```
+HubSpot → processing → Claude → Slack
+Zendesk → classifier → Salesforce
+Google Sheets → Claude narrator → board deck
+Stripe → threshold check → email alert
+```
+
+This graph answers questions no other system can:
+
+- Where is AI touching the company?
+- Where is work still manual?
+- Which teams depend on the same data?
+- Where are the bottlenecks?
+- What automations should be built next?
+
+And eventually, it can simulate: **if we automate this node, what downstream work disappears?**
+
+That's organizational systems intelligence.
+
+### Why This Is a Category
+
+Most AI tooling focuses on building agents, writing prompts, or running workflows. Very few focus on **AI system management** — the layer above execution. But as AI adoption grows, that layer becomes critical.
+
+The precedent exists in other domains:
+
+| Domain | The "graph" tool | What it maps |
+|--------|-----------------|--------------|
+| Infrastructure | Datadog | How servers and services connect |
+| Data | dbt + data catalogs | How data flows and transforms |
+| Machine Learning | MLFlow | How models are trained and deployed |
+| **AI Operations** | **This** | **How work flows across the company** |
+
+### Who This Is For
+
+Not engineers. **Operators.**
+
+- Chief of Staff
+- BizOps / RevOps
+- Founders Associate
+- Finance Ops
+
+These people run the company but have no tooling for automation governance. That's the gap.
+
+### Evolution Path
+
+| Stage | What it does | Status |
+|-------|-------------|--------|
+| **1. Registry** | Catalog all AI automations | Built (this demo) |
+| **2. Governance** | Track reliability, ownership, credentials, data classification | Built (this demo) |
+| **3. Discovery** | Find reuse, match existing workflows, prevent duplication | Built (this demo) |
+| **4. Work Graph** | Map how work flows across the company. Visualize dependencies. | Next |
+| **5. Optimization Engine** | Recommend automations: "You spend 6 hrs/wk on this. Two workflows already produce 80% of the inputs. Build this." | Future |
+
+## What This Is Today
+
+An AI operations control plane. A registry — a catalog and governance layer — not a runtime. It doesn't execute workflows. Code lives elsewhere (GitHub, n8n, internal tools). This platform tracks what exists, who owns it, how well it works, and whether something new needs to be built.
 
 ## Problem
 
@@ -349,8 +408,8 @@ These are acknowledged constraints of the demo, framed as a production roadmap:
 
 ## Design Principles
 
-1. **No jargon** — "Rule-based" not "Type 1", "Working well" not "83% accepted", "Translate Between Apps" not "Schema Mapper"
-2. **Don't show what users can't act on** — removed Health grades, risk badges, reviewer lines that repeated the prompt summary
-3. **Chat first, form second** — discover before building. Check if it already exists before creating new.
-4. **Auto-detect everything possible** — risk, reviewer, type, BU. Don't ask the user what the system can figure out.
-5. **Every element earns its space** — if it doesn't help the user make a decision or take an action, cut it.
+1. **Don't show what users can't act on.** If it doesn't help the user make a decision or take an action, cut it. This is the single rule that drove every UI decision.
+2. **No jargon.** The user is an operator, not an engineer. "Rule-based" not "Type 1". "Working well" not "83% accepted". "Translate Between Apps" not "Schema Mapper".
+3. **Chat first, form second.** Discover before building. Check if it already exists before creating new. Don't start with a blank form — start with a conversation.
+4. **Auto-detect everything possible.** Risk, reviewer, type, BU. Don't ask the user what the system can figure out from the pipeline.
+5. **Every workflow is a data point in the work graph.** Each automation added to the registry makes the company's operational structure more legible. The value compounds.
