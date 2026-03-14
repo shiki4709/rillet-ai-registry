@@ -1369,6 +1369,28 @@
     16:['Weekly exec recap','Travel/offsite day catch-up','Cross-functional visibility']
   };
 
+  // ── Block Intelligence — what each block gives you, when to use it, trade-offs ──
+  const BLOCK_INTEL={
+    // Sources
+    'hubspot-pull':{category:'CRM',insights:['Deal stage velocity','Pipeline forecast','Rep activity','Contact engagement'],bestFor:'Structured sales data — deals, contacts, pipeline stages',notFor:'Customer sentiment or support issues — use Zendesk for that',lastUpdate:'API v3 stable, webhook support for real-time triggers'},
+    'zendesk-stream':{category:'Support',insights:['Ticket volume trends','Response time patterns','Product area hotspots','Customer sentiment'],bestFor:'Understanding what customers complain about and how fast you respond',notFor:'Proactive health signals — use Mixpanel for usage data',lastUpdate:'Sunshine API supports custom objects'},
+    'sheets-import':{category:'General',insights:['Any structured data someone maintains manually','Budget tracking','Manual KPI exports'],bestFor:'Quick data source when there\'s no API — someone maintains a spreadsheet',notFor:'Real-time data — sheets are updated manually and can be stale',lastUpdate:'Google Sheets API v4, supports named ranges'},
+    'stripe-feed':{category:'Payments',insights:['MRR and ARR','Payment failure rates','Invoice aging','Customer LTV','Subscription churn'],bestFor:'Financial data — revenue, payments, subscriptions',notFor:'Why customers churn — Stripe shows payment behavior, not product usage',lastUpdate:'Rate limits can be tight — cache when possible'},
+    'ocr-ingest':{category:'Documents',insights:['Invoice line items','Receipt amounts','Contract terms','Any data trapped in PDFs'],bestFor:'Extracting structured data from unstructured documents',notFor:'Clean data that\'s already in a system — use the system\'s API instead',lastUpdate:'AWS Textract supports tables and forms natively'},
+    'drive-scan':{category:'Files',insights:['Document inventory','File sharing patterns','Stale content detection'],bestFor:'Scanning folders for new documents to process',notFor:'Reading file contents — use PDF/OCR for that',lastUpdate:'Google Drive API v3, supports change notifications'},
+    'bamboo-pull':{category:'HR',insights:['Headcount by department','New hire pipeline','Compensation benchmarks','Org structure'],bestFor:'Employee data for people analytics and onboarding automation',notFor:'Employee sentiment — this is records data, not feedback',lastUpdate:'BambooHR API supports custom fields'},
+    'rss-feed':{category:'Monitoring',insights:['Competitor product changes','Industry news','Changelog monitoring'],bestFor:'Watching external sources that publish RSS feeds',notFor:'Monitoring competitors who don\'t publish changelogs',lastUpdate:'Standard RSS/Atom parsing'},
+    'mixpanel-pull':{category:'Product',insights:['Feature adoption rates','User engagement funnels','Retention cohorts','Power user identification'],bestFor:'Understanding how customers actually use the product',notFor:'Financial metrics — use Stripe for revenue data',lastUpdate:'Mixpanel JQL supports complex queries'},
+    'delighted-pull':{category:'Feedback',insights:['NPS scores and trends','Verbatim customer feedback','Promoter/detractor identification'],bestFor:'Direct customer sentiment — what they think and feel',notFor:'What they actually do — use Mixpanel for behavior data',lastUpdate:'Delighted API supports survey filtering'},
+    'knowledge-base':{category:'Internal',insights:['Past responses for reuse','Policy documents','Product documentation'],bestFor:'Grounding AI responses in your actual content',notFor:'External data — this searches your internal docs only',lastUpdate:'Notion API supports full-text search'},
+    // AI
+    'claude-summarize':{category:'AI — Language',insights:['Condense long documents','Extract key points','Generate narratives from data'],bestFor:'Turning messy, long-form content into concise summaries',notFor:'Structured classification — use Classifier for categorizing',pros:'High quality prose, understands nuance',cons:'Slower and more expensive than Haiku — use for quality-sensitive outputs'},
+    'claude-classify':{category:'AI — Classification',insights:['Categorize tickets/deals/content','Sentiment detection','Priority scoring'],bestFor:'Putting items into buckets when keywords alone can\'t capture the logic',notFor:'Generating new content — use Drafter or Summarizer',pros:'Fast and cheap (Haiku) — good for high-volume classification',cons:'Less nuanced than Sonnet for edge cases'},
+    'claude-draft':{category:'AI — Generation',insights:['First drafts of emails/reports/responses','Content creation','Template expansion'],bestFor:'Generating written content from structured inputs',notFor:'Quick categorization — overkill for classification tasks',pros:'Creative, handles tone and style well',cons:'Higher rewrite rate — output needs human review for tone'},
+    'claude-extract':{category:'AI — Extraction',insights:['Pull structured fields from unstructured text','Parse emails for key data','Extract entities'],bestFor:'When data is trapped in free text and you need structured output',notFor:'Data that\'s already structured — just use the API directly',pros:'Fast (Haiku), handles messy input well',cons:'Accuracy depends on input consistency'},
+    'claude-narrator':{category:'AI — Narrative',insights:['Turn data tables into readable stories','Generate plain-language explanations'],bestFor:'Making raw numbers understandable for non-technical audiences',notFor:'Data analysis — the narrator explains, it doesn\'t analyze',pros:'Natural language flow, good for exec-facing output',cons:'Can oversimplify — reviewer should check accuracy'}
+  };
+
   // Pipeline data: sources → AI logic → outputs → review gate
   const PIPELINES={
     1:{sources:['HubSpot CRM','Call Transcripts'],ai:['Extract metadata','Score confidence','Standardize format'],outputs:['Deal Summary PDF','Pipeline Report'],gate:'VP Sales'},
@@ -2237,9 +2259,27 @@
       +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api"><span data-api="'+esc(b.api)+'">'+esc(b.api)+'</span> \u00B7 '+b.type+'</div></div>'
       +'<button class="bd-close" id="drawerClose">&times;</button></div>'
       +'<div class="bd-body">'
-      +'<div class="bd-section"><div class="bd-label">Description</div><div class="bd-desc">'+esc(b.desc)+'</div></div>'
+      +'<div class="bd-section"><div class="bd-desc" style="font-size:var(--text-sm);line-height:1.6">'+esc(b.desc)+'</div></div>'
+      +(function(){
+        const intel=BLOCK_INTEL[blockId];if(!intel)return'';
+        let ih='<div class="bd-section"><div class="bd-label" style="display:flex;align-items:center;gap:6px">'+esc(intel.category)+'</div>';
+        // Best for / Not for
+        ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--green);font-weight:600;margin-bottom:2px">Best for</div><div style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.5">'+esc(intel.bestFor)+'</div></div>';
+        ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--amber);font-weight:600;margin-bottom:2px">Not for</div><div style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.5">'+esc(intel.notFor)+'</div></div>';
+        // Pros/cons for AI blocks
+        if(intel.pros)ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--teal);font-weight:600;margin-bottom:2px">Pros</div><div style="font-size:var(--text-sm);color:var(--tx-2)">'+esc(intel.pros)+'</div></div>';
+        if(intel.cons)ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--rust);font-weight:600;margin-bottom:2px">Cons</div><div style="font-size:var(--text-sm);color:var(--tx-2)">'+esc(intel.cons)+'</div></div>';
+        // Insights you can get
+        if(intel.insights&&intel.insights.length){
+          ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--tx-3);font-weight:600;margin-bottom:4px">Insights you can get</div>';
+          ih+='<div style="display:flex;flex-wrap:wrap;gap:4px">'+intel.insights.map(i=>'<span style="font-size:var(--text-xs);padding:2px 6px;border-radius:3px;background:var(--surface-2);color:var(--tx-2)">'+esc(i)+'</span>').join('')+'</div></div>';
+        }
+        // Latest update
+        if(intel.lastUpdate)ih+='<div style="font-size:var(--text-xs);color:var(--tx-3)">'+esc(intel.lastUpdate)+'</div>';
+        ih+='</div>';
+        return ih;
+      })()
       +modelHtml
-      +'<div class="bd-section"><div class="bd-label">Owner</div><div class="bd-owner">'+renderAvatar(owner,28)+' <div><div style="font-weight:600">'+esc(PEOPLE[owner]?PEOPLE[owner].name:owner)+'</div><div style="font-size:.625rem;color:var(--tx-3)">'+esc(owner)+'</div></div></div></div>'
       +credHtml
       +'<div class="bd-section"><div class="bd-label">Health Monitor</div><div class="health-grid">'
       +'<div class="health-item"><div class="health-val '+(h.uptime&&parseFloat(h.uptime)>=99.5?'health-good':'health-warn')+'">'+esc(h.uptime||'—')+'</div><div class="health-lbl">Uptime</div></div>'
