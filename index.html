@@ -1054,7 +1054,6 @@
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn" id="btnExport">Export</button>
       <button class="btn btn-accent" id="btnAdd">+ New Automation</button>
       <div class="user-badge" id="userBadge"></div>
     </div>
@@ -1062,7 +1061,6 @@
   <p class="subtitle">All AI automations in one place. See what exists, what's saving time, and build new ones.</p>
 
   <div class="stats">
-    <div class="stat" data-c="teal"><div class="stat-val" id="statTotal">&mdash;</div><div class="stat-lbl">Workflows</div></div>
     <div class="stat" data-c="gold"><div class="stat-val" id="statHours">&mdash;</div><div class="stat-lbl">Hours Saved / Week</div></div>
     <div class="stat" data-c="green"><div class="stat-val" id="statLive">&mdash;</div><div class="stat-lbl">Live</div><div class="stat-sub">in production</div></div>
     <div class="stat" data-c="amber"><div class="stat-val" id="statPilot">&mdash;</div><div class="stat-lbl">Pilot</div><div class="stat-sub">being tested</div></div>
@@ -1071,9 +1069,9 @@
   <div class="controls">
     <button class="btn" id="btnMyTeam" style="font-size:var(--text-xs);padding:6px 12px">My team</button>
     <input type="text" class="search-input" id="searchInput" placeholder="Search workflows...">
-    <select class="filter-sel" id="filterBU"><option value="">All BUs</option></select>
+    <select class="filter-sel" id="filterBU" style="display:none"><option value="">All BUs</option></select>
     <select class="filter-sel" id="filterStatus"><option value="">All Status</option><option value="Live">Live</option><option value="Pilot">Pilot</option></select>
-    <select class="filter-sel" id="filterType"><option value="">All Types</option><option value="1">Rule-based</option><option value="2">AI-powered</option></select>
+    <select class="filter-sel" id="filterType" style="display:none"><option value="">All Types</option><option value="1">Rule-based</option><option value="2">AI-powered</option></select>
   </div>
 
   <div class="table-wrap">
@@ -1082,10 +1080,8 @@
         <th class="expand-cell"></th>
         <th data-sort="name">Name <span class="sort-arrow">&#9650;</span></th>
         <th data-sort="bu">BU <span class="sort-arrow">&#9650;</span></th>
-        <th data-sort="type" class="hide-sm">How it works <span class="sort-arrow">&#9650;</span></th>
         <th data-sort="status">Status <span class="sort-arrow">&#9650;</span></th>
-        <th data-sort="saves" class="hide-sm">Time Saved <span class="sort-arrow">&#9650;</span></th>
-        <th class="hide-sm" style="width:50px">Health</th>
+        <th data-sort="saves">Time Saved <span class="sort-arrow">&#9650;</span></th>
       </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
@@ -1115,10 +1111,6 @@
     <div class="panel-body" id="reuseMap"></div>
   </div>
 
-  <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--slate)"></span>Available Blocks</div>
-    <div class="panel-body" id="blockLibrary"></div>
-  </div>
 </div>
 </div>
 
@@ -1195,11 +1187,8 @@
     <div class="composer-step" id="composerStep3">
       <div class="modal-body">
         <div id="reviewSummary"></div>
-        <div class="field-group" style="margin-top:16px">
-          <div class="field-group-label">Prompt Details (optional)</div>
-          <div class="field"><label for="fDetails">Details</label><textarea id="fDetails" placeholder="Describe inputs, logic, outputs. Claude auto-generates the prompt_summary if you fill this in."></textarea><div class="field-hint">Leave blank to auto-generate from your block composition.</div></div>
-          <div class="generating" id="generating"><span class="spin"></span>Generating prompt summary...</div>
-        </div>
+        <div class="generating" id="generating" style="display:none"><span class="spin"></span>Setting up...</div>
+        <textarea id="fDetails" style="display:none"></textarea>
       </div>
       <div class="modal-foot">
         <button class="btn" id="reviewBack">Back</button>
@@ -1670,6 +1659,7 @@
   fetch('./data/registry.json').then(r=>r.json()).then(boot).catch(()=>boot(REGISTRY_DATA));
 
   function renderBlockLibrary(){
+    const libEl=document.getElementById('blockLibrary');if(!libEl)return;
     // Count how many workflows use each block
     const counts={};Object.values(WORKFLOW_BLOCKS).forEach(bids=>bids.forEach(bid=>{counts[bid]=(counts[bid]||0)+1}));
     const order=['source','transform','ai','output','gate'];
@@ -1766,7 +1756,6 @@
   function populateBUFilter(){const bus=[...new Set(workflows.map(w=>w.bu))].sort();const sel=document.getElementById('filterBU');bus.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o)})}
 
   function computeStats(){
-    document.getElementById('statTotal').textContent=workflows.length;
     let h=0;workflows.forEach(w=>{const m=w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);if(m){let v=parseFloat(m[1]);if(m[2]==='mo')v/=4.33;h+=v}});
     document.getElementById('statHours').textContent=h.toFixed(1);
     document.getElementById('statLive').textContent=workflows.filter(w=>w.status==='Live').length;
@@ -1815,7 +1804,7 @@
 
   function render(){
     const filtered=getSorted(getFiltered());const tbody=document.getElementById('tableBody');
-    if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" class="empty-state">No workflows match current filters.</td></tr>';return}
+    if(!filtered.length){tbody.innerHTML='<tr><td colspan="5" class="empty-state">No workflows match current filters.</td></tr>';return}
     let html='';
     filtered.forEach((w,i)=>{
       const ex=expandedId===w.id,stCls=w.status==='Live'?'badge-live':'badge-pilot',delay=Math.min(i*20,200);
@@ -1825,7 +1814,7 @@
       const posture=computeSecurityPosture(w.id);
       const healthColor=posture.score>=90?'var(--green)':posture.score>=75?'var(--teal)':posture.score>=60?'var(--amber)':'var(--red)';
       const healthTip=posture.issues.length?posture.issues.join(', '):'All good';
-      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">'+(w.type===2?'AI-powered':'Rule-based')+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td><td class="hide-sm"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+healthColor+'" title="'+esc(healthTip)+'"></span></td></tr>';
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td><span class="saves-label">'+esc(w.saves)+'</span></td></tr>';
       const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>';
       // Reuse Intelligence detail section
       const stackChips=(intel.stack||[]).map(s=>'<span class="intel-chip intel-chip-stack">'+esc(s)+'</span>').join('');
@@ -1852,7 +1841,7 @@
       else if(oqAcceptPct>=60){reliabilityLabel='Works, sometimes needs edits';reliabilityCls='trend-stable'}
       else{reliabilityLabel='Needs improvement';reliabilityCls='trend-needs-attention'}
       // Build detail row
-      let detailHtml='<tr class="detail-row"><td colspan="7"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content">';
+      let detailHtml='<tr class="detail-row"><td colspan="5"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content">';
       // 1. What it does + pipeline
       detailHtml+='<div class="detail-pipeline-row">';
       detailHtml+='<div style="font-size:var(--text-base);color:var(--tx-2);line-height:1.6;margin-bottom:12px">'+esc(w.prompt_summary)+'</div>';
@@ -1909,7 +1898,6 @@
   function seedKhoj(){}
 
   // Export
-  document.getElementById('btnExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(workflows,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='registry.json';a.click();URL.revokeObjectURL(url)});
 
   // ── Block Detail Drawer ──
   const drawer=document.getElementById('blockDrawer');
