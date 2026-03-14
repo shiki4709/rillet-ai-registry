@@ -1871,13 +1871,9 @@
       if(w.reused_by&&w.reused_by.length){
         detailHtml+='<div class="ml">Also used by</div><div style="margin:4px 0 12px">'+reuseTags+'</div>';
       }
-      // Reviewer (only if exists)
-      if(w.reviewer){
-        detailHtml+='<div style="display:flex;align-items:center;gap:6px;font-size:var(--text-sm)">'+renderAvatar(w.reviewer,20)+'<span style="color:var(--tx-2)">'+esc(w.reviewer)+' reviews output</span> <span class="badge '+riskCls+'" style="font-size:var(--text-xs)">'+esc(w.risk)+'</span></div>';
-      }
       // Use cases
       if(useCases.length){
-        detailHtml+='<div style="margin-top:12px"><div class="ml">Also useful for</div><div style="margin-top:4px">'+useCaseHtml+'</div></div>';
+        detailHtml+='<div class="ml">Also useful for</div><div style="margin-top:4px">'+useCaseHtml+'</div>';
       }
       detailHtml+='</div>';
       // Comments
