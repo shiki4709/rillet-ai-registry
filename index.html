@@ -316,11 +316,10 @@
 
 
   .expand-cell { width:36px; text-align:center; padding-left:8px !important; }
-  .chv { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; color:var(--tx-2); background:var(--surface-2); border:1px solid var(--border-dim); transition:all 200ms var(--ease); border-radius:var(--r-sm); }
-  .chv svg { display:block; width:12px; height:12px; }
+  .chv { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; color:var(--tx-3); font-size:1.1rem; transition:all 200ms var(--ease); border-radius:var(--r-sm); }
   tr.data-row { cursor:pointer; }
-  tr.data-row:hover .chv { color:var(--accent); background:var(--teal-bg); border-color:var(--accent); }
-  tr.expanded .chv { transform:rotate(90deg); color:#fff; background:var(--accent); border-color:var(--accent); }
+  tr.data-row:hover .chv { color:var(--accent); }
+  tr.expanded .chv { color:var(--accent); transform:rotate(90deg); }
 
   /* ====== DETAIL ROW ====== */
   .detail-row td { padding:0; cursor:default; }
@@ -1650,7 +1649,7 @@
   })();
 
   let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
-  const chevSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+  const chevSVG='&#9656;';
 
   fetch('./data/registry.json').then(r=>r.json()).then(boot).catch(()=>boot(REGISTRY_DATA));
 
