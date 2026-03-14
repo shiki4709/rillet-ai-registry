@@ -822,6 +822,22 @@
   .success-metric-val { font-size:1.25rem; font-weight:700; color:var(--tx); }
   .success-metric-label { font-size:.5625rem; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; margin-top:2px; }
 
+  /* Work Graph */
+  .wg-container { display:flex; gap:0; min-height:400px; border:1px solid var(--border-dim); border-radius:var(--r); overflow:hidden; }
+  .wg-col { flex:1; padding:16px; display:flex; flex-direction:column; gap:6px; }
+  .wg-col:not(:last-child) { border-right:1px solid var(--border-dim); }
+  .wg-col-header { font-size:var(--text-xs); font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; text-align:center; }
+  .wg-node { display:flex; align-items:center; gap:6px; padding:8px 10px; border-radius:var(--r-sm); border:1px solid var(--border-dim); background:var(--surface); font-size:var(--text-sm); transition:all 150ms; cursor:default; position:relative; }
+  .wg-node:hover { border-color:var(--accent); background:var(--teal-bg); }
+  .wg-node-name { font-weight:600; color:var(--tx); }
+  .wg-node-sub { font-size:var(--text-xs); color:var(--tx-3); }
+  .wg-node-count { font-size:var(--text-xs); font-weight:600; color:var(--tx-3); background:var(--surface-2); padding:1px 6px; border-radius:3px; margin-left:auto; }
+  .wg-lines { position:relative; width:40px; flex-shrink:0; flex-grow:0; }
+  .wg-connector { position:absolute; left:0; right:0; height:1px; background:var(--border); }
+  .wg-connector-dot { position:absolute; width:4px; height:4px; border-radius:50%; background:var(--border); }
+  .wg-highlight .wg-node-name { color:var(--accent); }
+  .wg-dim { opacity:.3; }
+
   /* Open source toolbox */
   .oss-item { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-dim); cursor:pointer; transition:background 100ms; }
   .oss-item:last-child { border-bottom:none; }
@@ -1061,6 +1077,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn" id="btnGraph">Work Graph</button>
       <button class="btn btn-accent" id="btnAdd">+ New Automation</button>
       <div class="user-badge" id="userBadge"></div>
     </div>
@@ -1071,6 +1088,7 @@
     <div class="stat" data-c="gold"><div class="stat-val" id="statHours">&mdash;</div><div class="stat-lbl">Hours Saved / Week</div></div>
     <div class="stat" data-c="green"><div class="stat-val" id="statLive">&mdash;</div><div class="stat-lbl">Live</div><div class="stat-sub">in production</div></div>
     <div class="stat" data-c="amber"><div class="stat-val" id="statPilot">&mdash;</div><div class="stat-lbl">Pilot</div><div class="stat-sub">being tested</div></div>
+    <div class="stat" data-c="teal" id="statGraphWrap" style="cursor:pointer"><div class="stat-val" id="statAPIs">&mdash;</div><div class="stat-lbl">APIs Connected</div><div class="stat-sub" id="statFlows">&mdash; data flows</div></div>
   </div>
 
   <div class="controls">
@@ -1212,6 +1230,20 @@
 
 <div class="block-drawer" id="blockDrawer"></div>
 <div class="toast" id="toast"></div>
+
+<!-- Work Graph Modal -->
+<div class="modal-overlay" id="graphOverlay" role="dialog" aria-modal="true">
+  <div class="modal" style="width:90vw;max-width:1100px;max-height:90vh;overflow-y:auto">
+    <div class="modal-head">
+      <h2>Work Graph</h2>
+      <button class="modal-close" id="graphClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:24px">
+      <p style="font-size:var(--text-sm);color:var(--tx-2);margin-bottom:20px">How data flows across the company — APIs, workflows, and teams connected.</p>
+      <div id="workGraphContent"></div>
+    </div>
+  </div>
+</div>
 
 <!-- Request Workflow Modal -->
 <div class="modal-overlay" id="requestOverlay" role="dialog" aria-modal="true">
@@ -1785,6 +1817,150 @@
     }).join('');
   }
 
+  // ── Work Graph ──
+  function renderWorkGraph(){
+    const el=document.getElementById('workGraphContent');if(!el)return;
+    // Build the three columns: APIs → Workflows → Teams
+    // Collect all external APIs used
+    const apiMap={};// api name → {workflows:Set, teams:Set}
+    workflows.forEach(w=>{
+      const blocks=WORKFLOW_BLOCKS[w.id]||[];
+      blocks.forEach(bid=>{
+        const b=BLOCKS[bid];if(!b||b.api==='Built-in')return;
+        if(!apiMap[b.api])apiMap[b.api]={workflows:new Set(),teams:new Set()};
+        apiMap[b.api].workflows.add(w.id);
+        apiMap[b.api].teams.add(w.bu);
+      });
+    });
+    // Collect teams
+    const teamMap={};// team name → {workflows:Set, apis:Set}
+    workflows.forEach(w=>{
+      if(!teamMap[w.bu])teamMap[w.bu]={workflows:new Set(),apis:new Set()};
+      teamMap[w.bu].workflows.add(w.id);
+      const blocks=WORKFLOW_BLOCKS[w.id]||[];
+      blocks.forEach(bid=>{const b=BLOCKS[bid];if(b&&b.api!=='Built-in')teamMap[w.bu].apis.add(b.api)});
+    });
+    // Sort APIs by usage count
+    const sortedAPIs=Object.entries(apiMap).sort((a,b)=>b[1].workflows.size-a[1].workflows.size);
+    const sortedTeams=Object.entries(teamMap).sort((a,b)=>b[1].workflows.size-a[1].workflows.size);
+    const sortedWfs=[...workflows].sort((a,b)=>{
+      const aBlocks=(WORKFLOW_BLOCKS[a.id]||[]).length;
+      const bBlocks=(WORKFLOW_BLOCKS[b.id]||[]).length;
+      return bBlocks-aBlocks;
+    });
+
+    let html='<div class="wg-container">';
+    // Column 1: APIs
+    html+='<div class="wg-col"><div class="wg-col-header">APIs ('+sortedAPIs.length+')</div>';
+    sortedAPIs.forEach(([api,info])=>{
+      const credEntries=Object.entries(CREDENTIALS).filter(([,c])=>c.service===api);
+      const stColor=credEntries.length?(credEntries[0][1].status==='active'?'var(--green)':'var(--amber)'):'var(--tx-3)';
+      html+='<div class="wg-node" data-wg-api="'+esc(api)+'">';
+      html+='<span style="width:6px;height:6px;border-radius:50%;background:'+stColor+';flex-shrink:0"></span>';
+      html+='<div><div class="wg-node-name">'+esc(api)+'</div>';
+      html+='<div class="wg-node-sub">'+info.teams.size+' team'+(info.teams.size!==1?'s':'')+'</div></div>';
+      html+='<span class="wg-node-count">'+info.workflows.size+'</span>';
+      html+='</div>';
+    });
+    html+='</div>';
+
+    // Column 2: Workflows
+    html+='<div class="wg-col" style="flex:1.5"><div class="wg-col-header">Workflows ('+sortedWfs.length+')</div>';
+    sortedWfs.forEach(w=>{
+      const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+      const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+      const blocks=WORKFLOW_BLOCKS[w.id]||[];
+      const apis=[...new Set(blocks.map(bid=>BLOCKS[bid]?.api).filter(a=>a&&a!=='Built-in'))];
+      html+='<div class="wg-node" data-wg-wf="'+w.id+'" data-wg-apis="'+esc(apis.join(','))+'" data-wg-team="'+esc(w.bu)+'">';
+      html+='<div class="wf-icon" style="background:'+icon.bg+';width:22px;height:22px;font-size:var(--text-xs);flex-shrink:0">'+icon.abbr+'</div>';
+      html+='<div style="flex:1;min-width:0"><div class="wg-node-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(w.name)+'</div>';
+      html+='<div class="wg-node-sub">'+esc(w.bu)+' · '+esc(w.saves)+'</div></div>';
+      html+='<span class="badge '+stCls+'" style="font-size:var(--text-xs);flex-shrink:0">'+esc(w.status)+'</span>';
+      html+='</div>';
+    });
+    html+='</div>';
+
+    // Column 3: Teams
+    html+='<div class="wg-col"><div class="wg-col-header">Teams ('+sortedTeams.length+')</div>';
+    sortedTeams.forEach(([team,info])=>{
+      html+='<div class="wg-node" data-wg-team-node="'+esc(team)+'">';
+      html+='<div><div class="wg-node-name">'+esc(team)+'</div>';
+      html+='<div class="wg-node-sub">'+info.apis.size+' API'+(info.apis.size!==1?'s':'')+'</div></div>';
+      html+='<span class="wg-node-count">'+info.workflows.size+'</span>';
+      html+='</div>';
+    });
+    html+='</div>';
+
+    html+='</div>';
+
+    // Summary
+    const totalAPIs=sortedAPIs.length;
+    const totalFlows=workflows.reduce((s,w)=>(WORKFLOW_BLOCKS[w.id]||[]).length+s,0);
+    const sharedAPIs=sortedAPIs.filter(([,i])=>i.teams.size>1);
+    html+='<div style="display:flex;gap:24px;margin-top:16px;flex-wrap:wrap">';
+    html+='<div style="font-size:var(--text-sm);color:var(--tx-2)"><strong>'+totalAPIs+'</strong> APIs connected across <strong>'+sortedTeams.length+'</strong> teams</div>';
+    html+='<div style="font-size:var(--text-sm);color:var(--tx-2)"><strong>'+totalFlows+'</strong> data flows across <strong>'+workflows.length+'</strong> workflows</div>';
+    if(sharedAPIs.length)html+='<div style="font-size:var(--text-sm);color:var(--accent)"><strong>'+sharedAPIs.length+'</strong> APIs shared across multiple teams</div>';
+    html+='</div>';
+
+    el.innerHTML=html;
+
+    // Hover highlighting
+    el.addEventListener('mouseover',e=>{
+      const apiNode=e.target.closest('[data-wg-api]');
+      const wfNode=e.target.closest('[data-wg-wf]');
+      const teamNode=e.target.closest('[data-wg-team-node]');
+      if(!apiNode&&!wfNode&&!teamNode)return;
+      // Clear previous
+      el.querySelectorAll('.wg-node').forEach(n=>n.classList.remove('wg-highlight','wg-dim'));
+      if(apiNode){
+        const api=apiNode.dataset.wgApi;
+        el.querySelectorAll('.wg-node').forEach(n=>{
+          const isApi=n.dataset.wgApi===api;
+          const isWf=n.dataset.wgApis&&n.dataset.wgApis.split(',').includes(api);
+          const wfTeam=isWf?n.dataset.wgTeam:'';
+          const isTeam=n.dataset.wgTeamNode&&apiMap[api]?.teams.has(n.dataset.wgTeamNode);
+          if(isApi||isWf||isTeam)n.classList.add('wg-highlight');
+          else n.classList.add('wg-dim');
+        });
+      }else if(wfNode){
+        const wfId=parseInt(wfNode.dataset.wgWf);
+        const apis=(wfNode.dataset.wgApis||'').split(',').filter(Boolean);
+        const team=wfNode.dataset.wgTeam;
+        el.querySelectorAll('.wg-node').forEach(n=>{
+          const isThis=n===wfNode;
+          const isApi=n.dataset.wgApi&&apis.includes(n.dataset.wgApi);
+          const isTeam=n.dataset.wgTeamNode===team;
+          if(isThis||isApi||isTeam)n.classList.add('wg-highlight');
+          else n.classList.add('wg-dim');
+        });
+      }else if(teamNode){
+        const team=teamNode.dataset.wgTeamNode;
+        el.querySelectorAll('.wg-node').forEach(n=>{
+          const isTeam=n.dataset.wgTeamNode===team;
+          const isWf=n.dataset.wgTeam===team;
+          const wfApis=isWf?(n.dataset.wgApis||'').split(',').filter(Boolean):[];
+          const isApi=n.dataset.wgApi&&teamMap[team]?.apis.has(n.dataset.wgApi);
+          if(isTeam||isWf||isApi)n.classList.add('wg-highlight');
+          else n.classList.add('wg-dim');
+        });
+      }
+    });
+    el.addEventListener('mouseout',e=>{
+      if(!e.target.closest('[data-wg-api],[data-wg-wf],[data-wg-team-node]')){
+        el.querySelectorAll('.wg-node').forEach(n=>n.classList.remove('wg-highlight','wg-dim'));
+      }
+    });
+  }
+
+  // Graph modal
+  const graphOv=document.getElementById('graphOverlay');
+  function openGraph(){renderWorkGraph();graphOv.classList.add('open')}
+  document.getElementById('btnGraph').addEventListener('click',openGraph);
+  document.getElementById('statGraphWrap').addEventListener('click',openGraph);
+  document.getElementById('graphClose').addEventListener('click',()=>graphOv.classList.remove('open'));
+  graphOv.addEventListener('click',e=>{if(e.target===graphOv)graphOv.classList.remove('open')});
+
   function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();renderVaultPanel();renderExecPanel();renderOSSPanel();seedKhoj();
     // Default to "My team" if user has a BU, otherwise show all
     if(SESSION_USER.bu){
@@ -1807,6 +1983,15 @@
     document.getElementById('statHours').textContent=h.toFixed(1);
     document.getElementById('statLive').textContent=filtered.filter(w=>w.status==='Live').length;
     document.getElementById('statPilot').textContent=filtered.filter(w=>w.status==='Pilot').length;
+    // API + data flow stats
+    const allApis=new Set();let flowCount=0;
+    filtered.forEach(w=>{
+      const blocks=WORKFLOW_BLOCKS[w.id]||[];
+      blocks.forEach(bid=>{const b=BLOCKS[bid];if(b&&b.api!=='Built-in')allApis.add(b.api)});
+      flowCount+=blocks.length;
+    });
+    const apiEl=document.getElementById('statAPIs');if(apiEl)apiEl.textContent=allApis.size;
+    const flowEl=document.getElementById('statFlows');if(flowEl)flowEl.textContent=flowCount+' data flows';
   }
 
   function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
