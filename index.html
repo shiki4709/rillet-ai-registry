@@ -2276,7 +2276,7 @@
 
     return '<div class="bd-head">'
       +'<span class="block-dot block-dot-'+b.type+'" style="width:10px;height:10px"></span>'
-      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api">'+esc(b.api)+'</div></div>'
+      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api">'+esc(b.api)+(BLOCK_INTEL[blockId]?' · '+esc(BLOCK_INTEL[blockId].category):'')+'</div></div>'
       +'<button class="bd-close" id="drawerClose">&times;</button></div>'
       +'<div class="bd-body">'
       +(function(){
