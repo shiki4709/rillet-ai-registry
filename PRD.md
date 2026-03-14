@@ -1,24 +1,92 @@
 # Rillet AI Ops — Product Requirements Document
 
-**Version**: 4.0
+**Version**: 5.0
 **Date**: 2026-03-14
 **Owner**: Founders Associate
 
 ---
 
+## Thesis
+
+**AI adoption creates invisible automation sprawl.** Every team builds their own Claude workflows, connects their own APIs, writes their own prompts — and nobody else knows it exists. Within months, a 100-person company has 20+ automations with no inventory, no reuse, no governance, and no way to answer "what AI is running in our company?"
+
+**Companies need an AI operations control plane** to govern and reuse automation safely. Not another workflow builder — a registry that sits above the execution layer and answers: what exists, who owns it, does it work, and should we build something new or reuse what's already there?
+
 ## What This Is
 
-An internal platform for managing all AI automations running across Rillet. It's a registry — a catalog and governance layer — not a runtime. It doesn't execute workflows. Code lives elsewhere (GitHub, n8n, internal tools). This platform tracks what exists, who owns it, how well it works, and whether something new needs to be built.
+An AI operations control plane. It's a registry — a catalog and governance layer — not a runtime. It doesn't execute workflows. Code lives elsewhere (GitHub, n8n, internal tools). This platform tracks what exists, who owns it, how well it works, and whether something new needs to be built.
 
 ## Problem
 
-Companies adopting AI have automations scattered across teams with no visibility. The CEO doesn't know what AI workflows exist, who built them, whether they overlap, if the API keys are healthy, or how much time they actually save. The Chief of Staff can't answer "how many AI automations are we running?" without Slacking 10 people.
+The CEO can't answer "how many AI automations are we running?" without Slacking 10 people. The Chief of Staff doesn't know if Sales and CS built the same workflow independently. Finance doesn't know which automations touch PII. Nobody tracks whether the AI output is actually good or just assumed to be.
 
 At Rillet specifically: AI agents (accrual, audit, P&L flux, board decks) run inside the product, and additional Claude-powered workflows are being built across GTM, Finance, CS, and other teams. There's no single place to see all of them.
 
 ## ICP
 
 Series A-C startups, 50-500 employees, already using LLMs across multiple teams but managing them through spreadsheets, Notion, or nothing. The buyer is the Chief of Staff, Head of BizOps, or Founders Associate — the person responsible for cross-functional ops and AI rollout.
+
+---
+
+## Core Object Model
+
+These are the foundational objects in the system. Everything in the UI is a view into one or more of these.
+
+```
+┌─────────────┐       ┌─────────────┐       ┌─────────────┐
+│   Workflow   │──has──▶│    Block     │──uses──▶│     API     │
+│              │  many │             │        │             │
+│ name         │       │ name        │        │ service     │
+│ description  │       │ type        │        │ credentials │
+│ status       │       │ description │        │ data class  │
+│ saves        │       │ model (AI)  │        │ scope       │
+│ prompt ver   │       │ cost tier   │        │ health      │
+│ quality      │       │             │        │ comments    │
+│ lane         │       └─────────────┘        └─────────────┘
+│ reused_by    │
+└──────┬───────┘
+       │
+       │ belongs to          runs as            owned by
+       ▼                       ▼                   ▼
+┌─────────────┐       ┌─────────────┐       ┌─────────────┐
+│ Business Unit│       │     Run     │       │    Owner     │
+│              │       │             │       │             │
+│ name         │       │ status      │       │ name        │
+│ workflows[]  │       │ started_at  │       │ role        │
+│              │       │ duration    │       │ bu          │
+│              │       │ trigger     │       │             │
+│              │       │ blocks_run  │       │             │
+└─────────────┘       └─────────────┘       └─────────────┘
+```
+
+### Workflow
+The central object. An automation that does a specific job — "Invoice Discrepancy Flagger", "Deal Summary Generator". Has a status (Live/Pilot), a pipeline of Blocks, an Owner, belongs to a Business Unit, and tracks quality over time (prompt version, acceptance rate, reliability label). Classified into a Work Lane (Product/Product Ops/Ops).
+
+### Block
+A logical component in a workflow pipeline. Comes in 5 types: Source, Processing, AI, Output, Approval. Each block connects to an API (or is "Built-in"). AI blocks have a model and cost tier. Blocks are reusable across workflows — the same "HubSpot CRM" block appears in multiple pipelines.
+
+### API
+An external service connection (Stripe, HubSpot, Anthropic, Slack). Has one or more credentials with lifecycle tracking (active/rotating/expired), data classification (PII/Financial/Internal), access scope (which BUs can use it), and permissions (read/write). Has a comment thread for team discussion. APIs are the security surface — this is where credential management, audit trails, and data governance live.
+
+### Run
+A single execution of a workflow. Tracks: status (success/warning/error), timestamp, duration, which blocks ran, what triggered it, and optional error notes. Runs are the evidence that automations are actually working.
+
+### Owner
+A person who creates, maintains, or reviews a workflow. Has a name, role, and optionally a BU. The Owner is who you go to when something breaks. For Medium-risk workflows, the Owner's role determines who reviews output before action.
+
+### Business Unit
+An organizational team (GTM/Sales, Finance, Customer Success, etc.). Workflows belong to a BU. APIs are scoped to BUs. The BU is the primary lens for filtering and access control. Cross-functional roles (Founders Associate) have no BU and see everything.
+
+### Relationships
+
+- A **Workflow** has many **Blocks** (ordered as a pipeline)
+- A **Block** uses one **API** (or is Built-in)
+- An **API** has one or more **Credentials** with data classification
+- A **Workflow** belongs to one **Business Unit**
+- A **Workflow** has one **Owner**
+- A **Workflow** has many **Runs**
+- A **Workflow** can be reused by other **Business Units**
+- An **API** is scoped to specific **Business Units**
 
 ## How It Connects to Actual Automations
 
