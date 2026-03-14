@@ -1,241 +1,288 @@
-# Rillet AI Studio — Product Requirements Document
+# Rillet AI Ops — Product Requirements Document
 
-**Version**: 3.0
-**Date**: 2026-03-13
-**Owner**: Chief of Staff
-**Status**: Live
+**Version**: 4.0
+**Date**: 2026-03-14
+**Owner**: Founders Associate
 
 ---
 
-## 1. Problem
+## What This Is
 
-As AI adoption grows organically across business units, companies face three compounding problems:
+An internal platform for managing all AI automations running across Rillet. It's a registry — a catalog and governance layer — not a runtime. It doesn't execute workflows. Code lives elsewhere (GitHub, n8n, internal tools). This platform tracks what exists, who owns it, how well it works, and whether something new needs to be built.
 
-1. **No visibility** — Teams build AI workflows in isolation. Finance doesn't know Sales already solved a similar problem. Duplicate effort compounds.
-2. **No governance** — Unvetted AI workflows ("shadow AI") run without human review gates, risk classification, or accountability. One bad output reaches a customer or board.
-3. **No reuse** — A workflow built for one BU could serve three others, but there's no mechanism to discover, evaluate, or adopt it.
+## Problem
 
-Without a central system, AI becomes a liability instead of leverage.
+Companies adopting AI have automations scattered across teams with no visibility. The CEO doesn't know what AI workflows exist, who built them, whether they overlap, if the API keys are healthy, or how much time they actually save. The Chief of Staff can't answer "how many AI automations are we running?" without Slacking 10 people.
 
-## 2. Product
+At Rillet specifically: AI agents (accrual, audit, P&L flux, board decks) run inside the product, and additional Claude-powered workflows are being built across GTM, Finance, CS, and other teams. There's no single place to see all of them.
 
-**Rillet AI Studio** is a shared catalog of all AI-assisted workflows running across business units. It provides cross-BU visibility, governance enforcement, and a reuse framework so teams can discover, evaluate, and adopt automations instead of rebuilding them.
+## ICP
 
-### What it is
-- A single-page web dashboard deployed via GitHub Pages
-- Source of truth: `data/registry.json`
-- No backend, no build step, no authentication (internal tool)
+Series A-C startups, 50-500 employees, already using LLMs across multiple teams but managing them through spreadsheets, Notion, or nothing. The buyer is the Chief of Staff, Head of BizOps, or Founders Associate — the person responsible for cross-functional ops and AI rollout.
 
-### What it is not
-- Not a workflow execution engine — it catalogs workflows, not runs them
-- Not a prompt library — it tracks full pipelines (sources, logic, outputs, review gates)
-- Not a project management tool — no sprints, no assignments, no timelines
+## How It Connects to Actual Automations
 
-## 3. Users
+This is a registry, not a runtime:
+- **Code lives elsewhere** — GitHub, internal tools, no-code platforms like n8n or Flowise. The registry links to it. Each workflow entry is metadata about the automation.
+- **Rillet's product AI agents** — accrual, audit, P&L flux, board decks — run inside the product. This registry sits alongside them as the management layer.
+- **No one uploads code.** The blocks represent logical components (data source, AI processing, output destination), not executable code.
 
-| Role | Primary use | Frequency |
-|------|------------|-----------|
-| **BU Lead** (VP Sales, Controller, Head of CS) | See what workflows exist in their BU and others, evaluate reuse candidates | Weekly |
-| **Chief of Staff** | Governance oversight, track coverage across BUs, review requests | Daily |
-| **Builder** (analyst, ops person, engineer) | Add new workflows, document how they work, comment on existing ones | As needed |
-| **Cross-BU browser** (any employee) | Search for automations that could help their team, submit requests | Ad hoc |
+---
 
-## 4. Core Features
+## Core User Flow
 
-### 4.1 Workflow Registry Table
+### 1. Landing Page (Registry)
 
-The primary interface. A sortable, filterable, searchable table of all workflows.
+**What the user sees:**
+- Stats bar: Hours Saved / Week, Live count, Pilot count
+- Controls: "My team" toggle, search bar, status filter (Live/Pilot)
+- Workflow table: expand arrow, Name (with description + data sensitivity tags), BU, Status (with last run timestamp + status dot), Time Saved
+- Sidebar: Recent Runs, API Connections, Popular Across Teams, Open Source Toolbox
 
-**Columns**: Icon, Name + Description, BU, Type (1: Deterministic / 2: Generative), Status (Live / Pilot), Time Saved
+**Key behaviors:**
+- Founders Associate (no BU) sees all workflows by default, "My team" button hidden
+- Users with a BU see their team's workflows by default, "My team" button active
+- Stats update based on active filter (team vs all)
+- Each workflow row shows PII/Financial data tags inline for compliance visibility
+- Last run status (green/amber/red dot + timestamp) shown on every row
 
-**Filters**: Business Unit, Status, Type
-**Search**: Full-text across name and description
-**Sort**: Name, BU, Type, Status, Saves
+### 2. Expanding a Workflow
 
-### 4.2 Expandable Detail Row
+**What the user sees (top to bottom):**
+1. **How it works** — plain-English prompt summary (e.g. "Ingests weekly KPI spreadsheet. Generates a 3-paragraph narrative highlighting WoW changes. Tone-matched to company update style.")
+2. **Pipeline** — visual block flow with arrows: Source → Processing → AI → Output → Approval
+3. **Reliability** — one badge: "Working well", "Works, sometimes needs edits", "New — still being tested", or "Needs improvement"
+4. **Also used by** — other teams reusing this workflow
+5. **Also useful for** — other use case ideas
+6. **Comments** — team discussion with input
 
-Click any workflow to reveal:
+**What was intentionally removed:**
+- Reviewer line + risk badge (redundant — prompt summary already says who reviews)
+- Reuse Intelligence section with Readiness/Maintainability/Output badges (abstract jargon)
+- Stack chips (duplicated what the pipeline shows)
 
-**Pipeline Visualization**
-- Sources (inputs) → AI Logic (processing steps) → Outputs → Review Gate
-- Color-coded chips per stage (slate/teal/plum/gold)
+### 3. Clicking "+ New Automation"
 
-**Governance**
-- Reviewer (role title of human who signs off)
-- Risk level (Low / Medium)
-- Rewrite rate (% of outputs requiring human edits)
-- Reused By (list of BUs currently using this workflow)
+**Step 1: Discover (full-screen chat)**
+- Claude/ChatGPT-style full-screen interface. Messages centered at 640px, input pinned to bottom.
+- Advisor greets user by first name
+- Multi-turn conversation gathers: what they do manually, what systems are involved, how long it takes
+- Time matching handles natural language ("about 3 hours a week", "half a day every month")
+- BU inferred from keywords for cross-functional users, auto-filled for BU-specific users
 
-**Reuse Intelligence**
-- Readiness: High / Medium / Low — how portable the workflow is
-- Design quality: Modular / Coupled / Fragile — how maintainable
-- Output utility: Actionable / Informational / Raw — how directly usable the outputs are
-- Stack: tools and integrations used (chips)
-- Top risk: primary concern when adopting in another BU
+**Before building anything new, the advisor checks:**
+- **Work lane classification** — is this Product (redirect to feature request), Product Ops (tag as graduation candidate), or Ops (proceed)?
+- **Existing workflow matching** — searches registry for workflows with overlapping blocks. If found, shows them in a split-view panel (chat stays on left, workflow detail on right). User can click "This works for me" or "Doesn't fit — build new"
 
-**Comments**
-- Thread per workflow, visible in detail row
-- Any user can add comments (session-stored)
-- Seed data shows real team feedback
+**When ready (1+ blocks + time savings), the advisor generates a build spec:**
+- Pipeline visualization with typed block chips
+- Prompt summary in registry format
+- Model selection guidance (why an LLM is needed, which model, cost tier)
+- Credentials required with vault status
+- Work lane tag (Ops/Product Ops)
+- Owner (from session) and BU
 
-**Other Use Cases**
-- Suggested BU/scenario applications beyond current usage
-- Displayed as chips for quick scanning
+**"Build new workflow" button transitions to Step 2.**
 
-### 4.3 Sidebar Panels
+**Step 2: Build (form + composer)**
+- Form fields pre-filled from chat: Name, BU (dropdown if user has no default), Description, Time This Takes Manually
+- Staged pipeline composer below: block catalog on left (searchable), visual pipeline on right grouped by stage (Source → Processing → AI → Output → Approval) with arrows between stages
+- Blocks show: name, API provider, credential status dot, model tag for AI blocks
+- "Back to chat" returns to Step 1 without losing context
 
-**Cross-BU Reuse Map**
-- Shows which BUs share workflows: `GTM / Sales → Implementation, Customer Success`
-- Auto-computed from `reused_by` fields
+**Step 3: Review & Launch**
+- Credential gate: checks every block's API key against the vault
+  - Ready (green) — key exists, BU has access
+  - Needs access (amber) — key exists but BU not in scope, "Request" button
+  - Missing (red) — no key in vault, "Request" button
+  - Warning: "You can still launch as Pilot — the workflow will be saved but won't execute until all credentials are ready"
+- Review summary: name, BU, description, type, pipeline, credentials, models
+- "Launch as Pilot" button
 
-**AI Studio Library**
-- Chronological feed of registry events (promotions, reuse adoptions, notes)
-- Queryable input field
-- Requests from "Request Workflow" flow appear here
+**Success screen:**
+- Checkmark + workflow name
+- Two metrics: Time to create (elapsed since modal opened) and Time saved (from form)
+- "View in registry" (closes modal, scrolls to + expands the new row) or "Add another"
 
-### 4.4 Add Workflow Modal
+### 4. Clicking an API Name
 
-For builders to register a new workflow.
+Opens a drawer showing:
+1. **Key status** — masked key, active/rotating/expired, expiration date, data classification tags (PII/Financial/Internal), scope, permissions
+2. **Workflows** — who's using this API, with time saved per workflow, clickable
+3. **Recent activity** — last 3 credential events (rotations, access changes, failures)
+4. **Comments** — team discussion per API, add with Enter
 
-**Fields**:
-- Name, BU, Description (required)
-- Type, Risk (classification)
-- Reviewer
-- Details (free text — Claude auto-generates `prompt_summary` from this via API)
+API names are clickable everywhere: block cards, block drawer, composer, pipeline visualizations.
 
-**Behavior**:
-- Inline validation with error messages below fields
-- Required field indicators (red asterisk)
-- Submit button disabled during Claude generation
-- Success toast on completion
-- New workflow added as "Pilot" status
+### 5. Sidebar Panels
 
-### 4.5 Request Workflow Modal
+**Recent Runs** — latest workflow executions with status dots, timestamps, trigger type.
 
-For any team member to request a new automation.
+**API Connections** — two tabs:
+- Connections: each API service with status dot and workflow count, clickable to open detail
+- Activity: recent credential events
+- Badge shows total connected count or flags issues
 
-**Fields**:
-- Business Unit (required)
-- Task description (required) — "What do you want automated?"
-- Time estimate
-- Urgency (Normal / High)
+**Popular Across Teams** — workflows sorted by reuse count.
 
-**Behavior**:
-- Auto-matches against existing workflows on blur — surfaces potential reuse before building new
-- Submission logged to Studio Library feed
-- Confirmation screen after submit
+**Open Source Toolbox** — curated list of relevant open-source projects (Claude Code, Langfuse, n8n, Flowise, Rivet, Portkey, MCP Servers, Anthropic SDK). Each shows what it's useful for at Rillet, GitHub stars, and tags. Click to open repo.
 
-### 4.6 Stats Bar
+---
 
-Three metrics at the top of the page:
-- **Workflows**: total count
-- **Hrs Saved / Wk**: aggregate time savings across all workflows
-- **Governance**: % of workflows with a named reviewer (not TBD)
+## Work Lane Framework
 
-### 4.7 Export
+Every automation request is classified into one of three lanes:
 
-JSON export of the full registry for downstream use.
+| Lane | Who benefits | What happens | Example |
+|------|-------------|--------------|---------|
+| **Product** | End customer directly | Advisor redirects to file a feature request | "Add auto-reconciliation to Rillet" |
+| **Product Ops** | Customer indirectly | Build spec tagged as graduation candidate | "Customer onboarding data migration" |
+| **Ops** | Internal team only | Standard workflow creation | "Weekly sales summary from HubSpot" |
 
-## 5. Data Schema
+## Risk & Reviewer (Auto-detected)
 
-Each workflow entry in `data/registry.json`:
+- **Low risk**: no external-facing outputs. No reviewer needed. All teams encouraged to automate.
+- **Medium risk**: pipeline sends emails, updates Salesforce/Zendesk, or posts to Slack. Reviewer auto-assigned from BU.
+- Users never see risk level or reviewer fields.
 
-| Field | Type | Rules |
+---
+
+## Block System
+
+33 blocks across 5 types:
+
+**Sources (11):** HubSpot CRM, Zendesk Tickets, Google Sheets, Stripe Data, PDF/OCR, Google Drive, BambooHR, RSS Monitor, Mixpanel Events, Delighted NPS, Knowledge Base
+
+**Processing (6):** Sort by Category, Flag if Off, Translate Between Apps, Pull Specific Info, Check Against Rules, Combine Sources
+
+**AI (5):** Claude Summarizer (Sonnet 4), Claude Classifier (Haiku 4.5), Claude Drafter (Sonnet 4), Claude Extractor (Haiku 4.5), Claude Narrator (Sonnet 4)
+
+**Outputs (8):** Slack Alert, Sheets Update, Email Send, PDF Report, Notion Page, Zendesk Update, Salesforce Update, Data Export
+
+**Approval (3):** Manager Approves, Skip Review if Confident, Two People Approve
+
+All non-API blocks labeled "Built-in" instead of technical terms.
+
+### Block Drawer
+
+Click any block to see:
+- Model lifecycle (Active/Deprecated) with cost tier and pricing for AI blocks
+- Data classification (PII/Financial/Internal) with scope and permissions
+- "Used in Your Team" vs "Used by Other Teams" with role-specific relevance hints
+
+### Model Selection
+
+- **Sonnet 4** ($3/$15 per 1M tokens): Summarization, drafting, narration — tasks needing nuance
+- **Haiku 4.5** ($0.80/$4 per 1M tokens): Classification, extraction — structured tasks where speed matters
+
+Cost is tracked at the API key level, not per workflow. The registry shows which model each workflow uses so spending can be traced back from the Anthropic dashboard.
+
+---
+
+## Data Model
+
+### Workflow (registry.json)
+
+| Field | Type | Notes |
 |-------|------|-------|
-| `id` | number | Sequential, never reused |
-| `name` | string | Title case, max 50 chars |
-| `desc` | string | One sentence, max 120 chars |
-| `bu` | string | Must match existing BU list |
-| `type` | number | 1 = deterministic, 2 = generative |
-| `risk` | string | "Low" or "Medium" |
-| `status` | string | "Live" or "Pilot" |
-| `saves` | string | "N hrs/wk" or "N hrs/mo" or "—" |
-| `day` | number | Day offset for ordering |
-| `prompt_summary` | string | Structured: inputs → logic → output → reviewer |
-| `reused_by` | string[] | BU names reusing this workflow |
-| `reviewer` | string | Role title, "TBD" if unknown |
-| `rewrite_rate` | string | "N%" or "—%" |
+| id | number | Sequential |
+| name | string | Max 50 chars |
+| desc | string | Max 120 chars |
+| bu | string | Must match existing BU |
+| type | number | 1 = rule-based, 2 = AI-powered. Auto-detected. |
+| risk | string | "Low" or "Medium". Auto-detected from output blocks. |
+| status | string | "Live" or "Pilot" |
+| saves | string | "N hrs/wk" or "N hrs/mo" |
+| prompt_summary | string | 2-3 sentences: ingests → logic → output → approval |
+| reused_by | string[] | BU names |
+| reviewer | string | Auto-assigned for Medium risk. Empty for Low. |
+| rewrite_rate | string | "N%" or "—%" |
 
-### Supplementary Data (client-side)
+### Prompt Versioning (per workflow)
 
-| Dataset | Per-workflow fields |
-|---------|-------------------|
-| **Reuse Intelligence** | stack, reusable components, BU-specific items, readiness (H/M/L), days to live, reuse setup days, risks[] |
-| **Quality Signals** | design (Modular/Coupled/Fragile) + note, output (Actionable/Informational/Raw) + note |
-| **Pipeline** | sources[], ai[], outputs[], gate |
-| **Icons** | 2-letter abbreviation, background color |
-| **Comments** | author, text, timestamp (session-stored) |
-| **Use Cases** | string[] of suggested applications |
+| Field | Purpose |
+|-------|---------|
+| version | Semantic versioning (X.Y.Z) |
+| lastUpdated | Date of last change |
+| changelog | What changed |
+| previousVersions | Version history |
 
-## 6. Business Units
+### Output Quality (per workflow)
 
-GTM / Sales, Finance, Customer Success, Implementation, Chief of Staff, People Ops, Product, Marketing, Legal, Procurement
+| Field | Purpose |
+|-------|---------|
+| totalRuns | How many times it's run |
+| accepted | Output used as-is |
+| edited | Output used with changes |
+| rejected | Output discarded |
+| trend | improving / stable / needs attention / new |
 
-## 7. Classification Framework
+Displayed as plain language: "Working well", "Works, sometimes needs edits", "New — still being tested", "Needs improvement". No percentages shown to users.
 
-### Type
-- **Type 1 — Deterministic**: Fixed rules, thresholds, regex. Output is predictable given same input.
-- **Type 2 — Generative**: LLM-based generation, summarization, classification. Output varies; more human review needed.
+### API Connections
 
-### Risk
-- **Low**: Output is informational or advisory. No action taken without human sign-off.
-- **Medium**: Output directly triggers or informs a consequential action. Reviewer gate mandatory.
+Each credential tracks: name, service, masked key, status (active/rotating/expired), who added it, expiration, data classification (PII/Financial/Internal), access scope (which BUs), permissions (read/write), last audit date.
 
-### Reuse Readiness
-- **High**: Portable with minimal config changes. Prompt templates and logic transfer directly.
-- **Medium**: Requires integration work (API credentials, schema mapping) but core logic transfers.
-- **Low**: Deeply tied to source BU's data, terminology, or tools. Major customization needed.
+Each API has a comment thread for team discussion.
 
-### Design Quality
-- **Modular**: Easy to maintain, extend, and configure. Components are decoupled.
-- **Coupled**: Works but tightly integrated with specific systems. Changes ripple.
-- **Fragile**: Hardcoded assumptions. Difficult to modify without breaking.
+---
 
-### Output Utility
-- **Actionable**: Outputs directly drive decisions or trigger downstream workflows.
-- **Informational**: Outputs support decisions but require human interpretation.
-- **Raw**: Outputs need significant processing or context before they're useful.
+## Business Units
 
-## 8. Architecture
+GTM / Sales, Finance, Customer Success, Implementation, People Ops, Product, Marketing, Legal, Procurement
 
-```
-index.html          — Single-file app (HTML + CSS + JS)
-data/registry.json  — Source of truth
-.github/workflows/  — GitHub Actions deploy to Pages on push to main
-```
+Chief of Staff is a role, not a BU. The Founders Associate has no default BU and sees all workflows.
 
-- **No backend**: Static site, data loaded at runtime from JSON
-- **No build step**: Ship the HTML directly
-- **No auth**: Internal tool, access controlled at network/repo level
-- **Claude API**: Optional integration for auto-generating prompt summaries (requires API key in localStorage)
+---
 
-## 9. Non-Goals (v3)
+## Session & Identity
 
-- User authentication or role-based access
-- Workflow execution or scheduling
-- Real-time collaboration (comments are session-scoped)
-- Notifications or alerts
-- Integration with Slack, Jira, or other tools
-- Mobile-optimized layout (responsive but desktop-first)
-- Audit trail or change history (git log serves this purpose)
+Users are logged in with name, initials, BU (if applicable), and role. BU is auto-filled in forms. Users without a BU (cross-functional roles) see the BU dropdown in the build form and the chat infers BU from keywords.
 
-## 10. Future Considerations
+Current demo user: Haruka Takamori, Founders Associate (no BU — sees everything).
 
-- **Persistent comments**: Store in JSON or external service instead of session
-- **Request tracking**: Status pipeline for workflow requests (Submitted → Assessed → Building → Live)
-- **Reuse adoption flow**: One-click "I want this for my BU" with automated setup checklist
-- **Usage metrics**: Actual run counts, error rates, time saved per execution
-- **Slack integration**: Surface new workflows and requests in relevant channels
-- **Search by similarity**: Semantic search across workflow descriptions and prompt summaries
-- **Version history**: Track changes to individual workflows over time
+---
 
-## 11. Success Metrics
+## Known Technical Limitations
 
-| Metric | Target | How measured |
-|--------|--------|-------------|
-| Workflows cataloged | 20+ within 90 days | Count in registry |
-| Cross-BU reuse | 30%+ of workflows reused by at least 1 other BU | `reused_by` field |
-| Governance coverage | 100% of workflows have named reviewer | Governance stat |
-| Time saved | 40+ hrs/wk aggregate | Saves field sum |
-| Request-to-live | < 14 days from request to pilot | Day field tracking |
-| Shadow AI reduction | 0 unvetted workflows discovered per quarter | Studio Library signals |
+These are acknowledged constraints of the demo, framed as a production roadmap:
+
+1. **Keyword matching is brittle** — the advisor uses keyword-based block matching. Production would use an actual Claude API call.
+2. **No persistence** — all state resets on page refresh. Production needs a backend.
+3. **No runtime connection** — the registry is metadata only. Production would integrate with the execution layer.
+4. **No prompt drift detection** — monitoring rewrite rate trends would catch degrading prompts. Currently static data.
+5. **Single API key per service** — production should support per-environment keys and per-team scoping.
+6. **No cost tracking** — token usage can't be estimated from the UI. Requires runtime instrumentation.
+
+---
+
+## 16 Workflows in Demo
+
+| ID | Name | BU | Status | Saves |
+|----|------|----|--------|-------|
+| 1 | Deal Summary Generator | GTM / Sales | Live | 2.5 hrs/wk |
+| 2 | Invoice Discrepancy Flagger | Finance | Live | 4 hrs/wk |
+| 3 | Customer Health Score Digest | Customer Success | Live | 3 hrs/wk |
+| 4 | SOW Clause Extractor | Implementation | Live | 1.5 hrs/wk |
+| 5 | Weekly Metrics Narrator | Finance | Live | 2 hrs/wk |
+| 6 | Support Ticket Classifier | Customer Success | Live | 5 hrs/wk |
+| 7 | Competitive Intel Summarizer | GTM / Sales | Live | 3 hrs/wk |
+| 8 | Expense Policy Checker | Finance | Pilot | 2 hrs/wk |
+| 9 | Onboarding Checklist Generator | People Ops | Live | 1.5 hrs/wk |
+| 10 | Board Deck Data Puller | Finance | Pilot | 6 hrs/mo |
+| 11 | RFP Response Drafter | GTM / Sales | Live | 8 hrs/wk |
+| 12 | Contract Renewal Risk Scorer | Customer Success | Live | 3 hrs/wk |
+| 13 | API Endpoint Provisioner | Product | Pilot | 4 hrs/wk |
+| 14 | Investor Update Drafter | Finance | Live | 5 hrs/mo |
+| 15 | GTM Efficiency Analyzer | GTM / Sales | Pilot | 3 hrs/wk |
+| 16 | Cross-Functional Standup Digest | GTM / Sales | Live | 4 hrs/wk |
+
+---
+
+## Design Principles
+
+1. **No jargon** — "Rule-based" not "Type 1", "Working well" not "83% accepted", "Translate Between Apps" not "Schema Mapper"
+2. **Don't show what users can't act on** — removed Health grades, risk badges, reviewer lines that repeated the prompt summary
+3. **Chat first, form second** — discover before building. Check if it already exists before creating new.
+4. **Auto-detect everything possible** — risk, reviewer, type, BU. Don't ask the user what the system can figure out.
+5. **Every element earns its space** — if it doesn't help the user make a decision or take an action, cut it.
