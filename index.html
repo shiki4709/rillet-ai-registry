@@ -2276,80 +2276,38 @@
 
     return '<div class="bd-head">'
       +'<span class="block-dot block-dot-'+b.type+'" style="width:10px;height:10px"></span>'
-      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api"><span data-api="'+esc(b.api)+'">'+esc(b.api)+'</span> \u00B7 '+b.type+'</div></div>'
+      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api">'+esc(b.api)+'</div></div>'
       +'<button class="bd-close" id="drawerClose">&times;</button></div>'
       +'<div class="bd-body">'
-      +'<div class="bd-section"><div class="bd-desc" style="font-size:var(--text-sm);line-height:1.6">'+esc(b.desc)+'</div></div>'
       +(function(){
-        const intel=BLOCK_INTEL[blockId];if(!intel)return'';
-        let ih='<div class="bd-section"><div class="bd-label" style="display:flex;align-items:center;gap:6px">'+esc(intel.category)+'</div>';
-        // Best for / Not for
-        ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--green);font-weight:600;margin-bottom:2px">Best for</div><div style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.5">'+esc(intel.bestFor)+'</div></div>';
-        ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--amber);font-weight:600;margin-bottom:2px">Not for</div><div style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.5">'+esc(intel.notFor)+'</div></div>';
-        // Pros/cons for AI blocks
-        if(intel.pros)ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--teal);font-weight:600;margin-bottom:2px">Pros</div><div style="font-size:var(--text-sm);color:var(--tx-2)">'+esc(intel.pros)+'</div></div>';
-        if(intel.cons)ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--rust);font-weight:600;margin-bottom:2px">Cons</div><div style="font-size:var(--text-sm);color:var(--tx-2)">'+esc(intel.cons)+'</div></div>';
-        // Insights you can get
+        const intel=BLOCK_INTEL[blockId];if(!intel)return'<div class="bd-section"><div class="bd-desc">'+esc(b.desc)+'</div></div>';
+        let ih='';
+        // What it does
+        ih+='<div class="bd-section" style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.6">'+esc(intel.bestFor)+'</div>';
+        // When NOT to use it
+        ih+='<div class="bd-section"><div style="font-size:var(--text-xs);color:var(--amber);font-weight:600;margin-bottom:4px">Instead, use</div><div style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.5">'+esc(intel.notFor)+'</div></div>';
+        // Insights chips
         if(intel.insights&&intel.insights.length){
-          ih+='<div style="margin-bottom:8px"><div style="font-size:var(--text-xs);color:var(--tx-3);font-weight:600;margin-bottom:4px">Insights you can get</div>';
-          ih+='<div style="display:flex;flex-wrap:wrap;gap:4px">'+intel.insights.map(i=>'<span style="font-size:var(--text-xs);padding:2px 6px;border-radius:3px;background:var(--surface-2);color:var(--tx-2)">'+esc(i)+'</span>').join('')+'</div></div>';
+          ih+='<div class="bd-section"><div style="font-size:var(--text-xs);color:var(--tx-3);font-weight:600;margin-bottom:4px">What you get</div>';
+          ih+='<div style="display:flex;flex-wrap:wrap;gap:4px">'+intel.insights.map(i=>'<span style="font-size:var(--text-xs);padding:3px 8px;border-radius:3px;background:var(--surface-2);color:var(--tx)">'+esc(i)+'</span>').join('')+'</div></div>';
         }
-        // Latest update
-        if(intel.lastUpdate)ih+='<div style="font-size:var(--text-xs);color:var(--tx-3)">'+esc(intel.lastUpdate)+'</div>';
-        ih+='</div>';
+        // Pros/cons for AI blocks — one line each
+        if(intel.pros||intel.cons){
+          ih+='<div class="bd-section">';
+          if(intel.pros)ih+='<div style="font-size:var(--text-sm);color:var(--tx-2);margin-bottom:4px"><span style="color:var(--green)">+</span> '+esc(intel.pros)+'</div>';
+          if(intel.cons)ih+='<div style="font-size:var(--text-sm);color:var(--tx-2)"><span style="color:var(--red)">−</span> '+esc(intel.cons)+'</div>';
+          ih+='</div>';
+        }
         return ih;
       })()
-      +modelHtml
-      +credHtml
-      +'<div class="bd-section"><div class="bd-label">Health Monitor</div><div class="health-grid">'
-      +'<div class="health-item"><div class="health-val '+(h.uptime&&parseFloat(h.uptime)>=99.5?'health-good':'health-warn')+'">'+esc(h.uptime||'—')+'</div><div class="health-lbl">Uptime</div></div>'
-      +'<div class="health-item"><div class="health-val '+hCls(h.errorRate)+'">'+esc(h.errorRate||'—')+'</div><div class="health-lbl">Error Rate</div></div>'
-      +'<div class="health-item"><div class="health-val">'+esc(h.latency||'—')+'</div><div class="health-lbl">Avg Latency</div></div>'
-      +'<div class="health-item"><div class="health-val">'+esc(h.lastRun||'—')+'</div><div class="health-lbl">Last Run</div></div>'
-      +'</div></div>'
-      +flowHtml
-      +execHtml
       +(usedIn.length?(function(){
-        // Split into: workflows in user's BU vs other BUs
-        const myBU=SESSION_USER.bu;
-        const inMyBU=usedIn.filter(w=>w.bu===myBU);
-        const inOtherBU=usedIn.filter(w=>w.bu!==myBU);
-        let html='';
-        // Relevance to user's role
-        if(inMyBU.length){
-          html+='<div class="bd-section"><div class="bd-label" style="color:var(--teal)">Used in Your Team ('+esc(myBU)+')</div><div class="bd-wf-list">';
-          inMyBU.forEach(w=>{
-            const stCls=w.status==='Live'?'badge-live':'badge-pilot';
-            const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
-            html+='<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:var(--text-xs)">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.saves||'—')+' saved</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
-          });
-          html+='</div></div>';
-        }else{
-          // No workflows in user's BU — suggest relevance
-          html+='<div class="bd-section"><div class="bd-label" style="color:var(--teal)">Relevant to '+esc(myBU)+'?</div><div class="bd-desc" style="font-size:.6875rem;line-height:1.5">';
-          const otherBUs=[...new Set(inOtherBU.map(w=>w.bu))];
-          html+=otherBUs.length?esc(otherBUs.join(', '))+' already use'+(otherBUs.length===1?'s':'')+' this block. ':'';
-          // Generate relevance hint based on block type + user BU
-          const relevanceHints={
-            'Finance':{'source':'Pull financial data for reconciliation or reporting.','ai':'Automate analysis of invoices, expenses, or financial narratives.','transform':'Validate transactions against policies or flag anomalies.','output':'Push results to accounting systems or audit trails.','gate':'Add approval step for payment actions.'},
-            'GTM / Sales':{'source':'Ingest pipeline data for deal tracking.','ai':'Generate deal summaries or score leads automatically.','transform':'Route or categorize incoming opportunities.','output':'Alert the team on deal changes or generate reports.','gate':'Gate outbound communications for review.'},
-            'Customer Success':{'source':'Pull support tickets or health signals.','ai':'Summarize customer interactions or predict churn.','transform':'Aggregate signals across touchpoints.','output':'Notify CSMs or update dashboards.','gate':'Review escalations before action.'}
-          };
-          const hints=relevanceHints[myBU];
-          if(hints&&hints[b.type])html+=hints[b.type];
-          else html+='This block could be part of a workflow in '+esc(myBU)+'.';
-          html+='</div></div>';
-        }
-        // Other teams using it
-        if(inOtherBU.length){
-          html+='<div class="bd-section"><div class="bd-label">Used by Other Teams ('+inOtherBU.length+')</div><div class="bd-wf-list">';
-          inOtherBU.forEach(w=>{
-            const stCls=w.status==='Live'?'badge-live':'badge-pilot';
-            const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
-            html+='<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:var(--text-xs)">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.bu)+'</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
-          });
-          html+='</div></div>';
-        }
+        let html='<div class="bd-section"><div class="bd-label">Used in '+usedIn.length+' workflow'+(usedIn.length!==1?'s':'')+'</div><div class="bd-wf-list">';
+        usedIn.forEach(w=>{
+          const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+          const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+          html+='<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:var(--text-xs)">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.bu)+'</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
+        });
+        html+='</div></div>';
         return html;
       })():'')
       +'</div>';
