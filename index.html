@@ -2077,7 +2077,7 @@
       +'<span class="block-health-dot" style="background:'+hColor+'"></span>'
       +'<span class="block-dot block-dot-'+b.type+'"></span>'
       +'<div><div class="block-label">'+esc(b.name)+'</div>'
-      +'<div class="block-api" data-api="'+esc(b.api)+'">'+esc(b.api)+'</div></div></div>';
+      +'<div class="block-api">'+esc(b.api)+'</div></div></div>';
   }
   function renderPipeline(id){
     const blockIds=WORKFLOW_BLOCKS[id];if(!blockIds)return'';
