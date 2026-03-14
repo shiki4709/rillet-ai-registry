@@ -2520,9 +2520,19 @@
 
   // Click block cards — detect workflow context from detail row
   document.addEventListener('click',e=>{
-    // Check for API label click first (can be inside a block card)
+    // Check for API label click — only when clicking directly on the API text, not the whole block
     const apiEl=e.target.closest('[data-api]');
-    if(apiEl){
+    if(apiEl&&!apiEl.closest('[data-block]')){
+      // API click outside a block card (e.g. in drawer header) — open API detail
+      const apiName=apiEl.dataset.api;
+      if(apiName&&apiName!=='Internal'&&apiName!=='Custom'&&apiName!=='Rule Engine'&&apiName!=='Built-in'){
+        e.stopPropagation();
+        openApiDetail(apiName);
+        return;
+      }
+    }
+    if(apiEl&&apiEl.closest('[data-block]')&&e.target===apiEl){
+      // API text clicked directly inside a block card — open API detail instead of block
       const apiName=apiEl.dataset.api;
       if(apiName&&apiName!=='Internal'&&apiName!=='Custom'&&apiName!=='Rule Engine'&&apiName!=='Built-in'){
         e.stopPropagation();
@@ -2554,7 +2564,7 @@
   document.getElementById('tableBody').addEventListener('click',e=>{
     // API clicks inside blocks should open API detail, not the block
     const apiEl=e.target.closest('[data-api]');
-    if(apiEl){const an=apiEl.dataset.api;if(an&&an!=='Internal'&&an!=='Custom'&&an!=='Rule Engine'&&an!=='Built-in'){e.stopPropagation();openApiDetail(an);return}}
+    if(apiEl&&e.target===apiEl){const an=apiEl.dataset.api;if(an&&an!=='Internal'&&an!=='Custom'&&an!=='Rule Engine'&&an!=='Built-in'){e.stopPropagation();openApiDetail(an);return}}
     if(e.target.closest('[data-block]')){e.stopPropagation();return}
     if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;
     const row=e.target.closest('tr.data-row');if(!row)return;
