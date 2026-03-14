@@ -1345,12 +1345,12 @@
     'delighted-pull':{name:'Delighted NPS',type:'source',api:'Delighted',desc:'NPS scores and feedback'},
     'knowledge-base':{name:'Knowledge Base',type:'source',api:'Notion',desc:'Internal docs and past responses'},
     // Transforms
-    'keyword-classify':{name:'Auto-Categorizer',type:'transform',api:'Built-in',desc:'Sorts items into categories by keywords'},
-    'threshold-check':{name:'Threshold Alert',type:'transform',api:'Built-in',desc:'Flags when values go above or below a limit'},
-    'schema-map':{name:'Field Mapper',type:'transform',api:'Built-in',desc:'Converts field names between systems'},
-    'regex-extract':{name:'Pattern Finder',type:'transform',api:'Built-in',desc:'Finds and extracts specific patterns from text'},
-    'policy-validator':{name:'Policy Checker',type:'transform',api:'Built-in',desc:'Checks data against company policy rules'},
-    'signal-aggregator':{name:'Data Combiner',type:'transform',api:'Built-in',desc:'Merges data from multiple sources into one'},
+    'keyword-classify':{name:'Sort by Category',type:'transform',api:'Built-in',desc:'Automatically puts items in the right bucket based on what they contain'},
+    'threshold-check':{name:'Flag if Off',type:'transform',api:'Built-in',desc:'Alerts you when a number is too high or too low'},
+    'schema-map':{name:'Translate Between Apps',type:'transform',api:'Built-in',desc:'Makes data from one app readable by another — like a translator between systems'},
+    'regex-extract':{name:'Pull Specific Info',type:'transform',api:'Built-in',desc:'Grabs specific pieces of info from messy text — like finding all dollar amounts in an email'},
+    'policy-validator':{name:'Check Against Rules',type:'transform',api:'Built-in',desc:'Compares data against your company rules and flags anything that doesn\'t comply'},
+    'signal-aggregator':{name:'Combine Sources',type:'transform',api:'Built-in',desc:'Pulls data from multiple places and merges it into one view'},
     // AI (with model info)
     'claude-summarize':{name:'Claude Summarizer',type:'ai',api:'Anthropic',desc:'Summarize text with Claude',model:'claude-sonnet-4-20250514'},
     'claude-classify':{name:'Claude Classifier',type:'ai',api:'Anthropic',desc:'LLM-based classification and scoring',model:'claude-haiku-4-5-20251001'},
@@ -1367,9 +1367,9 @@
     'salesforce-update':{name:'Salesforce Update',type:'output',api:'Salesforce',desc:'Update CRM records'},
     'json-export':{name:'Data Export',type:'output',api:'Built-in',desc:'Output structured data for other systems'},
     // Gates
-    'manager-approve':{name:'Manager Review',type:'gate',api:'Built-in',desc:'Requires manager sign-off before action'},
-    'confidence-gate':{name:'Auto-Approve',type:'gate',api:'Built-in',desc:'Skips review if AI confidence is high enough'},
-    'dual-review':{name:'Two-Person Review',type:'gate',api:'Built-in',desc:'Requires two people to approve'}
+    'manager-approve':{name:'Manager Approves',type:'gate',api:'Built-in',desc:'Pauses the workflow until a manager says it\'s OK to proceed'},
+    'confidence-gate':{name:'Skip Review if Confident',type:'gate',api:'Built-in',desc:'If the AI is confident enough, it goes through automatically — otherwise a human checks'},
+    'dual-review':{name:'Two People Approve',type:'gate',api:'Built-in',desc:'Two different people need to say OK before anything happens'}
   };
 
   // Which blocks compose each workflow (ordered left→right)
