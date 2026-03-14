@@ -8,68 +8,89 @@
 
 ## Thesis
 
-**AI adoption creates invisible automation sprawl.** Every team builds their own Claude workflows, connects their own APIs, writes their own prompts — and nobody else knows it exists. Within months, a 100-person company has 20+ automations with no inventory, no reuse, no governance, and no way to answer "what AI is running in our company?"
+**AI adoption creates operational chaos before it creates efficiency.**
 
-**Companies need an AI operations control plane** to govern and reuse automation safely. Not another workflow builder — a registry that sits above the execution layer and answers: what exists, who owns it, does it work, and should we build something new or reuse what's already there?
+Someone writes a prompt in ChatGPT. Someone else builds an n8n workflow. Another team adds an internal script. Product ships an AI feature. Finance automates reports with Claude. Within months, a 100-person company has dozens of AI automations — and nobody knows they exist, who owns them, if they still work, if they overlap, or how much value they create.
 
-## The Bigger Idea: AI Work Graph
+The problem is not building AI workflows. The problem is **managing AI inside organizations.**
 
-The registry is stage one. But the system is quietly building something more powerful — **a structured map of how work actually happens in a company.**
+The stack of an AI-powered company will look like this:
 
-Each workflow describes a work path: where data comes from, how it's processed, where AI is applied, where the output goes, where humans intervene. One workflow is a recipe. Hundreds of workflows become a graph — a living model of how the company operates.
+```
+AI models (Claude, GPT)
+        ↓
+Automation tools (agents, n8n, scripts, no-code)
+        ↓
+AI operations system  ← this layer is missing
+        ↓
+Humans / leadership
+```
+
+Every technology wave creates a control layer: cloud infrastructure got Datadog, microservices got service registries, data pipelines got data catalogs, ML got MLFlow. AI automation is heading toward the same inflection point — and the control layer doesn't exist yet.
+
+**This system is that missing layer.** Not a better agent builder. Not a better prompt tool. A system for managing AI work across organizations. Built for operators — Chief of Staff, BizOps, RevOps, Finance Ops — the people who run the company but have no tooling for automation governance.
+
+## The IP: AI Work Graph
+
+The registry is the entry point. The real asset is what it builds over time — **a structured model of how work flows through the company.**
+
+Each workflow defines a work path. One workflow is a recipe. Hundreds of workflows become a graph — a living map of the organization's operational structure that no org chart, dashboard, or Slack channel can provide.
 
 ```
 HubSpot → processing → Claude → Slack
 Zendesk → classifier → Salesforce
-Google Sheets → Claude narrator → board deck
-Stripe → threshold check → email alert
+Stripe  → threshold  → email alert
+Sheets  → narrator   → board deck
 ```
 
-This graph answers questions no other system can:
+The AI Work Graph models:
 
-- Where is AI touching the company?
-- Where is work still manual?
-- Which teams depend on the same data?
-- Where are the bottlenecks?
-- What automations should be built next?
+- **Workflows** — what automated work exists
+- **Teams** — who owns and uses each workflow
+- **Data sources** — where information originates
+- **AI touchpoints** — where models make decisions
+- **Outputs** — where results go
+- **Approvals** — where humans intervene
+- **Dependencies** — what breaks when something changes
 
-And eventually, it can simulate: **if we automate this node, what downstream work disappears?**
+Over time, this graph answers questions no other system can:
 
-That's organizational systems intelligence.
+| Question | What it reveals |
+|----------|----------------|
+| Where is AI touching the company? | Adoption map |
+| Where is work still manual? | Automation opportunities |
+| Which teams depend on the same data? | Hidden dependencies |
+| Which automations overlap? | Redundancy waste |
+| Where are the failure points? | Operational risk |
+| What should be automated next? | Prioritized roadmap |
 
-### Why This Is a Category
+And eventually: **if we automate this node, what downstream work disappears?** That's organizational systems intelligence.
 
-Most AI tooling focuses on building agents, writing prompts, or running workflows. Very few focus on **AI system management** — the layer above execution. But as AI adoption grows, that layer becomes critical.
+### Category Positioning
 
-The precedent exists in other domains:
+Every technology wave creates a management layer once adoption reaches critical mass:
 
-| Domain | The "graph" tool | What it maps |
-|--------|-----------------|--------------|
-| Infrastructure | Datadog | How servers and services connect |
-| Data | dbt + data catalogs | How data flows and transforms |
-| Machine Learning | MLFlow | How models are trained and deployed |
-| **AI Operations** | **This** | **How work flows across the company** |
+| Wave | Chaos | Control layer that emerged |
+|------|-------|---------------------------|
+| Cloud infrastructure | Servers everywhere | Datadog, New Relic |
+| Microservices | Services everywhere | Service registries, Istio |
+| Data pipelines | Pipelines everywhere | dbt, data catalogs |
+| Machine learning | Models everywhere | MLFlow, model registries |
+| **AI automation** | **Workflows everywhere** | **??? (this)** |
 
-### Who This Is For
-
-Not engineers. **Operators.**
-
-- Chief of Staff
-- BizOps / RevOps
-- Founders Associate
-- Finance Ops
-
-These people run the company but have no tooling for automation governance. That's the gap.
+Most AI startups build better agents, better prompts, better automation tools. This sits at a different level of abstraction — **how organizations manage AI work.** That's infrastructure. Infrastructure companies tend to become large because every organization eventually needs them.
 
 ### Evolution Path
 
 | Stage | What it does | Status |
 |-------|-------------|--------|
-| **1. Registry** | Catalog all AI automations | Built (this demo) |
-| **2. Governance** | Track reliability, ownership, credentials, data classification | Built (this demo) |
-| **3. Discovery** | Find reuse, match existing workflows, prevent duplication | Built (this demo) |
-| **4. Work Graph** | Map how work flows across the company. Visualize dependencies. | Next |
-| **5. Optimization Engine** | Recommend automations: "You spend 6 hrs/wk on this. Two workflows already produce 80% of the inputs. Build this." | Future |
+| **1. Registry** | Catalog all AI automations | Built |
+| **2. Governance** | Track reliability, ownership, credentials, data classification | Built |
+| **3. Discovery** | Find reuse, match existing workflows, prevent duplication | Built |
+| **4. Work Graph** | Map how work flows across the company. Visualize dependencies between workflows, teams, and data. | Next |
+| **5. Optimization** | Recommend automations: "You spend 6 hrs/wk on this report. Two workflows already produce 80% of the inputs. Build this." | Future |
+
+At Stage 5, the system becomes a co-pilot for organizational efficiency.
 
 ## What This Is Today
 
