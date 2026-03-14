@@ -2381,7 +2381,7 @@
   function openDrawer(blockId,wfContext){
     activeBlockId=blockId;
     activeWfId=wfContext||null;
-    try{drawer.innerHTML=renderDrawerContent(blockId)}catch(err){console.error('Drawer render error:',err);drawer.innerHTML='<div style="padding:20px;color:red">Error: '+err.message+'</div>'}
+    try{drawer.innerHTML=renderDrawerContent(blockId)}catch(err){alert('Render error for '+blockId+': '+err.message);drawer.innerHTML='<div style="padding:20px;color:red">Error: '+err.message+'</div>'}
     drawer.classList.add('open');
     drawerOpen=true;
     // Set up close button
@@ -2569,7 +2569,7 @@
       let wfCtx=null;
       const detailInner=card.closest('.detail-inner');
       if(detailInner){const detailRow=detailInner.closest('tr.detail-row');if(detailRow){const dataRow=detailRow.previousElementSibling;if(dataRow)wfCtx=parseInt(dataRow.dataset.id)}}
-      if(drawerOpen&&activeBlockId===bid){closeDrawer()}else{openDrawer(bid,wfCtx)}
+      if(drawerOpen&&activeBlockId===bid){closeDrawer()}else{try{openDrawer(bid,wfCtx)}catch(err){alert('Drawer error: '+err.message)}}
       return;
     }
     if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;
