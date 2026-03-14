@@ -19,7 +19,7 @@ How it connects to actual automations:
 
 Architecture Overview
 
-1. **Session & Identity** — Users are logged in with name, BU, and role (`SESSION_USER`). BU is auto-filled everywhere. Currently set to Founders Associate / Chief of Staff.
+1. **Session & Identity** — Users are logged in with name, BU, and role (`SESSION_USER`). BU is auto-filled if the user belongs to one. Founders Associate has no BU (cross-functional role, sees all workflows).
 2. **Automation Advisor (Chat)** — Full-screen Claude-style chat interface (Step 1). Gathers context across turns, checks for existing workflows, classifies the work lane, decomposes multi-workflow problems, generates build specs.
 3. **Work Lane Classification** — Every request is classified as Product, Product Ops, or Ops.
 4. **Existing Workflow Matching** — Before building anything new, the advisor searches the registry for workflows that might already solve the problem. Shows matches in a split-view panel so the user can evaluate without losing their conversation.
@@ -147,7 +147,7 @@ Each entry in registry.json:
 
 Business Units
 
-GTM / Sales, Finance, Customer Success, Implementation, Chief of Staff, People Ops, Product, Marketing, Legal, Procurement
+GTM / Sales, Finance, Customer Success, Implementation, People Ops, Product, Marketing, Legal, Procurement
 
 Things You Must Never Do
 

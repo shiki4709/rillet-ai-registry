@@ -1340,17 +1340,17 @@
     'ocr-ingest':{name:'PDF / OCR',type:'source',api:'AWS Textract',desc:'Extract text from PDF documents'},
     'drive-scan':{name:'Google Drive',type:'source',api:'Google Drive',desc:'Scan files and folders'},
     'bamboo-pull':{name:'BambooHR',type:'source',api:'BambooHR',desc:'Employee records and org data'},
-    'rss-feed':{name:'RSS Monitor',type:'source',api:'Custom',desc:'Monitor RSS and changelog feeds'},
+    'rss-feed':{name:'RSS Monitor',type:'source',api:'RSS',desc:'Monitor RSS and changelog feeds'},
     'mixpanel-pull':{name:'Mixpanel Events',type:'source',api:'Mixpanel',desc:'Product usage and event data'},
     'delighted-pull':{name:'Delighted NPS',type:'source',api:'Delighted',desc:'NPS scores and feedback'},
     'knowledge-base':{name:'Knowledge Base',type:'source',api:'Notion',desc:'Internal docs and past responses'},
     // Transforms
-    'keyword-classify':{name:'Keyword Classifier',type:'transform',api:'Rule Engine',desc:'Categorize by keyword matching'},
-    'threshold-check':{name:'Threshold Checker',type:'transform',api:'Rule Engine',desc:'Flag values outside thresholds'},
-    'schema-map':{name:'Schema Mapper',type:'transform',api:'Custom',desc:'Map fields between systems'},
-    'regex-extract':{name:'Regex Extractor',type:'transform',api:'Rule Engine',desc:'Extract patterns from text'},
-    'policy-validator':{name:'Policy Validator',type:'transform',api:'Rule Engine',desc:'Validate against policy rules'},
-    'signal-aggregator':{name:'Signal Aggregator',type:'transform',api:'Custom',desc:'Merge signals from multiple sources'},
+    'keyword-classify':{name:'Auto-Categorizer',type:'transform',api:'Built-in',desc:'Sorts items into categories by keywords'},
+    'threshold-check':{name:'Threshold Alert',type:'transform',api:'Built-in',desc:'Flags when values go above or below a limit'},
+    'schema-map':{name:'Field Mapper',type:'transform',api:'Built-in',desc:'Converts field names between systems'},
+    'regex-extract':{name:'Pattern Finder',type:'transform',api:'Built-in',desc:'Finds and extracts specific patterns from text'},
+    'policy-validator':{name:'Policy Checker',type:'transform',api:'Built-in',desc:'Checks data against company policy rules'},
+    'signal-aggregator':{name:'Data Combiner',type:'transform',api:'Built-in',desc:'Merges data from multiple sources into one'},
     // AI (with model info)
     'claude-summarize':{name:'Claude Summarizer',type:'ai',api:'Anthropic',desc:'Summarize text with Claude',model:'claude-sonnet-4-20250514'},
     'claude-classify':{name:'Claude Classifier',type:'ai',api:'Anthropic',desc:'LLM-based classification and scoring',model:'claude-haiku-4-5-20251001'},
@@ -1361,15 +1361,15 @@
     'slack-notify':{name:'Slack Alert',type:'output',api:'Slack',desc:'Send notification to channel'},
     'sheets-write':{name:'Sheets Update',type:'output',api:'Google Sheets',desc:'Write results to spreadsheet'},
     'sendgrid-email':{name:'Email Send',type:'output',api:'SendGrid',desc:'Send formatted email'},
-    'pdf-report':{name:'PDF Report',type:'output',api:'Custom',desc:'Generate PDF document'},
+    'pdf-report':{name:'PDF Report',type:'output',api:'Built-in',desc:'Generate PDF document'},
     'notion-write':{name:'Notion Page',type:'output',api:'Notion',desc:'Create or update Notion page'},
     'zendesk-update':{name:'Zendesk Update',type:'output',api:'Zendesk',desc:'Update ticket fields and routing'},
     'salesforce-update':{name:'Salesforce Update',type:'output',api:'Salesforce',desc:'Update CRM records'},
-    'json-export':{name:'Structured JSON',type:'output',api:'Custom',desc:'Output structured data as JSON'},
+    'json-export':{name:'Data Export',type:'output',api:'Built-in',desc:'Output structured data for other systems'},
     // Gates
-    'manager-approve':{name:'Manager Review',type:'gate',api:'Internal',desc:'Requires manager sign-off'},
-    'confidence-gate':{name:'Confidence Gate',type:'gate',api:'Internal',desc:'Auto-approve above threshold'},
-    'dual-review':{name:'Dual Review',type:'gate',api:'Internal',desc:'Requires two reviewers'}
+    'manager-approve':{name:'Manager Review',type:'gate',api:'Built-in',desc:'Requires manager sign-off before action'},
+    'confidence-gate':{name:'Auto-Approve',type:'gate',api:'Built-in',desc:'Skips review if AI confidence is high enough'},
+    'dual-review':{name:'Two-Person Review',type:'gate',api:'Built-in',desc:'Requires two people to approve'}
   };
 
   // Which blocks compose each workflow (ordered left→right)
@@ -1659,7 +1659,7 @@
     // Count how many workflows use each block
     const counts={};Object.values(WORKFLOW_BLOCKS).forEach(bids=>bids.forEach(bid=>{counts[bid]=(counts[bid]||0)+1}));
     const order=['source','transform','ai','output','gate'];
-    const labels={source:'Sources',transform:'Transform',ai:'AI',output:'Outputs',gate:'Gates'};
+    const labels={source:'Sources',transform:'Processing',ai:'AI',output:'Outputs',gate:'Gates'};
     const colors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
     let html='';
     order.forEach(type=>{
@@ -1792,7 +1792,7 @@
     const blockIds=WORKFLOW_BLOCKS[id];if(!blockIds)return'';
     // Group blocks by type in order: source, transform, ai, output, gate
     const order=['source','transform','ai','output','gate'];
-    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Approval'};
+    const labels={source:'Sources',transform:'Processing',ai:'AI Logic',output:'Output',gate:'Approval'};
     const groups={};
     blockIds.forEach(bid=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push(bid)});
     let html='<div class="block-flow">';
@@ -2260,7 +2260,7 @@
   let composerBlocks=[];
   function renderComposerCatalog(){
     const order=['source','transform','ai','output','gate'];
-    const labels={source:'Sources',transform:'Transform',ai:'AI',output:'Outputs',gate:'Gates'};
+    const labels={source:'Sources',transform:'Processing',ai:'AI',output:'Outputs',gate:'Gates'};
     const colors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
     let html='<input type="text" class="catalog-search" id="catalogSearch" placeholder="Search blocks...">';
     order.forEach(type=>{
@@ -2300,7 +2300,7 @@
     }
     // Group by type in stage order
     const order=['source','transform','ai','output','gate'];
-    const stageLabels={source:'Source',transform:'Transform',ai:'AI',output:'Output',gate:'Gate'};
+    const stageLabels={source:'Source',transform:'Processing',ai:'AI',output:'Output',gate:'Gate'};
     const groups={};composerBlocks.forEach((bid,i)=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push({bid,idx:i})});
     let html='',first=true;
     order.forEach(type=>{
@@ -2411,7 +2411,7 @@
     const credChips=credIds.map(cid=>{const c=CREDENTIALS[cid];if(!c)return'';const stColor=c.status==='active'?'var(--green)':'var(--amber)';return '<div class="cred-badge"><span class="cred-badge-status" style="background:'+stColor+'"></span><span class="cred-badge-name">'+esc(c.name)+'</span><span class="cred-badge-key">'+esc(c.maskedKey)+'</span></div>'}).join('');
     // Pipeline preview
     const order=['source','transform','ai','output','gate'];
-    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Approval'};
+    const labels={source:'Sources',transform:'Processing',ai:'AI Logic',output:'Output',gate:'Approval'};
     const groups={};composerBlocks.forEach(bid=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push(bid)});
     let pipeHtml='<div class="block-flow" style="margin-top:0">';
     let pfirst=true;
