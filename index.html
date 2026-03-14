@@ -822,6 +822,18 @@
   .success-metric-val { font-size:1.25rem; font-weight:700; color:var(--tx); }
   .success-metric-label { font-size:.5625rem; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; margin-top:2px; }
 
+  /* Open source toolbox */
+  .oss-item { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-dim); cursor:pointer; transition:background 100ms; }
+  .oss-item:last-child { border-bottom:none; }
+  .oss-item:hover { background:var(--surface-2); margin:0 -16px; padding:8px 16px; border-radius:var(--r-sm); }
+  .oss-icon { width:28px; height:28px; border-radius:var(--r-sm); background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:.75rem; flex-shrink:0; }
+  .oss-info { flex:1; min-width:0; }
+  .oss-name { font-size:var(--text-sm); font-weight:600; color:var(--tx); }
+  .oss-desc { font-size:var(--text-xs); color:var(--tx-3); line-height:1.4; margin-top:1px; }
+  .oss-meta { display:flex; gap:8px; margin-top:3px; font-size:var(--text-xs); color:var(--tx-3); }
+  .oss-stars { display:flex; align-items:center; gap:2px; }
+  .oss-tag { font-size:var(--text-xs); padding:1px 5px; border-radius:3px; background:var(--surface-2); color:var(--tx-2); font-weight:500; }
+
   /* Execution monitor */
   .exec-item {
     display:flex; align-items:center; gap:8px;
@@ -1104,6 +1116,11 @@
   <div class="panel">
     <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Popular Across Teams</div>
     <div class="panel-body" id="reuseMap"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--tx-2)"></span>Open Source Toolbox</div>
+    <div class="panel-body" id="ossPanel"></div>
   </div>
 
 </div>
@@ -1744,7 +1761,31 @@
     document.getElementById('execPanel').innerHTML=html;
   }
 
-  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();renderVaultPanel();renderExecPanel();seedKhoj();
+  // ── Open Source Toolbox ──
+  const OSS_PROJECTS=[
+    {name:'Claude Code',repo:'anthropics/claude-code',desc:'CLI tool for agentic coding with Claude',stars:'27.2k',tags:['AI','CLI'],useCase:'Build and debug automations from the terminal'},
+    {name:'Langfuse',repo:'langfuse/langfuse',desc:'Open-source LLM observability and cost tracking',stars:'9.8k',tags:['Observability'],useCase:'Track token usage and cost across all Claude workflows'},
+    {name:'n8n',repo:'n8n-io/n8n',desc:'Workflow automation with 400+ integrations',stars:'52k',tags:['Automation'],useCase:'Connect Stripe, HubSpot, Slack without code'},
+    {name:'Flowise',repo:'FlowiseAI/Flowise',desc:'Drag-and-drop LLM workflow builder',stars:'35k',tags:['AI','No-code'],useCase:'Build AI chains visually — good for prototyping'},
+    {name:'Rivet',repo:'Ironclad/rivet',desc:'Visual AI programming environment',stars:'2.8k',tags:['AI','Visual'],useCase:'Design complex AI agent logic with a node editor'},
+    {name:'Portkey',repo:'portkey-ai/gateway',desc:'AI gateway for routing, caching, and observability',stars:'6.5k',tags:['Gateway'],useCase:'Single proxy for all LLM calls — manage keys and costs'},
+    {name:'MCP Servers',repo:'modelcontextprotocol/servers',desc:'Reference servers for the Model Context Protocol',stars:'18k',tags:['AI','MCP'],useCase:'Connect Claude to databases, APIs, and file systems'},
+    {name:'Anthropic SDK',repo:'anthropics/anthropic-sdk-python',desc:'Official Python SDK for the Claude API',stars:'2.1k',tags:['AI','SDK'],useCase:'Build custom Claude integrations in Python'}
+  ];
+  function renderOSSPanel(){
+    const el=document.getElementById('ossPanel');if(!el)return;
+    el.innerHTML=OSS_PROJECTS.map(p=>{
+      const tagsHtml=p.tags.map(t=>'<span class="oss-tag">'+esc(t)+'</span>').join('');
+      return '<div class="oss-item" onclick="window.open(\'https://github.com/'+esc(p.repo)+'\',\'_blank\')">'
+        +'<div class="oss-icon">'+esc(p.name[0])+'</div>'
+        +'<div class="oss-info"><div class="oss-name">'+esc(p.name)+'</div>'
+        +'<div class="oss-desc">'+esc(p.useCase)+'</div>'
+        +'<div class="oss-meta"><span class="oss-stars">\u2605 '+esc(p.stars)+'</span>'+tagsHtml+'</div>'
+        +'</div></div>';
+    }).join('');
+  }
+
+  function boot(d){workflows=d;populateBUFilter();computeStats();computeReuseMap();renderBlockLibrary();renderVaultPanel();renderExecPanel();renderOSSPanel();seedKhoj();
     // Default to "My team" if user has a BU, otherwise show all
     if(SESSION_USER.bu){
       document.getElementById('filterBU').value=SESSION_USER.bu;
