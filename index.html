@@ -41,12 +41,22 @@
     --amber:    #d48806;
     --amber-bg: rgba(212,136,6,0.08);
 
+    --accent: #1a8a7a;
+
     --sans: 'IBM Plex Sans', system-ui, sans-serif;
     --mono: 'IBM Plex Mono', monospace;
 
     --ease:  cubic-bezier(.22, 1, .36, 1);
     --r:     10px;
     --r-sm:  6px;
+
+    /* Type scale */
+    --text-xs:   .625rem;
+    --text-sm:   .6875rem;
+    --text-base: .8125rem;
+    --text-md:   .875rem;
+    --text-lg:   1rem;
+    --text-xl:   1.25rem;
   }
 
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -107,6 +117,11 @@
     padding: 2px 6px; border-radius: 3px;
   }
   .header-actions { display: flex; gap: 8px; align-items: center; }
+  .user-badge { display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:99px; background:var(--surface); border:1px solid var(--border-dim); cursor:default; }
+  .user-badge-avatar { width:26px; height:26px; border-radius:50%; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.625rem; font-weight:700; flex-shrink:0; }
+  .user-badge-info { display:flex; flex-direction:column; line-height:1.2; }
+  .user-badge-name { font-size:.6875rem; font-weight:600; color:var(--tx); }
+  .user-badge-bu { font-size:.5625rem; color:var(--tx-3); }
 
   .subtitle {
     font-size: .8125rem; color: var(--tx-2);
@@ -116,8 +131,8 @@
   /* ---- Buttons ---- */
   .btn {
     font-family: var(--sans);
-    font-size: .75rem; font-weight: 600;
-    padding: 7px 14px; border-radius: var(--r-sm);
+    font-size: var(--text-sm); font-weight: 600;
+    padding: 8px 16px; border-radius: var(--r-sm);
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--tx-2);
@@ -128,6 +143,8 @@
   .btn:hover { background: var(--surface-2); color: var(--tx); border-color: var(--tx-3); }
   .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--teal); }
   .btn:active { transform: scale(.97); }
+  /* Global focus-visible for keyboard users */
+  a:focus-visible, select:focus-visible, [role="button"]:focus-visible, tr.data-row:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--r-sm); }
 
   .btn-accent {
     background: var(--teal); color: #fff;
@@ -241,17 +258,16 @@
   table { width:100%; border-collapse:collapse; }
 
   thead th {
-    font-size: .625rem; font-weight: 600;
-    color: var(--tx-3);
-    text-transform: uppercase; letter-spacing: .07em;
-    padding: 11px 14px; text-align: left;
-    border-bottom: 1px solid var(--border);
+    font-size: var(--text-sm); font-weight: 600;
+    color: var(--tx-2);
+    padding: 12px 14px; text-align: left;
+    border-bottom: 2px solid var(--border);
     cursor:pointer; user-select:none; white-space:nowrap;
     transition: color 120ms;
   }
-  thead th:hover { color: var(--tx-2); }
+  thead th:hover { color: var(--tx); }
   thead th.sorted { color: var(--teal); }
-  .sort-arrow { margin-left:3px; font-size:.5rem; opacity:.5; }
+  .sort-arrow { margin-left:3px; font-size:.5625rem; opacity:.5; }
   thead th.sorted .sort-arrow { opacity:1; }
 
   tbody tr.data-row {
@@ -264,7 +280,7 @@
   tbody tr.data-row:hover { background: var(--surface-2); }
   tbody tr.data-row.expanded { background: var(--surface-2); }
 
-  tbody td { padding:10px 14px; font-size:.8125rem; vertical-align:middle; }
+  tbody td { padding:12px 14px; font-size:var(--text-base); vertical-align:middle; }
   .cell-name { min-width:180px; display:flex; align-items:center; gap:10px; }
   .wf-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.625rem; font-weight:700; letter-spacing:.02em; flex-shrink:0; color:#fff; }
   .wf-info { min-width:0; }
@@ -299,11 +315,12 @@
   .readiness-low { color:var(--tx-3); background:var(--surface-3); }
 
 
-  .expand-cell { width:28px; text-align:center; }
-  .chv { display:inline-block; width:14px; height:14px; color:var(--tx-3); transition:transform 200ms var(--ease),color 120ms; }
-  .chv svg { display:block; width:14px; height:14px; }
-  tr.data-row:hover .chv { color:var(--tx-2); }
-  tr.expanded .chv { transform:rotate(90deg); color:var(--teal); }
+  .expand-cell { width:36px; text-align:center; padding-left:8px !important; }
+  .chv { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; color:var(--tx-2); background:var(--surface-2); border:1px solid var(--border-dim); transition:all 200ms var(--ease); border-radius:var(--r-sm); }
+  .chv svg { display:block; width:12px; height:12px; }
+  tr.data-row { cursor:pointer; }
+  tr.data-row:hover .chv { color:var(--accent); background:var(--teal-bg); border-color:var(--accent); }
+  tr.expanded .chv { transform:rotate(90deg); color:#fff; background:var(--accent); border-color:var(--accent); }
 
   /* ====== DETAIL ROW ====== */
   .detail-row td { padding:0; cursor:default; }
@@ -316,6 +333,7 @@
     display:flex; flex-direction:column; gap:0;
     border-top:1px solid var(--border-dim);
     background: var(--bg);
+    border-left:3px solid var(--accent);
   }
   .detail-pipeline-row {
     padding-bottom: 16px;
@@ -351,7 +369,7 @@
   .comment-list { max-height:120px; overflow-y:auto; }
   .comment-item { display:flex; gap:8px; align-items:flex-start; padding:4px 0; }
   .comment-item + .comment-item { border-top:1px solid var(--border-dim); }
-  .comment-avatar { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.5rem; font-weight:600; color:#fff; flex-shrink:0; margin-top:1px; }
+  .comment-avatar { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:var(--text-xs); font-weight:600; color:#fff; flex-shrink:0; margin-top:1px; }
 
   /* Slack-style avatars */
   .avatar {
@@ -371,14 +389,29 @@
 
   .intel-badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
   .intel-badge-group { display:flex; align-items:center; gap:4px; }
-  .intel-badge-label { font-size:.5rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; }
+  .intel-badge-label { font-size:var(--text-xs); font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; }
+  /* Prompt version badge */
+  .prompt-ver { font-family:var(--mono); font-size:var(--text-xs); color:var(--tx-3); background:var(--surface-2); padding:1px 6px; border-radius:3px; }
+  /* Output quality bar */
+  .quality-bar { display:flex; height:6px; border-radius:3px; overflow:hidden; width:100%; max-width:120px; }
+  .quality-bar-accept { background:var(--green); }
+  .quality-bar-edit { background:var(--amber); }
+  .quality-bar-reject { background:var(--red); }
+  /* Trend indicator */
+  .trend-badge { font-size:var(--text-xs); font-weight:600; padding:1px 6px; border-radius:3px; }
+  .trend-improving { color:var(--green); background:var(--green-bg); }
+  .trend-stable { color:var(--slate); background:var(--slate-bg); }
+  .trend-needs-attention { color:var(--amber); background:var(--amber-bg); }
+  .trend-new { color:var(--teal); background:var(--teal-bg); }
+  /* Model lifecycle */
+  .model-eol-badge { font-size:var(--text-xs); font-weight:600; padding:1px 6px; border-radius:3px; }
+  .model-eol-active { color:var(--green); background:var(--green-bg); }
+  .model-eol-deprecated { color:var(--red); background:var(--red-bg); }
+  .model-eol-sunset { color:var(--amber); background:var(--amber-bg); }
   .quality-badge { font-size:.5625rem; font-weight:600; padding:2px 6px; border-radius:3px; }
-  .quality-modular { color:var(--teal); background:var(--teal-bg); }
-  .quality-coupled { color:var(--gold); background:var(--gold-bg); }
-  .quality-fragile { color:var(--rust); background:var(--rust-bg); }
-  .quality-actionable { color:var(--teal); background:var(--teal-bg); }
-  .quality-informational { color:var(--slate); background:var(--slate-bg); }
-  .quality-raw { color:var(--rust); background:var(--rust-bg); }
+  .quality-good { color:var(--green); background:var(--green-bg); }
+  .quality-mid { color:var(--amber); background:var(--amber-bg); }
+  .quality-bad { color:var(--rust); background:var(--rust-bg); }
 
   .intel-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
   .intel-chip { font-size:.5625rem; font-weight:500; padding:2px 7px; border-radius:3px; }
@@ -417,6 +450,12 @@
     font-size: .625rem; font-weight: 600; color: var(--tx);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     line-height: 1.2;
+  }
+  .block-api, .bd-head-api span[data-api], .bd-flow-block-api[data-api], .cb-api[data-api] {
+    cursor:pointer; transition:color 100ms;
+  }
+  .block-api:hover, .bd-head-api span[data-api]:hover, .bd-flow-block-api[data-api]:hover, .cb-api[data-api]:hover {
+    color:var(--accent); text-decoration:underline;
   }
   .block-api {
     font-size: .5rem; color: var(--tx-3); font-weight: 400;
@@ -465,20 +504,20 @@
     overflow:visible;
   }
   .panel-head {
-    font-size:.6875rem; font-weight:600; color:var(--tx-2);
-    padding:10px 16px; border-bottom:1px solid var(--border-dim);
+    font-size:var(--text-sm); font-weight:600; color:var(--tx-2);
+    padding:12px 16px; border-bottom:1px solid var(--border-dim);
     display:flex; align-items:center; gap:7px;
   }
-  .panel-head .dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+  .panel-head .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
   .panel-head .panel-badge {
-    font-size:.5rem; font-weight:600;
+    font-size:var(--text-xs); font-weight:600;
     padding:2px 6px; border-radius:3px;
     margin-left:auto;
   }
   .panel-body {
-    padding:8px 16px;
-    font-size:.75rem;
-    max-height:240px; overflow-y:auto;
+    padding:10px 16px;
+    font-size:var(--text-sm);
+    max-height:300px; overflow-y:auto;
     position: relative;
   }
   .panel-body::-webkit-scrollbar { width:3px; }
@@ -531,10 +570,58 @@
     border-radius:14px; width:480px; max-width:92vw; max-height:88vh;
     overflow-y:auto;
     box-shadow:0 24px 64px rgba(44,42,37,.15),0 2px 8px rgba(44,42,37,.06);
+    transition:all 300ms var(--ease);
   }
-  .modal-wide { width:620px; }
+  .modal-wide { width:640px; }
+  /* Full-screen chat mode for Step 1 */
+  .modal-chat-mode {
+    width:100vw; max-width:100vw; height:100vh; max-height:100vh;
+    border-radius:0; border:none;
+    display:flex; flex-direction:column;
+  }
+  .modal-chat-mode .modal-head { border-radius:0; background:var(--bg); border-bottom:1px solid var(--border-dim); }
+  .modal-chat-mode .composer-steps { display:none; }
+  .modal-chat-mode #composerStep1 { flex:1; display:flex; flex-direction:column; }
+  .modal-chat-mode #composerStep1 .modal-body { flex:1; display:flex; flex-direction:column; padding:0; overflow:hidden; }
+  .modal-chat-mode #composerStep1 .modal-foot { display:none; }
+  /* Split view: chat left + workflow preview right */
+  .modal-chat-mode #composerStep1 .modal-body { flex-direction:row; }
+  .modal-chat-mode .goal-chat { flex:1; min-width:0; transition:flex 200ms var(--ease); }
+  .modal-chat-mode.has-preview .goal-chat { flex:1; }
+  .wf-preview-panel {
+    display:none; width:0; flex-shrink:0;
+    border-left:1px solid var(--border-dim);
+    background:var(--surface); overflow-y:auto;
+    transition:width 200ms var(--ease);
+  }
+  .modal-chat-mode.has-preview .wf-preview-panel { display:flex; flex-direction:column; width:420px; }
+  .wf-preview-head {
+    display:flex; align-items:center; gap:10px;
+    padding:16px 20px; border-bottom:1px solid var(--border-dim);
+    flex-shrink:0; position:sticky; top:0; background:var(--surface); z-index:1;
+  }
+  .wf-preview-head-info { flex:1; min-width:0; }
+  .wf-preview-title { font-size:var(--text-md); font-weight:700; color:var(--tx); }
+  .wf-preview-sub { font-size:var(--text-xs); color:var(--tx-3); margin-top:2px; }
+  .wf-preview-close {
+    width:28px; height:28px; border-radius:6px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--tx-2); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:1rem;
+    transition:all 100ms; flex-shrink:0;
+  }
+  .wf-preview-close:hover { background:var(--surface-3); color:var(--tx); }
+  .wf-preview-body { padding:20px; flex:1; overflow-y:auto; }
+  .wf-preview-section { margin-bottom:16px; }
+  .wf-preview-section:last-child { margin-bottom:0; }
+  .wf-preview-label { font-size:var(--text-xs); font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+  .wf-preview-text { font-size:var(--text-sm); color:var(--tx); line-height:1.6; }
+  .wf-preview-footer {
+    padding:16px 20px; border-top:1px solid var(--border-dim);
+    display:flex; gap:8px; flex-shrink:0; background:var(--surface);
+  }
+  @media(max-width:768px){ .modal-chat-mode.has-preview .wf-preview-panel{width:100%;position:absolute;inset:0;z-index:5} }
   .modal-head {
-    padding:16px 24px; border-bottom:1px solid var(--border-dim);
+    padding:12px 24px; border-bottom:1px solid var(--border-dim);
     display:flex; justify-content:space-between; align-items:center;
     position:sticky; top:0; background:var(--surface);
     border-radius:14px 14px 0 0; z-index:1;
@@ -556,12 +643,12 @@
   .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .field { margin-bottom:12px; }
   .field:last-child { margin-bottom:0; }
-  .field label { display:block; font-size:.625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; }
+  .field label { display:block; font-size:var(--text-xs); font-weight:600; color:var(--tx-2); margin-bottom:5px; }
   .field label .req { color:var(--rust); margin-left:2px; }
   .field input,.field select,.field textarea {
     width:100%; background:var(--bg); border:1px solid var(--border);
-    border-radius:var(--r-sm); padding:9px 12px;
-    color:var(--tx); font-family:var(--sans); font-size:.8125rem;
+    border-radius:var(--r-sm); padding:10px 12px;
+    color:var(--tx); font-family:var(--sans); font-size:var(--text-base);
     outline:none; transition:border-color 150ms,box-shadow 150ms;
   }
   .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-bg); }
@@ -683,9 +770,62 @@
   .vault-dot-rotating { background:var(--amber); }
   .vault-dot-expired { background:var(--red); }
   .vault-info { flex:1; min-width:0; }
-  .vault-name { font-size:.6875rem; font-weight:600; color:var(--tx); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .vault-key { font-family:var(--mono); font-size:.5625rem; color:var(--tx-3); }
-  .vault-count { font-size:.5625rem; font-weight:600; color:var(--tx-3); background:var(--surface-2); padding:1px 6px; border-radius:3px; }
+  .vault-name { font-size:var(--text-sm); font-weight:600; color:var(--tx); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .vault-key { font-family:var(--mono); font-size:var(--text-xs); color:var(--tx-3); }
+  .vault-count { font-size:var(--text-xs); font-weight:600; color:var(--tx-3); background:var(--surface-2); padding:2px 7px; border-radius:3px; }
+
+  /* Endpoint Security */
+  .sec-tabs { display:flex; border-bottom:1px solid var(--border-dim); padding:0 12px; }
+  .sec-tab { font-size:.5625rem; font-weight:600; padding:6px 10px; cursor:pointer; color:var(--tx-3); border-bottom:2px solid transparent; transition:all 100ms; text-transform:uppercase; letter-spacing:.04em; }
+  .sec-tab.active { color:var(--tx); border-bottom-color:var(--accent); background:var(--teal-bg); border-radius:var(--r-sm) var(--r-sm) 0 0; }
+  .sec-tab-content { display:none; }
+  .sec-tab-content.active { display:block; }
+  .sec-endpoint { display:flex; align-items:center; gap:6px; padding:6px 0; border-bottom:1px solid var(--border-dim); }
+  .sec-endpoint:last-child { border-bottom:none; }
+  .sec-posture { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .sec-posture-good { background:var(--green); }
+  .sec-posture-warn { background:var(--amber); }
+  .sec-posture-bad { background:var(--red); }
+  .sec-ep-info { flex:1; min-width:0; }
+  .sec-ep-name { font-size:.6875rem; font-weight:600; color:var(--tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sec-ep-meta { font-size:.5625rem; color:var(--tx-3); display:flex; gap:6px; }
+  .sec-data-tag { font-size:var(--text-xs); font-weight:600; padding:1px 5px; border-radius:3px; text-transform:uppercase; letter-spacing:.03em; }
+  .sec-data-pii { background:var(--red-bg); color:var(--red); }
+  .sec-data-financial { background:var(--amber-bg); color:var(--amber); }
+  .sec-data-internal { background:var(--slate-bg); color:var(--slate); }
+  .sec-data-public { background:var(--green-bg); color:var(--green); }
+  .sec-scope-tag { font-size:var(--text-xs); padding:1px 5px; border-radius:3px; background:var(--surface-2); color:var(--tx-3); font-weight:500; }
+  .sec-audit-item { padding:5px 0; border-bottom:1px solid var(--border-dim); }
+  .sec-audit-item:last-child { border-bottom:none; }
+  .sec-audit-action { font-size:.625rem; color:var(--tx); }
+  .sec-audit-meta { font-size:.5625rem; color:var(--tx-3); }
+  .sec-score { display:inline-flex; align-items:center; gap:3px; font-size:.5625rem; font-weight:600; padding:1px 6px; border-radius:3px; }
+  .sec-score-a { background:var(--green-bg); color:var(--green); }
+  .sec-score-b { background:var(--teal-bg); color:var(--teal); }
+  .sec-score-c { background:var(--amber-bg); color:var(--amber); }
+  .sec-score-d { background:var(--red-bg); color:var(--red); }
+
+  /* Credential gate (between step 2 and 3) */
+  .cred-gate-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-dim); }
+  .cred-gate-item:last-child { border-bottom:none; }
+  .cred-gate-status { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .cred-gate-ready { background:var(--green); }
+  .cred-gate-needs-access { background:var(--amber); }
+  .cred-gate-missing { background:var(--red); }
+  .cred-gate-info { flex:1; min-width:0; }
+  .cred-gate-name { font-size:.75rem; font-weight:600; color:var(--tx); }
+  .cred-gate-detail { font-size:.625rem; color:var(--tx-3); }
+  .cred-gate-action { font-size:.5625rem; }
+  .cred-gate-btn { font-size:.5625rem; padding:3px 10px; border-radius:var(--r-sm); border:1px solid var(--accent); background:transparent; color:var(--accent); cursor:pointer; font-family:var(--sans); font-weight:600; transition:all 100ms; }
+  .cred-gate-btn:hover { background:var(--accent); color:#fff; }
+  .cred-gate-btn.requested { background:var(--green-bg); color:var(--green); border-color:var(--green); pointer-events:none; }
+  .cred-gate-summary { display:flex; gap:12px; padding:10px 0; font-size:.6875rem; }
+  .cred-gate-summary-item { display:flex; align-items:center; gap:4px; }
+  /* Time metrics on success screen */
+  .success-metrics { display:flex; gap:16px; margin:16px 0; }
+  .success-metric { text-align:center; padding:12px 16px; background:var(--bg); border-radius:var(--r-sm); border:1px solid var(--border-dim); flex:1; }
+  .success-metric-val { font-size:1.25rem; font-weight:700; color:var(--tx); }
+  .success-metric-label { font-size:.5625rem; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; margin-top:2px; }
 
   /* Execution monitor */
   .exec-item {
@@ -698,10 +838,10 @@
   .exec-dot-warning { background:var(--amber); }
   .exec-dot-error { background:var(--red); }
   .exec-info { flex:1; min-width:0; }
-  .exec-name { font-size:.6875rem; font-weight:600; color:var(--tx); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .exec-meta { font-size:.5625rem; color:var(--tx-3); }
-  .exec-duration { font-family:var(--mono); font-size:.5625rem; font-weight:600; color:var(--tx-2); }
-  .exec-note { font-size:.5625rem; color:var(--amber); margin-top:1px; }
+  .exec-name { font-size:var(--text-sm); font-weight:600; color:var(--tx); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .exec-meta { font-size:var(--text-xs); color:var(--tx-3); }
+  .exec-duration { font-family:var(--mono); font-size:var(--text-xs); font-weight:600; color:var(--tx-2); }
+  .exec-note { font-size:var(--text-xs); color:var(--amber); margin-top:1px; }
 
   /* Model badge in drawer and detail row */
   .model-badge {
@@ -734,54 +874,130 @@
   .composer-step { display:none; }
   .composer-step.active { display:block; }
   .composer-picker { display:flex; gap:16px; min-height:260px; }
-  .composer-catalog { width:200px; flex-shrink:0; max-height:340px; overflow-y:auto; border-right:1px solid var(--border-dim); padding-right:12px; }
+  .composer-catalog { width:200px; flex-shrink:0; max-height:340px; overflow-y:auto; border-right:1px solid var(--border-dim); padding-right:12px; display:flex; flex-direction:column; }
   .composer-catalog::-webkit-scrollbar { width:3px; }
   .composer-catalog::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .catalog-search { width:100%; padding:5px 8px; font-size:.6875rem; border:1px solid var(--border-dim); border-radius:var(--r-sm); background:var(--bg); color:var(--tx); font-family:var(--sans); outline:none; margin-bottom:8px; flex-shrink:0; }
+  .catalog-search:focus { border-color:var(--accent); }
+  .catalog-search::placeholder { color:var(--tx-3); }
+  .catalog-block.hidden { display:none; }
+  .catalog-group.hidden { display:none; }
   .composer-canvas { flex:1; display:flex; flex-direction:column; gap:12px; }
-  .catalog-group-label { font-size:.5rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; margin-top:12px; }
+  .catalog-group-label { font-size:var(--text-xs); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; margin-top:12px; }
   .catalog-group-label:first-child { margin-top:0; }
   .catalog-block { display:flex; align-items:center; gap:6px; padding:5px 8px; border-radius:var(--r-sm); cursor:pointer; font-size:.6875rem; transition:background 100ms; }
   .catalog-block:hover { background:var(--surface-2); }
   .catalog-block-name { font-weight:500; color:var(--tx); }
   .catalog-block-api { font-size:.5625rem; color:var(--tx-3); margin-left:auto; }
   .composer-flow {
-    display:flex; align-items:center; gap:6px; flex-wrap:wrap;
     min-height:48px; padding:12px;
     background:var(--bg); border:1px dashed var(--border); border-radius:var(--r-sm);
+    display:flex; flex-direction:column; gap:0;
   }
   .composer-flow-empty { color:var(--tx-3); font-size:.6875rem; }
+  .composer-stage { display:flex; align-items:center; gap:8px; padding:6px 0; }
+  .composer-stage-label { font-size:var(--text-xs); font-weight:600; text-transform:uppercase; letter-spacing:.05em; width:56px; flex-shrink:0; text-align:right; }
+  .composer-stage-label-source { color:var(--slate); }
+  .composer-stage-label-transform { color:var(--amber); }
+  .composer-stage-label-ai { color:var(--teal); }
+  .composer-stage-label-output { color:var(--plum); }
+  .composer-stage-label-gate { color:var(--gold); }
+  .composer-stage-blocks { display:flex; gap:4px; flex-wrap:wrap; flex:1; }
+  .composer-stage-arrow { text-align:center; color:var(--border); font-size:.625rem; padding:0 0 0 60px; line-height:1; }
   .composer-block {
-    display:flex; align-items:center; gap:6px;
+    display:flex; align-items:center; gap:5px;
     padding:5px 10px; border-radius:var(--r-sm);
     border:1px solid var(--border-dim); background:var(--surface);
-    font-size:.625rem; position:relative;
+    font-size:.625rem; position:relative; transition:border-color 100ms;
   }
+  .composer-block:hover { border-color:var(--accent); }
   .composer-block .cb-name { font-weight:600; color:var(--tx); }
+  .composer-block .cb-api { font-size:var(--text-xs); color:var(--tx-3); }
   .composer-block .cb-remove {
-    margin-left:4px; width:14px; height:14px;
+    margin-left:2px; width:14px; height:14px;
     border-radius:50%; background:var(--red-bg); color:var(--red);
-    font-size:.5rem; display:flex; align-items:center; justify-content:center;
+    font-size:var(--text-xs); display:flex; align-items:center; justify-content:center;
     cursor:pointer; border:none; opacity:0; transition:opacity 100ms;
   }
   .composer-block:hover .cb-remove { opacity:1; }
+  /* Live pipeline preview in step 1 */
+  .live-pipeline { margin-top:16px; border:1px solid var(--border-dim); border-radius:var(--r); padding:12px 16px; background:var(--surface); display:none; }
+  .live-pipeline.has-blocks { display:block; }
+  .live-pipeline-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .live-pipeline-flow { display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+  .live-pipeline-block { display:flex; align-items:center; gap:3px; padding:3px 8px; border-radius:var(--r-sm); background:var(--bg); border:1px solid var(--border-dim); font-size:.5625rem; font-weight:500; }
+  .live-pipeline-arrow { color:var(--tx-3); font-size:.5625rem; }
+  /* Existing workflow match cards */
+  .match-card { display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border-dim); border-radius:var(--r-sm); background:var(--surface); cursor:pointer; transition:border-color 100ms; margin-bottom:4px; }
+  .match-card:hover { border-color:var(--accent); }
+  .match-card:last-child { margin-bottom:0; }
+  .match-card-info { flex:1; min-width:0; }
+  .match-card-name { font-size:.6875rem; font-weight:600; color:var(--tx); }
+  .match-card-desc { font-size:.5625rem; color:var(--tx-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .match-card-meta { display:flex; gap:4px; }
+  .match-card-overlap { font-size:var(--text-xs); padding:1px 5px; border-radius:3px; background:var(--green-bg); color:var(--green); font-weight:600; }
   .composer-hint { font-size:.625rem; color:var(--tx-3); line-height:1.5; }
-  .composer-chat { margin-top:4px; }
-  .chat-messages { max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:8px 0; }
-  .chat-msg { font-size:.75rem; line-height:1.5; padding:8px 12px; border-radius:var(--r-sm); max-width:90%; }
+  .chat-messages,.goal-messages { display:flex; flex-direction:column; gap:16px; padding:0; }
+  .chat-msg { font-size:var(--text-base); line-height:1.7; padding:0; border-radius:0; max-width:100%; }
   .chat-msg em { font-style:italic; color:var(--tx-3); }
-  .chat-msg-ai { background:var(--bg); border:1px solid var(--border-dim); color:var(--tx-2); align-self:flex-start; }
-  .chat-msg-user { background:var(--accent); color:#fff; align-self:flex-end; }
-  .chat-msg-blocks { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
-  .chat-msg-blocks .chat-block-chip {
-    font-size:.625rem; padding:2px 8px; border-radius:var(--r-pill); cursor:pointer;
-    border:1px solid var(--border-dim); background:var(--surface-2); color:var(--tx);
-    transition:background 100ms;
-  }
-  .chat-msg-blocks .chat-block-chip:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
-  .chat-msg-blocks .chat-block-chip.added { opacity:.5; pointer-events:none; }
-  .chat-input-row { display:flex; gap:6px; align-items:center; }
-  .chat-input { flex:1; font-size:.75rem; padding:6px 10px; border:1px solid var(--border-dim); border-radius:var(--r-sm); background:var(--bg); color:var(--tx); font-family:var(--sans); }
-  .chat-input:focus { outline:none; border-color:var(--accent); }
+  .chat-msg-ai { background:none; border:none; color:var(--tx); align-self:flex-start; padding:16px 20px; background:var(--surface); border-radius:var(--r); border:1px solid var(--border-dim); }
+  .chat-msg-user { background:none; border:none; color:var(--tx); align-self:flex-end; padding:16px 20px; background:var(--surface-2); border-radius:var(--r); max-width:80%; }
+  .chat-msg-ai strong { color:var(--tx); }
+  .chat-input-row { display:flex; gap:0; align-items:center; position:relative; }
+  .chat-input { flex:1; font-size:var(--text-md); padding:14px 48px 14px 16px; border:1px solid var(--border); border-radius:24px; background:var(--bg); color:var(--tx); font-family:var(--sans); line-height:1.5; }
+  .chat-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--teal-bg); }
+  .chat-input::placeholder { color:var(--tx-3); }
+  .chat-send-btn { position:absolute; right:6px; top:50%; transform:translateY(-50%); width:32px; height:32px; border-radius:50%; border:none; background:var(--accent); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.875rem; transition:background 100ms; }
+  .chat-send-btn:hover { background:var(--teal-deep); }
+  .chat-send-btn:disabled { background:var(--border); cursor:default; }
+  /* Goal chat in step 1 */
+  .goal-chat { display:flex; flex-direction:column; flex:1; min-height:0; background:var(--bg); }
+  .goal-chat-scroll { flex:1; overflow-y:auto; padding:24px 24px 16px; }
+  .goal-chat-center { max-width:640px; margin:0 auto; width:100%; }
+  .goal-chat-label { display:none; }
+  .goal-chat-input-wrap { border-top:1px solid var(--border-dim); padding:16px 24px; background:var(--surface); flex-shrink:0; }
+  .goal-chat-input-center { max-width:640px; margin:0 auto; width:100%; }
+  /* Fallback for non-chat-mode (step 2/3 context) */
+  .modal:not(.modal-chat-mode) .goal-chat { border:1px solid var(--border-dim); border-radius:var(--r); padding:12px; background:var(--surface); flex:unset; }
+  .modal:not(.modal-chat-mode) .goal-chat-scroll { padding:0; max-height:200px; }
+  .modal:not(.modal-chat-mode) .goal-chat-input-wrap { border:none; padding:0; margin-top:8px; }
+  .goal-suggested-blocks { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .goal-block-chip { font-size:.625rem; padding:2px 8px; border-radius:var(--r-pill,99px); cursor:default; border:1px solid var(--border-dim); background:var(--surface-2); color:var(--tx); }
+  .goal-autofill-btn { display:inline-flex; align-items:center; gap:4px; margin-top:8px; padding:6px 14px; font-size:.6875rem; font-weight:600; border:1px solid var(--accent); background:var(--teal-bg); color:var(--accent); border-radius:var(--r-sm); cursor:pointer; transition:all 150ms; font-family:var(--sans); }
+  .goal-autofill-btn:hover { background:var(--accent); color:#fff; }
+  .goal-autofill-preview { margin-top:8px; font-size:.6875rem; background:var(--surface-2); border-radius:var(--r-sm); padding:8px 10px; border:1px solid var(--border-dim); }
+  .goal-autofill-preview dt { font-weight:600; color:var(--tx-3); font-size:.5625rem; text-transform:uppercase; letter-spacing:.04em; margin-top:6px; }
+  .goal-autofill-preview dt:first-child { margin-top:0; }
+  .goal-autofill-preview dd { color:var(--tx); margin-left:0; }
+  /* Multi-workflow proposals */
+  .goal-workflow-card { background:var(--surface); border:1px solid var(--border-dim); border-radius:var(--r-sm); padding:10px 12px; margin-bottom:8px; }
+  .goal-workflow-card:last-child { margin-bottom:0; }
+  .goal-workflow-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .goal-workflow-name { font-size:.75rem; font-weight:700; color:var(--tx); }
+  .goal-workflow-tag { font-size:var(--text-xs); padding:2px 6px; border-radius:var(--r-sm); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+  .goal-workflow-desc { font-size:.6875rem; color:var(--tx-2); line-height:1.5; margin-bottom:6px; }
+  .goal-thinking { font-size:.6875rem; color:var(--tx-3); font-style:italic; padding:8px 0; display:flex; align-items:center; gap:6px; }
+  .goal-thinking .spin { width:12px; height:12px; border:1.5px solid var(--border); border-top-color:var(--accent); border-radius:50%; display:inline-block; }
+  /* Build spec document */
+  .build-spec { background:var(--surface); border:1px solid var(--border-dim); border-radius:var(--r); overflow:hidden; margin:8px 0; }
+  .build-spec-header { background:var(--bg); padding:10px 14px; border-bottom:1px solid var(--border-dim); display:flex; align-items:center; justify-content:space-between; }
+  .build-spec-title { font-size:.75rem; font-weight:700; color:var(--tx); }
+  .build-spec-tag { font-size:var(--text-xs); padding:2px 8px; border-radius:var(--r-sm); font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#fff; }
+  .build-spec-body { padding:12px 14px; }
+  .build-spec-section { margin-bottom:12px; }
+  .build-spec-section:last-child { margin-bottom:0; }
+  .build-spec-label { font-size:.5625rem; font-weight:600; color:var(--tx-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+  .build-spec-text { font-size:.6875rem; color:var(--tx); line-height:1.6; }
+  .build-spec-pipeline { display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-top:4px; }
+  .build-spec-step { display:flex; align-items:center; gap:4px; padding:3px 8px; border-radius:var(--r-sm); border:1px solid var(--border-dim); background:var(--bg); font-size:.625rem; font-weight:500; }
+  .build-spec-arrow { color:var(--tx-3); font-size:.625rem; }
+  .build-spec-meta { display:flex; gap:12px; flex-wrap:wrap; }
+  .build-spec-meta-item { font-size:.625rem; color:var(--tx-2); }
+  .build-spec-meta-item strong { color:var(--tx); }
+  .build-spec-footer { padding:10px 14px; border-top:1px solid var(--border-dim); background:var(--bg); display:flex; gap:8px; align-items:center; }
+  .lane-banner { padding:10px 14px; border-radius:var(--r-sm); font-size:.6875rem; line-height:1.5; display:flex; align-items:flex-start; gap:8px; margin-bottom:8px; }
+  .lane-banner-icon { font-size:1rem; flex-shrink:0; margin-top:1px; }
+  .lane-banner-tag { font-size:var(--text-xs); font-weight:700; padding:2px 8px; border-radius:var(--r-sm); color:#fff; text-transform:uppercase; letter-spacing:.05em; flex-shrink:0; margin-top:2px; }
   .composer-meta { display:flex; flex-wrap:wrap; gap:8px; }
   .composer-meta-item {
     display:flex; align-items:center; gap:4px;
@@ -830,33 +1046,34 @@
 <div class="main-col">
   <div class="header">
     <div class="header-left">
-      <h1>Rillet AI Studio</h1>
+      <h1>Rillet AI Ops</h1>
       <span class="header-divider"></span>
       <div class="header-badges">
-        <span class="header-badge header-badge-blue">AI Studio model &middot; PwC 2026</span>
+        <span class="header-badge header-badge-blue">Internal Automation Registry</span>
         <span class="header-badge header-badge-green">&bull; Live</span>
-        <span class="header-ver">v3</span>
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn" id="btnRequest">Request Workflow</button>
-      <button class="btn" id="btnExport">Export JSON</button>
-      <button class="btn btn-accent" id="btnAdd">+ Add Workflow</button>
+      <button class="btn" id="btnExport">Export</button>
+      <button class="btn btn-accent" id="btnAdd">+ New Automation</button>
+      <div class="user-badge" id="userBadge"></div>
     </div>
   </div>
-  <p class="subtitle">Shared AI workflow library. Discover, govern, and reuse automations across every business unit.</p>
+  <p class="subtitle">All AI automations in one place. See what exists, what's saving time, and build new ones.</p>
 
   <div class="stats">
     <div class="stat" data-c="teal"><div class="stat-val" id="statTotal">&mdash;</div><div class="stat-lbl">Workflows</div></div>
-    <div class="stat" data-c="gold"><div class="stat-val" id="statHours">&mdash;</div><div class="stat-lbl">Hrs Saved / Wk</div></div>
-    <div class="stat" data-c="red"><div class="stat-val" id="statGov">&mdash;</div><div class="stat-lbl">Governance</div><div class="stat-sub">named reviewer</div></div>
+    <div class="stat" data-c="gold"><div class="stat-val" id="statHours">&mdash;</div><div class="stat-lbl">Hours Saved / Week</div></div>
+    <div class="stat" data-c="green"><div class="stat-val" id="statLive">&mdash;</div><div class="stat-lbl">Live</div><div class="stat-sub">in production</div></div>
+    <div class="stat" data-c="amber"><div class="stat-val" id="statPilot">&mdash;</div><div class="stat-lbl">Pilot</div><div class="stat-sub">being tested</div></div>
   </div>
 
   <div class="controls">
+    <button class="btn" id="btnMyTeam" style="font-size:var(--text-xs);padding:6px 12px">My team</button>
     <input type="text" class="search-input" id="searchInput" placeholder="Search workflows...">
     <select class="filter-sel" id="filterBU"><option value="">All BUs</option></select>
     <select class="filter-sel" id="filterStatus"><option value="">All Status</option><option value="Live">Live</option><option value="Pilot">Pilot</option></select>
-    <select class="filter-sel" id="filterType"><option value="">All Types</option><option value="1">Type 1</option><option value="2">Type 2</option></select>
+    <select class="filter-sel" id="filterType"><option value="">All Types</option><option value="1">Rule-based</option><option value="2">AI-powered</option></select>
   </div>
 
   <div class="table-wrap">
@@ -865,9 +1082,10 @@
         <th class="expand-cell"></th>
         <th data-sort="name">Name <span class="sort-arrow">&#9650;</span></th>
         <th data-sort="bu">BU <span class="sort-arrow">&#9650;</span></th>
-        <th data-sort="type" class="hide-sm">Type <span class="sort-arrow">&#9650;</span></th>
+        <th data-sort="type" class="hide-sm">How it works <span class="sort-arrow">&#9650;</span></th>
         <th data-sort="status">Status <span class="sort-arrow">&#9650;</span></th>
-        <th data-sort="saves" class="hide-sm">Saves <span class="sort-arrow">&#9650;</span></th>
+        <th data-sort="saves" class="hide-sm">Time Saved <span class="sort-arrow">&#9650;</span></th>
+        <th class="hide-sm" style="width:50px">Health</th>
       </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
@@ -876,29 +1094,30 @@
 
 <div class="side-col">
   <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--slate)"></span>Block Library</div>
-    <div class="panel-body" id="blockLibrary"></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--gold)"></span>Credentials Vault</div>
-    <div class="panel-body" id="vaultPanel"></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--green)"></span>Execution Monitor</div>
+    <div class="panel-head"><span class="dot" style="background:var(--green)"></span>Recent Runs</div>
     <div class="panel-body" id="execPanel"></div>
   </div>
 
   <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Top Shared Workflows</div>
+    <div class="panel-head"><span class="dot" style="background:var(--gold)"></span>API Connections<span class="panel-badge" id="secPostureBadge" style="background:var(--green-bg);color:var(--green)"></span></div>
+    <div class="sec-tabs">
+      <span class="sec-tab active" data-sec-tab="endpoints">Connections</span>
+      <span class="sec-tab" data-sec-tab="audit">Activity</span>
+    </div>
+    <div class="panel-body" style="max-height:280px">
+      <div class="sec-tab-content active" id="secEndpoints"></div>
+      <div class="sec-tab-content" id="secAudit"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><span class="dot" style="background:var(--plum)"></span>Popular Across Teams</div>
     <div class="panel-body" id="reuseMap"></div>
   </div>
 
   <div class="panel">
-    <div class="panel-head"><span class="dot" style="background:var(--teal)"></span>AI Studio Library</div>
-    <div class="panel-body" id="khojFeed"></div>
-    <div class="khoj-input-wrap"><input class="khoj-input" id="khojInput" placeholder="Query Studio library..."></div>
+    <div class="panel-head"><span class="dot" style="background:var(--slate)"></span>Available Blocks</div>
+    <div class="panel-body" id="blockLibrary"></div>
   </div>
 </div>
 </div>
@@ -915,46 +1134,60 @@
       <span class="step-dot" data-step="2"></span>
       <span class="step-dot" data-step="3"></span>
     </div>
-    <!-- Step 1: Describe -->
+    <!-- Step 1: Discover (full-screen chat) -->
     <div class="composer-step active" id="composerStep1">
       <div class="modal-body">
-        <div class="field-group">
-          <div class="field-group-label">Workflow</div>
-          <div class="field"><label for="fName">Name <span class="req">*</span></label><input id="fName" placeholder="e.g. Invoice Matcher" aria-required="true" aria-describedby="errName"><div class="field-error-msg" id="errName">Workflow name is required</div></div>
-          <div class="field"><label for="fBU">Business Unit <span class="req">*</span></label><select id="fBU" aria-required="true" aria-describedby="errBU"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select><div class="field-error-msg" id="errBU">Select a business unit</div></div>
-          <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
+        <div class="goal-chat">
+          <div class="goal-chat-label"><span class="block-dot block-dot-ai"></span>Automation Advisor</div>
+          <div class="goal-chat-scroll">
+            <div class="goal-chat-center">
+              <div class="goal-messages" id="goalMessages">
+                <div class="chat-msg chat-msg-ai">What repetitive task do you want to automate?</div>
+              </div>
+              <div class="live-pipeline" id="livePipeline">
+                <div class="live-pipeline-label"><span class="block-dot block-dot-source" style="width:5px;height:5px"></span>Pipeline Preview</div>
+                <div class="live-pipeline-flow" id="livePipelineFlow"></div>
+              </div>
+            </div>
+          </div>
+          <div class="goal-chat-input-wrap">
+            <div class="goal-chat-input-center">
+              <div class="chat-input-row"><input type="text" id="goalInput" class="chat-input" placeholder="Describe what you want to automate..."><button class="chat-send-btn" id="goalSend" aria-label="Send">&#8593;</button></div>
+            </div>
+          </div>
         </div>
-        <div class="field-group">
-          <div class="field-group-label">Governance</div>
-          <div class="field"><label for="fReviewer">Reviewer <span class="req">*</span></label><input id="fReviewer" placeholder="e.g. VP Sales" aria-required="true" aria-describedby="errReviewer"><div class="field-error-msg" id="errReviewer">Reviewer is required for governance</div><div class="field-hint">Role title of human reviewer. Every workflow needs a review gate.</div></div>
-          <div class="field"><label for="fRisk">Risk Level</label><select id="fRisk"><option value="Low">Low — informational, no direct action</option><option value="Medium">Medium — triggers consequential action</option></select></div>
-        </div>
+        <div class="wf-preview-panel" id="wfPreviewPanel"></div>
       </div>
       <div class="modal-foot">
         <button class="btn" id="modalCancel">Cancel</button>
-        <button class="btn btn-accent" id="modalNext">Next: Compose Blocks</button>
       </div>
     </div>
-    <!-- Step 2: Compose Blocks -->
+    <!-- Step 2: Build (form + composer) -->
     <div class="composer-step" id="composerStep2">
       <div class="modal-body">
-        <div class="composer-picker">
-          <div class="composer-catalog" id="composerCatalog"></div>
-          <div class="composer-canvas">
-            <div class="field-group-label">Pipeline</div>
-            <div class="composer-flow" id="composerFlow"><span class="composer-flow-empty">Click blocks from the catalog to add them here</span></div>
-            <div id="composerMeta" style="margin-top:8px"></div>
-            <div class="composer-hint">Credentials are resolved from the vault automatically. Type is auto-detected from your blocks.</div>
-            <div class="composer-chat" id="composerChat">
-              <div class="field-group-label" style="margin-top:8px;display:flex;align-items:center;gap:6px"><span class="block-dot block-dot-ai" style="width:6px;height:6px"></span>Block Assistant</div>
-              <div class="chat-messages" id="chatMessages"><div class="chat-msg chat-msg-ai">Describe what you want to automate and I'll recommend the right blocks. e.g. <em>"Pull deals from CRM and summarize them weekly"</em></div></div>
-              <div class="chat-input-row"><input type="text" id="chatInput" class="chat-input" placeholder="What do you want to automate?"><button class="btn btn-sm btn-accent" id="chatSend">Send</button></div>
+        <div class="field-group">
+          <div class="field-group-label">Workflow Details</div>
+          <div class="field"><label for="fName">Name <span class="req">*</span></label><input id="fName" placeholder="e.g. Invoice Matcher" aria-required="true" aria-describedby="errName"><div class="field-error-msg" id="errName">Workflow name is required</div></div>
+          <div class="field"><label>Business Unit</label><div style="font-size:.8125rem;color:var(--tx);padding:6px 0" id="fBUDisplay"></div><select id="fBU" style="display:none"><option value="">Select BU</option><option>GTM / Sales</option><option>Finance</option><option>Customer Success</option><option>Implementation</option><option>Chief of Staff</option><option>People Ops</option><option>Product</option><option>Marketing</option><option>Legal</option><option>Procurement</option></select></div>
+          <div class="field"><label for="fDesc">Description <span class="req">*</span></label><input id="fDesc" placeholder="One-sentence summary" aria-required="true" aria-describedby="errDesc"><div class="field-error-msg" id="errDesc">Description is required</div></div>
+          <div class="field"><label for="fSaves">Time This Takes Manually <span class="req">*</span></label><input id="fSaves" placeholder="e.g. 3 hrs/wk or 5 hrs/mo" aria-required="true" aria-describedby="errSaves"><div class="field-error-msg" id="errSaves">Time estimate is required</div></div>
+        </div>
+        <input type="hidden" id="fRisk" value="Low">
+        <input type="hidden" id="fReviewer" value="">
+        <div class="field-group" style="margin-top:12px">
+          <div class="field-group-label">Pipeline</div>
+          <div class="composer-picker">
+            <div class="composer-catalog" id="composerCatalog"></div>
+            <div class="composer-canvas">
+              <div class="composer-flow" id="composerFlow"><span class="composer-flow-empty">Click blocks from the catalog to add them here</span></div>
+              <div id="composerMeta" style="margin-top:8px"></div>
+              <div class="composer-hint">Add or remove blocks from the catalog on the left.</div>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-foot">
-        <button class="btn" id="composerBack">Back</button>
+        <button class="btn" id="composerBack">Back to chat</button>
         <button class="btn btn-accent" id="composerNext2">Next: Review</button>
       </div>
     </div>
@@ -1018,25 +1251,33 @@
     9:{stack:['Claude','HR system API'],reusable:['Checklist generation prompt','30/60/90 framework','Access request template'],specific:['Training module catalog','Team-specific intro meetings'],readiness:'High',days_to_live:10,reuse_days:6,risks:['Training catalogs differ per department','System access varies by role','Manager meeting cadence is team-specific']},
     10:{stack:['Stripe API','HubSpot API','Mixpanel API','Claude'],reusable:['Multi-source data pull pattern','Table formatting','Validation checks'],specific:['Board deck template','Metric definitions','Data source credentials'],readiness:'Low',days_to_live:null,reuse_days:null,risks:['Deeply tied to specific data sources','Board format is org-specific','Credential management across 4+ APIs']},
     11:{stack:['Knowledge base search','Claude','Citation engine'],reusable:['Question-answer matching','Citation generation','Draft formatting'],specific:['Internal KB content','Past response archive','Security questionnaire DB'],readiness:'Medium',days_to_live:20,reuse_days:8,risks:['Knowledge base content is BU-specific','Response tone/style varies by audience','Security answers need legal review per BU']},
-    12:{stack:['Usage analytics','Zendesk sentiment','Payment system','Claude'],reusable:['Multi-signal scoring model','Factor ranking logic','Risk threshold framework'],specific:['Account tier definitions','Renewal terms structure','Engagement benchmarks'],readiness:'High',days_to_live:16,reuse_days:7,risks:['Engagement benchmarks vary by segment','Payment system integration is BU-specific','Risk thresholds need calibration per portfolio']}
+    12:{stack:['Usage analytics','Zendesk sentiment','Payment system','Claude'],reusable:['Multi-signal scoring model','Factor ranking logic','Risk threshold framework'],specific:['Account tier definitions','Renewal terms structure','Engagement benchmarks'],readiness:'High',days_to_live:16,reuse_days:7,risks:['Engagement benchmarks vary by segment','Payment system integration is BU-specific','Risk thresholds need calibration per portfolio']},
+    13:{stack:['Notion','JSON Schema','Rule Engine'],reusable:['Schema validation rules','API naming conventions'],specific:['Rillet API design standards'],readiness:'Medium',days_to_live:null,reuse_days:null,risks:['Schema standards evolve frequently']},
+    14:{stack:['Stripe','HubSpot','Google Sheets','Claude','SendGrid'],reusable:['KPI aggregation pattern','Investor update template'],specific:['Rillet investor format','CEO tone preferences'],readiness:'Medium',days_to_live:null,reuse_days:null,risks:['Metric source format changes','CEO edits heavily — 30% rewrite rate']},
+    15:{stack:['HubSpot','BambooHR','Google Sheets','Claude'],reusable:['Efficiency metric calculations','Trend detection logic'],specific:['Rillet segment definitions','GTM team structure'],readiness:'Low',days_to_live:null,reuse_days:null,risks:['New workflow — reuse assessment pending']},
+    16:{stack:['Slack','Claude'],reusable:['Channel digest pattern','Executive summary prompt'],specific:['Rillet Slack channel structure'],readiness:'High',days_to_live:5,reuse_days:null,risks:['Channel names change occasionally']}
   };
 
-  // Workflow quality signals: design usability + output usability
-  // Design: Modular (easy to maintain/extend), Coupled (works but tightly integrated), Fragile (hard to change)
-  // Output: Actionable (directly drives decisions), Informational (supports decisions), Raw (needs interpretation)
+  // Workflow quality signals
+  // Maintainability: Easy to update (configurable, template-based), Needs dev work (tightly integrated), Hard to change (brittle, hardcoded)
+  // Output usefulness: Ready to use (output drives action directly), Needs review (useful but someone checks it), Starting point only (raw data, requires context)
   const WF_QUALITY={
-    1:{design:'Modular',output:'Actionable',designNote:'Webhook-triggered, template-based',outputNote:'Summaries go directly into pipeline reviews'},
-    2:{design:'Modular',output:'Actionable',designNote:'Rule engine with configurable thresholds',outputNote:'Flags trigger AP workflow directly'},
-    3:{design:'Modular',output:'Informational',designNote:'Multi-source aggregator, easy to add signals',outputNote:'Digest informs but CSM decides outreach'},
-    4:{design:'Coupled',output:'Actionable',designNote:'Tightly tied to SOW PDF format',outputNote:'Structured JSON feeds project tracker automatically'},
-    5:{design:'Fragile',output:'Informational',designNote:'Hardcoded KPI definitions and tone rules',outputNote:'Narrative used as-is in all-hands but needs review'},
-    6:{design:'Modular',output:'Actionable',designNote:'Taxonomy and routing rules are configurable',outputNote:'Classification routes tickets without manual triage'},
-    7:{design:'Modular',output:'Informational',designNote:'Feed list is editable, summarization prompt reusable',outputNote:'Digest informs strategy but no auto-action'},
-    8:{design:'Coupled',output:'Actionable',designNote:'Policy rules hardcoded per company',outputNote:'Violations flag specific policy sections for AP'},
-    9:{design:'Modular',output:'Informational',designNote:'Template-driven, department-agnostic generator',outputNote:'Checklist is a starting point, HR customizes'},
-    10:{design:'Fragile',output:'Raw',designNote:'4 API integrations, credential-heavy',outputNote:'Data tables need CoS interpretation and context'},
-    11:{design:'Coupled',output:'Actionable',designNote:'Depends on internal KB quality and structure',outputNote:'Draft responses used directly after SE review'},
-    12:{design:'Modular',output:'Actionable',designNote:'Signal weights adjustable, scoring transparent',outputNote:'Risk scores drive renewal outreach priority'}
+    1:{design:'Easy to update',output:'Ready to use',designNote:'Configurable templates, triggered by webhook',outputNote:'Summaries go directly into pipeline reviews'},
+    2:{design:'Easy to update',output:'Ready to use',designNote:'Thresholds are configurable without code changes',outputNote:'Flags trigger the AP workflow directly'},
+    3:{design:'Easy to update',output:'Needs a quick check',designNote:'Easy to add new data signals',outputNote:'Digest informs decisions but CSM decides action'},
+    4:{design:'Needs dev work',output:'Ready to use',designNote:'Tightly tied to specific SOW PDF format',outputNote:'Extracted data feeds project tracker automatically'},
+    5:{design:'Hard to change',output:'Needs a quick check',designNote:'KPI definitions and tone are hardcoded',outputNote:'Narrative is used in all-hands but needs a quick check'},
+    6:{design:'Easy to update',output:'Ready to use',designNote:'Categories and routing rules are configurable',outputNote:'Tickets get classified and routed without manual triage'},
+    7:{design:'Easy to update',output:'Needs a quick check',designNote:'Feed list is editable, prompt is reusable',outputNote:'Digest informs strategy but no auto-action taken'},
+    8:{design:'Needs dev work',output:'Ready to use',designNote:'Policy rules are specific to each company',outputNote:'Violations flag specific policy sections for AP'},
+    9:{design:'Easy to update',output:'Needs a quick check',designNote:'Template-driven, works across departments',outputNote:'Checklist is a starting point that HR customizes'},
+    10:{design:'Hard to change',output:'Starting point only',designNote:'4 API integrations, lots of credentials involved',outputNote:'Data tables need context — someone interprets them for the board'},
+    11:{design:'Needs dev work',output:'Ready to use',designNote:'Quality depends on internal knowledge base',outputNote:'Draft responses are used directly after SE review'},
+    12:{design:'Easy to update',output:'Ready to use',designNote:'Scoring weights are adjustable and transparent',outputNote:'Risk scores directly drive renewal outreach priority'},
+    13:{design:'Easy to update',output:'Ready to use',designNote:'Schema validation is rules-based and configurable',outputNote:'Config and test stubs deploy directly to staging'},
+    14:{design:'Needs dev work',output:'Needs a quick check',designNote:'Depends on metric source format consistency',outputNote:'CEO edits tone and adds color before sending'},
+    15:{design:'Easy to update',output:'Needs a quick check',designNote:'Metric definitions are configurable',outputNote:'Summary highlights trends but needs exec context'},
+    16:{design:'Easy to update',output:'Ready to use',designNote:'Channel list is configurable, prompt is reusable',outputNote:'Digest goes directly to CEO DM every morning'}
   };
 
   // Workflow icons: 2-letter abbreviation + color
@@ -1044,7 +1285,8 @@
     1:{abbr:'DS',bg:'#4e6378'},2:{abbr:'IF',bg:'#c4603a'},3:{abbr:'HS',bg:'#1a8a7a'},
     4:{abbr:'SC',bg:'#7e5ba5'},5:{abbr:'MN',bg:'#9a7b15'},6:{abbr:'TC',bg:'#4a8fe8'},
     7:{abbr:'CI',bg:'#1f9d6e'},8:{abbr:'EP',bg:'#d48806'},9:{abbr:'OC',bg:'#7e5ba5'},
-    10:{abbr:'BD',bg:'#e25555'},11:{abbr:'RD',bg:'#4e6378'},12:{abbr:'RS',bg:'#1a8a7a'}
+    10:{abbr:'BD',bg:'#e25555'},11:{abbr:'RD',bg:'#4e6378'},12:{abbr:'RS',bg:'#1a8a7a'},
+    13:{abbr:'AP',bg:'#4a8fe8'},14:{abbr:'IU',bg:'#c4603a'},15:{abbr:'GE',bg:'#9a7b15'},16:{abbr:'SD',bg:'#1f9d6e'}
   };
 
   // Seed comments (session-stored, can be added to)
@@ -1060,7 +1302,11 @@
     9:[{author:'HR',text:'New hires say the checklist helped them ramp faster. 30-day section is best.',ts:'Mar 4'}],
     10:[{author:'CK',text:'Still fighting Stripe rate limits. May need to cache MRR data.',ts:'Mar 10'}],
     11:[{author:'SE',text:'Rewrite rate dropping — prompt tuning on technical questions helped.',ts:'Mar 7'},{author:'AP',text:'CS team using for renewal proposals, not just RFPs.',ts:'Mar 5'}],
-    12:[{author:'KL',text:'Score accuracy improved after adding payment history signal.',ts:'Mar 8'}]
+    12:[{author:'KL',text:'Score accuracy improved after adding payment history signal.',ts:'Mar 8'}],
+    13:[{author:'VP',text:'Saves the eng team from writing boilerplate. Schema validation catches issues early.',ts:'Mar 12'}],
+    14:[{author:'CK',text:'CEO still edits heavily but saves the 2-hour data gathering step completely.',ts:'Mar 11'},{author:'MR',text:'Finance validates the MRR numbers before it goes out.',ts:'Mar 10'}],
+    15:[{author:'JS',text:'Magic number trending down — this caught it before we noticed in the board deck.',ts:'Mar 13'}],
+    16:[{author:'CK',text:'CEO reads this every morning. Replaced 20 min of Slack scanning.',ts:'Mar 12'}]
   };
 
   // Possible use cases per workflow
@@ -1076,7 +1322,11 @@
     9:['Contractor onboarding','Cross-team rotation guides','Intern program setup'],
     10:['Investor reporting','Department budget reviews','Quarterly business reviews'],
     11:['Security questionnaires','Vendor due diligence responses','Partnership proposals'],
-    12:['Upsell opportunity scoring','At-risk account alerts','Executive sponsor tracking']
+    12:['Upsell opportunity scoring','At-risk account alerts','Executive sponsor tracking'],
+    13:['Microservice scaffolding','Integration endpoint setup','Partner API provisioning'],
+    14:['Monthly board updates','LP communication','Fundraising data rooms'],
+    15:['Board deck GTM section','Sales team capacity planning','Quota setting analysis'],
+    16:['Weekly exec recap','Travel/offsite day catch-up','Cross-functional visibility']
   };
 
   // Pipeline data: sources → AI logic → outputs → review gate
@@ -1150,7 +1400,11 @@
     9:['bamboo-pull','schema-map','claude-draft','notion-write','manager-approve'],
     10:['stripe-feed','hubspot-pull','mixpanel-pull','sheets-import','schema-map','sheets-write','manager-approve'],
     11:['drive-scan','knowledge-base','claude-draft','pdf-report','dual-review'],
-    12:['hubspot-pull','zendesk-stream','sheets-import','claude-classify','slack-notify','manager-approve']
+    12:['hubspot-pull','zendesk-stream','sheets-import','claude-classify','slack-notify','manager-approve'],
+    13:['knowledge-base','schema-map','policy-validator','json-export','manager-approve'],
+    14:['stripe-feed','hubspot-pull','sheets-import','claude-narrator','sendgrid-email','manager-approve'],
+    15:['hubspot-pull','bamboo-pull','sheets-import','claude-summarize','slack-notify'],
+    16:['rss-feed','claude-summarize','slack-notify']
   };
 
   // ── People (Slack-style profiles) ──
@@ -1174,7 +1428,11 @@
     'HR':{initials:'HR',name:'Holly Reed',color:'#d48806'},
     'SE':{initials:'SE',name:'Sara Evans',color:'#e25555'},
     'LM':{initials:'LM',name:'Lisa Morgan',color:'#7e5ba5'},
-    'Me':{initials:'Me',name:'You',color:'#1a8a7a'}
+    'Me':{initials:'Me',name:'You',color:'#1a8a7a'},
+    'CEO':{initials:'JR',name:'Joseph Rao',color:'#c4603a'},
+    'VP':{initials:'VP',name:'VP Product',color:'#4a8fe8'},
+    'VP Product':{initials:'VP',name:'VP Product',color:'#4a8fe8'},
+    '':{initials:'—',name:'No reviewer',color:'#9e968c'}
   };
 
   // Block owners (who maintains each block)
@@ -1194,6 +1452,53 @@
   };
 
   // Block health/monitoring (simulated real-time data)
+  // ── Prompt Versioning — tracks which version of the prompt is live per workflow ──
+  const PROMPT_VERSIONS={
+    1:{version:'2.1.0',lastUpdated:'Mar 8',changelog:'Added confidence scoring per field',previousVersions:['2.0.0','1.1.0','1.0.0']},
+    2:{version:'1.3.0',lastUpdated:'Mar 1',changelog:'Lowered variance threshold from 5% to 2%',previousVersions:['1.2.0','1.1.0','1.0.0']},
+    3:{version:'3.0.0',lastUpdated:'Feb 28',changelog:'Added Delighted NPS as third signal source',previousVersions:['2.1.0','2.0.0','1.0.0']},
+    4:{version:'1.0.0',lastUpdated:'Feb 15',changelog:'Initial release',previousVersions:[]},
+    5:{version:'1.2.0',lastUpdated:'Mar 5',changelog:'Tuned tone matching to company update style',previousVersions:['1.1.0','1.0.0']},
+    6:{version:'2.0.0',lastUpdated:'Mar 10',changelog:'Expanded taxonomy from 8 to 14 product areas',previousVersions:['1.1.0','1.0.0']},
+    7:{version:'1.1.0',lastUpdated:'Feb 20',changelog:'Added pricing change detection',previousVersions:['1.0.0']},
+    8:{version:'1.0.0',lastUpdated:'Feb 22',changelog:'Initial pilot release',previousVersions:[]},
+    9:{version:'1.1.0',lastUpdated:'Mar 2',changelog:'Added department-specific checklist sections',previousVersions:['1.0.0']},
+    10:{version:'0.9.0',lastUpdated:'Mar 10',changelog:'Pilot — still tuning data source mappings',previousVersions:['0.8.0']},
+    11:{version:'2.2.0',lastUpdated:'Mar 7',changelog:'Improved technical question matching against KB',previousVersions:['2.1.0','2.0.0','1.0.0']},
+    12:{version:'1.4.0',lastUpdated:'Mar 8',changelog:'Added payment history as scoring signal',previousVersions:['1.3.0','1.2.0','1.0.0']},
+    13:{version:'0.1.0',lastUpdated:'Mar 12',changelog:'Initial pilot',previousVersions:[]},
+    14:{version:'1.1.0',lastUpdated:'Mar 11',changelog:'Refined investor update tone to match CEO style',previousVersions:['1.0.0']},
+    15:{version:'0.1.0',lastUpdated:'Mar 13',changelog:'Initial pilot — metric definitions being calibrated',previousVersions:[]},
+    16:{version:'1.0.0',lastUpdated:'Mar 12',changelog:'Stable — channel list finalized',previousVersions:[]}
+  };
+
+  // ── Model Lifecycle — tracks deprecation status per model ──
+  const MODEL_LIFECYCLE={
+    'claude-sonnet-4-20250514':{status:'active',eol:null,successor:null,note:'Current recommended model for complex tasks'},
+    'claude-haiku-4-5-20251001':{status:'active',eol:null,successor:null,note:'Current recommended model for fast/cheap tasks'}
+  };
+
+  // ── Output Quality — richer than just rewrite rate ──
+  // accept: used as-is, edit: used with changes, reject: discarded and redone manually
+  const OUTPUT_QUALITY={
+    1:{totalRuns:142,accepted:118,edited:20,rejected:4,trend:'stable'},
+    2:{totalRuns:215,accepted:198,edited:12,rejected:5,trend:'improving'},
+    3:{totalRuns:98,accepted:78,edited:16,rejected:4,trend:'stable'},
+    4:{totalRuns:67,accepted:45,edited:18,rejected:4,trend:'stable'},
+    5:{totalRuns:52,accepted:38,edited:12,rejected:2,trend:'stable'},
+    6:{totalRuns:340,accepted:315,edited:18,rejected:7,trend:'improving'},
+    7:{totalRuns:88,accepted:72,edited:12,rejected:4,trend:'stable'},
+    8:{totalRuns:34,accepted:28,edited:4,rejected:2,trend:'improving'},
+    9:{totalRuns:45,accepted:32,edited:11,rejected:2,trend:'stable'},
+    10:{totalRuns:8,accepted:4,edited:3,rejected:1,trend:'needs attention'},
+    11:{totalRuns:156,accepted:102,edited:45,rejected:9,trend:'improving'},
+    12:{totalRuns:112,accepted:95,edited:14,rejected:3,trend:'stable'},
+    13:{totalRuns:5,accepted:4,edited:1,rejected:0,trend:'new'},
+    14:{totalRuns:12,accepted:6,edited:5,rejected:1,trend:'stable'},
+    15:{totalRuns:3,accepted:1,edited:2,rejected:0,trend:'new'},
+    16:{totalRuns:28,accepted:24,edited:3,rejected:1,trend:'stable'}
+  };
+
   const BLOCK_HEALTH={
     'hubspot-pull':{status:'healthy',uptime:'99.8%',errorRate:'0.2%',lastRun:'2 min ago',latency:'340ms'},
     'zendesk-stream':{status:'healthy',uptime:'99.5%',errorRate:'0.5%',lastRun:'5 min ago',latency:'220ms'},
@@ -1258,6 +1563,86 @@
     'notion-write':'cred-notion','zendesk-update':'cred-zendesk','salesforce-update':'cred-salesforce'
   };
 
+  // ── Endpoint Security — data classification, access scope, audit trail ──
+  // Data classification per credential/endpoint
+  const ENDPOINT_DATA_CLASS={
+    'cred-anthropic':{dataTypes:['internal'],scope:['All BUs'],permissions:'read',lastAudit:'Mar 10',notes:'Processes text — no raw PII stored by Anthropic'},
+    'cred-hubspot':{dataTypes:['pii','financial'],scope:['GTM / Sales','Customer Success'],permissions:'read/write',lastAudit:'Mar 8',notes:'Contains contact emails, deal amounts, pipeline data'},
+    'cred-zendesk':{dataTypes:['pii'],scope:['Customer Success','Implementation'],permissions:'read/write',lastAudit:'Mar 5',notes:'Ticket content may contain customer PII'},
+    'cred-stripe':{dataTypes:['financial','pii'],scope:['Finance'],permissions:'read',lastAudit:'Mar 12',notes:'Payment amounts, invoice data, last 4 card digits'},
+    'cred-textract':{dataTypes:['financial'],scope:['Finance'],permissions:'read',lastAudit:'Mar 7',notes:'Processes invoice/receipt PDFs — financial data extracted'},
+    'cred-sheets':{dataTypes:['internal'],scope:['All BUs'],permissions:'read/write',lastAudit:'Mar 11',notes:'General workspace — data classification depends on sheet content'},
+    'cred-slack':{dataTypes:['internal'],scope:['All BUs'],permissions:'write',lastAudit:'Mar 9',notes:'Posts notifications only — no data ingestion'},
+    'cred-sendgrid':{dataTypes:['pii'],scope:['Customer Success','Marketing'],permissions:'write',lastAudit:'Mar 6',notes:'Sends emails — recipient addresses are PII'},
+    'cred-mixpanel':{dataTypes:['internal'],scope:['Product','Customer Success'],permissions:'read',lastAudit:'Mar 4',notes:'Product usage events — anonymized user IDs'},
+    'cred-bamboo':{dataTypes:['pii'],scope:['People Ops'],permissions:'read',lastAudit:'Mar 3',notes:'Employee records — names, addresses, compensation'},
+    'cred-delighted':{dataTypes:['pii'],scope:['Customer Success'],permissions:'read',lastAudit:'Mar 2',notes:'NPS responses with customer emails'},
+    'cred-notion':{dataTypes:['internal'],scope:['All BUs'],permissions:'read/write',lastAudit:'Mar 10',notes:'Internal docs and knowledge base'},
+    'cred-salesforce':{dataTypes:['pii','financial'],scope:['GTM / Sales'],permissions:'read/write',lastAudit:'Mar 1',notes:'CRM records — contacts, accounts, opportunity amounts'}
+  };
+
+  // Endpoint audit log
+  const ENDPOINT_AUDIT=[
+    {credId:'cred-salesforce',action:'Credential rotated',by:'VP Sales',at:'Mar 13, 9:00 AM',detail:'Scheduled rotation — new token issued'},
+    {credId:'cred-stripe',action:'Access granted',by:'Controller',at:'Mar 12, 3:15 PM',detail:'Added to Invoice Discrepancy Flagger workflow'},
+    {credId:'cred-anthropic',action:'Usage spike detected',by:'System',at:'Mar 12, 11:30 AM',detail:'2.3x normal volume — RFP Drafter batch run'},
+    {credId:'cred-hubspot',action:'Scope expanded',by:'VP Sales',at:'Mar 11, 2:00 PM',detail:'Added deals.read permission for Deal Summary workflow'},
+    {credId:'cred-zendesk',action:'Access reviewed',by:'Head of CS',at:'Mar 10, 10:00 AM',detail:'Quarterly access review — no changes'},
+    {credId:'cred-bamboo',action:'Access restricted',by:'VP People',at:'Mar 9, 4:30 PM',detail:'Removed compensation field access from onboarding workflow'},
+    {credId:'cred-sendgrid',action:'Failed auth attempt',by:'System',at:'Mar 8, 8:45 AM',detail:'Invalid API key on Health Score workflow — key was stale'},
+    {credId:'cred-sheets',action:'Access reviewed',by:'Chief of Staff',at:'Mar 7, 11:00 AM',detail:'Quarterly access review — removed 2 unused workflow bindings'},
+    {credId:'cred-textract',action:'Access granted',by:'Controller',at:'Mar 5, 9:30 AM',detail:'Added to Expense Policy Checker workflow'},
+    {credId:'cred-notion',action:'Credential rotated',by:'People Ops Lead',at:'Mar 3, 2:00 PM',detail:'Integration token refreshed'}
+  ];
+
+  // Compute security posture score for a workflow
+  function computeSecurityPosture(wfId){
+    const blocks=WORKFLOW_BLOCKS[wfId]||[];
+    const credIds=[...new Set(blocks.map(bid=>BLOCK_CREDS[bid]).filter(Boolean))];
+    let score=100;
+    let issues=[];
+    credIds.forEach(cid=>{
+      const cred=CREDENTIALS[cid];
+      const edc=ENDPOINT_DATA_CLASS[cid];
+      if(!cred)return;
+      // Credential health
+      if(cred.status==='rotating'){score-=10;issues.push(cred.name+': rotating')}
+      if(cred.status==='expired'){score-=30;issues.push(cred.name+': expired')}
+      // Expiration proximity
+      if(cred.expiresOn&&cred.expiresOn!=='—'){
+        const exp=new Date(cred.expiresOn+' 1');const now=new Date();
+        const daysLeft=(exp-now)/(1000*60*60*24);
+        if(daysLeft<30){score-=15;issues.push(cred.name+': expires soon')}
+        else if(daysLeft<90){score-=5}
+      }
+      // Data sensitivity
+      if(edc){
+        if(edc.dataTypes.includes('pii'))score-=3;
+        if(edc.dataTypes.includes('financial'))score-=3;
+        // Scope check — is this BU authorized?
+        const wf=workflows.find(w=>w.id===wfId);
+        if(wf&&!edc.scope.includes('All BUs')&&!edc.scope.includes(wf.bu)){
+          score-=20;issues.push(cred.name+': BU not in scope');
+        }
+      }
+    });
+    // No credentials = internal only = perfect score
+    if(!credIds.length){score=100}
+    const grade=score>=90?'A':score>=75?'B':score>=60?'C':'D';
+    return{score:Math.max(0,score),grade,issues};
+  }
+
+  // ── API Comments ──
+  const API_COMMENTS={
+    'Anthropic':[{author:'CK',text:'Token usage spiked last week from the RFP batch run. Might need to stagger.',ts:'Mar 12'},{author:'RB',text:'Can we get a second key for the Chief of Staff workflows? Want to track our usage separately.',ts:'Mar 10'}],
+    'HubSpot':[{author:'JS',text:'Rate limits hitting us during pipeline sync. Moved to off-peak cron.',ts:'Mar 11'}],
+    'Stripe':[{author:'MC',text:'Rate limit hit on Mar 13 — added retry logic to the Stripe Data block.',ts:'Mar 13'},{author:'RB',text:'Board deck pulls need to run before 9am ET to catch overnight transactions.',ts:'Mar 9'}],
+    'Slack':[{author:'CK',text:'CEO prefers the standup digest in a DM, not the #exec channel.',ts:'Mar 12'}],
+    'Zendesk':[{author:'KL',text:'Ticket classifier accuracy dropped after they changed their API response format. Fixed.',ts:'Mar 8'}],
+    'SendGrid':[{author:'AP',text:'Deliverability rate at 98.5%. No issues.',ts:'Mar 6'}],
+    'Salesforce':[{author:'JS',text:'Key is rotating — new token issued Mar 13. Old one expires Apr 15.',ts:'Mar 13'}]
+  };
+
   // ── Execution Monitor — recent workflow runs ──
   const EXEC_LOG=[
     {wfId:1,status:'success',startedAt:'Mar 13, 2:12 PM',duration:'4.2s',blocksRun:4,trigger:'Webhook'},
@@ -1271,6 +1656,13 @@
     {wfId:9,status:'success',startedAt:'Mar 13, 10:00 AM',duration:'3.7s',blocksRun:5,trigger:'New hire event'},
     {wfId:4,status:'success',startedAt:'Mar 13, 9:15 AM',duration:'7.2s',blocksRun:5,trigger:'Upload'}
   ];
+
+  // ── Logged-in user session ──
+  const SESSION_USER={name:'Haruka Takamori',initials:'HT',bu:'Chief of Staff',role:'Founders Associate'};
+  (function renderUserBadge(){
+    const el=document.getElementById('userBadge');
+    el.innerHTML='<span class="user-badge-avatar">'+esc(SESSION_USER.initials)+'</span><span class="user-badge-info"><span class="user-badge-name">'+esc(SESSION_USER.name)+'</span><span class="user-badge-bu">'+esc(SESSION_USER.bu)+'</span></span>';
+  })();
 
   let workflows=[],sortCol='name',sortAsc=true,expandedId=null;
   const chevSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
@@ -1298,14 +1690,63 @@
     document.getElementById('blockLibrary').innerHTML=html;
   }
 
-  function renderVaultPanel(){
-    let html='';
+  function renderVaultPanel(){renderEndpointSecurity()}
+  function renderEndpointSecurity(){
+    // Connections tab — grouped by API service, clickable
+    let epHtml='';
+    const services={};
     Object.entries(CREDENTIALS).forEach(([id,c])=>{
-      const dotCls='vault-dot-'+c.status;
-      html+='<div class="vault-item"><span class="vault-dot '+dotCls+'"></span><div class="vault-info"><div class="vault-name">'+esc(c.name)+'</div><div class="vault-key">'+esc(c.maskedKey)+'</div></div><span class="vault-count">'+c.usedBy.length+'</span></div>';
+      if(!services[c.service])services[c.service]={creds:[],status:'active',workflows:0};
+      services[c.service].creds.push({id,cred:c});
+      if(c.status==='expired')services[c.service].status='expired';
+      else if(c.status==='rotating'&&services[c.service].status!=='expired')services[c.service].status='rotating';
     });
-    document.getElementById('vaultPanel').innerHTML=html;
+    // Count workflows per service
+    Object.keys(services).forEach(svc=>{
+      const svcBlocks=Object.entries(BLOCKS).filter(([,b])=>b.api===svc).map(([id])=>id);
+      const wfCount=new Set();
+      Object.entries(WORKFLOW_BLOCKS).forEach(([wid,bids])=>{if(bids.some(bid=>svcBlocks.includes(bid)))wfCount.add(wid)});
+      services[svc].workflows=wfCount.size;
+    });
+    Object.entries(services).forEach(([svc,info])=>{
+      const stColor=info.status==='active'?'var(--green)':info.status==='rotating'?'var(--amber)':'var(--red)';
+      epHtml+='<div class="sec-endpoint" style="cursor:pointer" data-api="'+esc(svc)+'">';
+      epHtml+='<span class="sec-posture" style="background:'+stColor+'"></span>';
+      epHtml+='<div class="sec-ep-info"><div class="sec-ep-name">'+esc(svc)+'</div>';
+      epHtml+='<div class="sec-ep-meta"><span style="font-size:var(--text-xs);color:var(--tx-3)">'+info.workflows+' workflow'+(info.workflows!==1?'s':'')+'</span></div>';
+      epHtml+='</div>';
+      epHtml+='</div>';
+    });
+    document.getElementById('secEndpoints').innerHTML=epHtml;
+
+    // Activity tab
+    let auditHtml='';
+    ENDPOINT_AUDIT.slice(0,6).forEach(ev=>{
+      const cred=CREDENTIALS[ev.credId];
+      const name=cred?cred.service:ev.credId;
+      const isAlert=ev.action.includes('Failed')||ev.action.includes('spike');
+      auditHtml+='<div class="sec-audit-item">';
+      auditHtml+='<div class="sec-audit-action">'+(isAlert?'<span style="color:var(--red)">!</span> ':'')+esc(ev.action)+' — <strong>'+esc(name)+'</strong></div>';
+      auditHtml+='<div class="sec-audit-meta">'+esc(ev.at)+'</div>';
+      auditHtml+='</div>';
+    });
+    document.getElementById('secAudit').innerHTML=auditHtml;
+
+    // Badge
+    const expired=Object.values(CREDENTIALS).filter(c=>c.status==='expired').length;
+    const rotating=Object.values(CREDENTIALS).filter(c=>c.status==='rotating').length;
+    const badge=document.getElementById('secPostureBadge');
+    if(expired>0){badge.textContent=expired+' issue';badge.style.background='var(--red-bg)';badge.style.color='var(--red)'}
+    else if(rotating>0){badge.textContent=rotating+' rotating';badge.style.background='var(--amber-bg)';badge.style.color='var(--amber)'}
+    else{badge.textContent=Object.keys(services).length+' connected';badge.style.background='var(--green-bg)';badge.style.color='var(--green)'}
   }
+  // Endpoint security tab switching
+  document.querySelector('.sec-tabs')?.addEventListener('click',e=>{
+    const tab=e.target.closest('.sec-tab');if(!tab)return;
+    const target=tab.dataset.secTab;
+    document.querySelectorAll('.sec-tab').forEach(t=>t.classList.toggle('active',t.dataset.secTab===target));
+    document.querySelectorAll('.sec-tab-content').forEach(c=>c.classList.toggle('active',c.id==='sec'+target.charAt(0).toUpperCase()+target.slice(1)));
+  });
 
   function renderExecPanel(){
     let html='';
@@ -1328,9 +1769,8 @@
     document.getElementById('statTotal').textContent=workflows.length;
     let h=0;workflows.forEach(w=>{const m=w.saves.match(/([\d.]+)\s*hrs?\/(wk|mo)/i);if(m){let v=parseFloat(m[1]);if(m[2]==='mo')v/=4.33;h+=v}});
     document.getElementById('statHours').textContent=h.toFixed(1);
-    const withReviewer=workflows.filter(w=>w.reviewer&&w.reviewer!=='TBD'&&w.reviewer!=='').length;
-    const govPct=workflows.length?Math.round((withReviewer/workflows.length)*100):0;
-    document.getElementById('statGov').textContent=govPct+'%';
+    document.getElementById('statLive').textContent=workflows.filter(w=>w.status==='Live').length;
+    document.getElementById('statPilot').textContent=workflows.filter(w=>w.status==='Pilot').length;
   }
 
   function getFiltered(){const q=document.getElementById('searchInput').value.toLowerCase();const bu=document.getElementById('filterBU').value;const st=document.getElementById('filterStatus').value;const ty=document.getElementById('filterType').value;return workflows.filter(w=>{if(q&&!w.name.toLowerCase().includes(q)&&!w.desc.toLowerCase().includes(q))return false;if(bu&&w.bu!==bu)return false;if(st&&w.status!==st)return false;if(ty&&w.type!==parseInt(ty))return false;return true})}
@@ -1350,13 +1790,13 @@
       +'<span class="block-health-dot" style="background:'+hColor+'"></span>'
       +'<span class="block-dot block-dot-'+b.type+'"></span>'
       +'<div><div class="block-label">'+esc(b.name)+'</div>'
-      +'<div class="block-api">'+esc(b.api)+'</div></div></div>';
+      +'<div class="block-api" data-api="'+esc(b.api)+'">'+esc(b.api)+'</div></div></div>';
   }
   function renderPipeline(id){
     const blockIds=WORKFLOW_BLOCKS[id];if(!blockIds)return'';
     // Group blocks by type in order: source, transform, ai, output, gate
     const order=['source','transform','ai','output','gate'];
-    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Review Gate'};
+    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Approval'};
     const groups={};
     blockIds.forEach(bid=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push(bid)});
     let html='<div class="block-flow">';
@@ -1375,29 +1815,73 @@
 
   function render(){
     const filtered=getSorted(getFiltered());const tbody=document.getElementById('tableBody');
-    if(!filtered.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state">No workflows match current filters.</td></tr>';return}
+    if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" class="empty-state">No workflows match current filters.</td></tr>';return}
     let html='';
     filtered.forEach((w,i)=>{
       const ex=expandedId===w.id,stCls=w.status==='Live'?'badge-live':'badge-pilot',delay=Math.min(i*20,200);
       const intel=REUSE_INTEL[w.id]||{readiness:'—'};
       const rdCls=intel.readiness==='High'?'readiness-high':intel.readiness==='Medium'?'readiness-medium':'readiness-low';
       const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
-      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">Type '+w.type+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span style="display:flex;align-items:center;gap:4px">'+renderAvatar(w.reviewer,18)+'<span class="saves-label">'+esc(w.saves)+'</span></span></td></tr>';
+      const posture=computeSecurityPosture(w.id);
+      const healthColor=posture.score>=90?'var(--green)':posture.score>=75?'var(--teal)':posture.score>=60?'var(--amber)':'var(--red)';
+      const healthTip=posture.issues.length?posture.issues.join(', '):'All good';
+      html+='<tr class="data-row'+(ex?' expanded':'')+'" data-id="'+w.id+'" style="animation-delay:'+delay+'ms"><td class="expand-cell"><span class="chv">'+chevSVG+'</span></td><td class="cell-name"><div class="wf-icon" style="background:'+icon.bg+'">'+icon.abbr+'</div><div class="wf-info"><div class="wf-name">'+esc(w.name)+'</div><div class="wf-desc">'+esc(w.desc)+'</div></div></td><td><span class="bu-label">'+esc(w.bu)+'</span></td><td class="hide-sm"><span class="badge badge-type">'+(w.type===2?'AI-powered':'Rule-based')+'</span></td><td><span class="badge '+stCls+'">'+esc(w.status)+'</span></td><td class="hide-sm"><span class="saves-label">'+esc(w.saves)+'</span></td><td class="hide-sm"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+healthColor+'" title="'+esc(healthTip)+'"></span></td></tr>';
       const riskCls=w.risk==='Low'?'badge-risk-low':'badge-risk-medium',reuseTags=w.reused_by.length?w.reused_by.map(r=>'<span class="reuse-tag">'+esc(r)+'</span>').join(''):'<span style="color:var(--tx-3)">None yet</span>';
       // Reuse Intelligence detail section
       const stackChips=(intel.stack||[]).map(s=>'<span class="intel-chip intel-chip-stack">'+esc(s)+'</span>').join('');
       const topRisk=(intel.risks&&intel.risks[0])?esc(intel.risks[0]):'—';
       // Quality signals
       const qual=WF_QUALITY[w.id]||{design:'—',output:'—',designNote:'',outputNote:''};
-      const dCls='quality-'+qual.design.toLowerCase();
-      const oCls='quality-'+qual.output.toLowerCase();
+      const qMap={'Easy to update':'quality-good','Needs dev work':'quality-mid','Hard to change':'quality-bad','Ready to use':'quality-good','Needs a quick check':'quality-mid','Starting point only':'quality-bad'};
+      const dCls=qMap[qual.design]||'quality-mid';
+      const oCls=qMap[qual.output]||'quality-mid';
       // Comments
       const comments=COMMENTS[w.id]||[];
       const commentHtml=comments.map(c=>'<div class="comment-item">'+renderAvatar(c.author,20)+'<div class="comment-body"><div class="comment-text">'+esc(c.text)+'</div><div class="comment-meta">'+esc(c.ts)+'</div></div></div>').join('');
       // Use cases
       const useCases=USE_CASES[w.id]||[];
       const useCaseHtml=useCases.map(u=>'<span class="usecase-chip">'+esc(u)+'</span>').join('');
-      html+='<tr class="detail-row"><td colspan="6"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content"><div class="detail-pipeline-row"><h4>Workflow Blocks</h4>'+renderPipeline(w.id)+'</div><div class="detail-cols"><div class="detail-section"><h4>Governance</h4><div class="meta-row"><div class="meta-item"><div class="ml">Reviewer</div><div class="mv" style="display:flex;align-items:center;gap:6px">'+renderAvatar(w.reviewer,22)+esc(w.reviewer)+'</div></div><div class="meta-item"><div class="ml">Risk</div><div class="mv"><span class="badge '+riskCls+'">'+esc(w.risk)+'</span></div></div><div class="meta-item"><div class="ml">Rewrite</div><div class="mv">'+esc(w.rewrite_rate)+'</div></div></div><div style="margin-top:8px"><div class="ml">Reused By</div><div style="margin-top:4px">'+reuseTags+'</div></div></div><div class="detail-section"><h4>Reuse Intelligence</h4><div class="intel-badges"><div class="intel-badge-group"><span class="intel-badge-label">Ready</span><span class="readiness-badge '+rdCls+'">'+esc(intel.readiness)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Design</span><span class="quality-badge '+dCls+'">'+esc(qual.design)+'</span></div><div class="intel-badge-group"><span class="intel-badge-label">Output</span><span class="quality-badge '+oCls+'">'+esc(qual.output)+'</span></div></div><div class="intel-chips">'+stackChips+'</div><div class="intel-risk-item" style="margin-top:6px">'+topRisk+'</div></div></div><div class="detail-extras"><div><h4>Comments</h4><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div><div><h4>Other Use Cases</h4><div>'+useCaseHtml+'</div></div></div></div></div></div></td></tr>';
+      const pv=PROMPT_VERSIONS[w.id]||{version:'1.0.0',lastUpdated:'—',changelog:'—',previousVersions:[]};
+      const oq=OUTPUT_QUALITY[w.id]||{totalRuns:0,accepted:0,edited:0,rejected:0,trend:'new'};
+      const oqTotal=oq.totalRuns||1;
+      const oqAcceptPct=Math.round(oq.accepted/oqTotal*100);
+      // Plain language — no percentages, no jargon
+      let reliabilityLabel,reliabilityCls;
+      if(oq.totalRuns<10){reliabilityLabel='New — still being tested';reliabilityCls='trend-new'}
+      else if(oqAcceptPct>=85){reliabilityLabel='Working well';reliabilityCls='trend-improving'}
+      else if(oqAcceptPct>=60){reliabilityLabel='Works, sometimes needs edits';reliabilityCls='trend-stable'}
+      else{reliabilityLabel='Needs improvement';reliabilityCls='trend-needs-attention'}
+      // Build detail row
+      let detailHtml='<tr class="detail-row"><td colspan="7"><div class="detail-outer'+(ex?' open':'')+'"><div class="detail-inner"><div class="detail-content">';
+      // 1. What it does + pipeline
+      detailHtml+='<div class="detail-pipeline-row">';
+      detailHtml+='<div style="font-size:var(--text-base);color:var(--tx-2);line-height:1.6;margin-bottom:12px">'+esc(w.prompt_summary)+'</div>';
+      detailHtml+='<h4>Pipeline</h4>'+renderPipeline(w.id)+'</div>';
+      // 2. How well does it work? — simple plain-language summary
+      detailHtml+='<div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--border-dim);flex-wrap:wrap">';
+      detailHtml+='<span class="trend-badge '+reliabilityCls+'" style="font-size:var(--text-sm)">'+reliabilityLabel+'</span>';
+      detailHtml+='<span style="font-size:var(--text-xs);color:var(--tx-3)">Last updated: '+esc(pv.lastUpdated)+'</span>';
+      detailHtml+='</div>';
+      // 3. Who uses it + details
+      detailHtml+='<div class="detail-cols"><div class="detail-section">';
+      // Reused by
+      if(w.reused_by&&w.reused_by.length){
+        detailHtml+='<div class="ml">Also used by</div><div style="margin:4px 0 12px">'+reuseTags+'</div>';
+      }
+      // Reviewer (only if exists)
+      if(w.reviewer){
+        detailHtml+='<div style="display:flex;align-items:center;gap:6px;font-size:var(--text-sm)">'+renderAvatar(w.reviewer,20)+'<span style="color:var(--tx-2)">'+esc(w.reviewer)+' reviews output</span> <span class="badge '+riskCls+'" style="font-size:var(--text-xs)">'+esc(w.risk)+'</span></div>';
+      }
+      // Use cases
+      if(useCases.length){
+        detailHtml+='<div style="margin-top:12px"><div class="ml">Also useful for</div><div style="margin-top:4px">'+useCaseHtml+'</div></div>';
+      }
+      detailHtml+='</div>';
+      // Comments
+      detailHtml+='<div class="detail-section"><div class="ml">Comments</div><div class="comment-list" id="comments-'+w.id+'">'+commentHtml+'</div><div class="comment-input-wrap"><input class="comment-input" data-wf="'+w.id+'" placeholder="Add a comment..."></div></div>';
+      detailHtml+='</div>';
+      detailHtml+='</div></div></div></td></tr>';
+      html+=detailHtml;
     });
     tbody.innerHTML=html;
     document.querySelectorAll('thead th[data-sort]').forEach(th=>{const a=th.dataset.sort===sortCol;th.classList.toggle('sorted',a);const ar=th.querySelector('.sort-arrow');if(ar)ar.textContent=(a&&!sortAsc)?'\u25BC':'\u25B2'});
@@ -1409,12 +1893,20 @@
   document.getElementById('tableBody').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target.closest('.comment-input');if(!input)return;e.stopPropagation();const text=input.value.trim();if(!text)return;const wfId=parseInt(input.dataset.wf);if(!COMMENTS[wfId])COMMENTS[wfId]=[];COMMENTS[wfId].push({author:'Me',text,ts:'Now'});const list=document.getElementById('comments-'+wfId);const item=document.createElement('div');item.className='comment-item';item.innerHTML=renderAvatar('Me',20)+'<div class="comment-body"><div class="comment-text">'+esc(text)+'</div><div class="comment-meta">Now</div></div>';list.appendChild(item);list.scrollTop=list.scrollHeight;input.value=''});
   document.querySelectorAll('thead th[data-sort]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.sort;if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true}render()})});
   ['searchInput','filterBU','filterStatus','filterType'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',render);el.addEventListener('change',render)});
+  // "My team" quick filter toggle
+  document.getElementById('btnMyTeam').addEventListener('click',function(){
+    const buSel=document.getElementById('filterBU');
+    if(buSel.value===SESSION_USER.bu){
+      buSel.value='';this.classList.remove('btn-accent');this.style.color='';this.style.background='';this.style.borderColor='';
+    }else{
+      buSel.value=SESSION_USER.bu;this.classList.add('btn-accent');
+    }
+    render();
+  });
 
   function computeReuseMap(){const shared=workflows.filter(w=>w.reused_by.length).sort((a,b)=>b.reused_by.length-a.reused_by.length);const el=document.getElementById('reuseMap');if(!shared.length){el.innerHTML='<div style="color:var(--tx-3);font-size:.75rem">No shared workflows yet</div>';return}el.innerHTML=shared.map(w=>'<div class="shared-row"><span class="shared-count">'+w.reused_by.length+'</span><div class="shared-info"><div class="shared-name">'+esc(w.name)+'</div><div class="shared-bus">'+w.reused_by.map(b=>esc(b)).join(', ')+'</div></div></div>').join('')}
 
-  const khojSeed=[{tag:'progress',text:'Invoice Discrepancy Flagger \u2014 promoted Pilot \u2192 Live. Rewrite rate settled at 5%.',ts:'Mar 10'},{tag:'reuse',text:'Deal Summary Generator now reused by Customer Success for QBR prep.',ts:'Mar 9'},{tag:'shipped',text:'Support Ticket Classifier v2 deployed with P1-P4 severity routing.',ts:'Mar 8'},{tag:'context',text:'Board Deck Data Puller blocked on Stripe API rate limits. CoS investigating.',ts:'Mar 7'},{tag:'note',text:'RFP Response Drafter rewrite rate trending down \u2014 25% \u2192 22% after prompt tuning.',ts:'Mar 6'},{tag:'progress',text:'Expense Policy Checker pilot started. Controller reviewing first batch.',ts:'Mar 5'},{tag:'reuse',text:'SOW Clause Extractor adopted by Legal for contract review pipeline.',ts:'Mar 4'}];
-  function seedKhoj(){document.getElementById('khojFeed').innerHTML=khojSeed.map(k=>'<div class="khoj-item"><span class="khoj-tag khoj-tag-'+k.tag+'">#'+k.tag+'</span><div class="khoj-text">'+esc(k.text)+'</div><div class="khoj-ts">'+k.ts+'</div></div>').join('')}
-  document.getElementById('khojInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim()){const q=e.target.value.trim();const feed=document.getElementById('khojFeed');const item=document.createElement('div');item.className='khoj-item';item.innerHTML='<span class="khoj-tag khoj-tag-note">#query</span><div class="khoj-text" style="color:var(--tx)">\u2192 '+esc(q)+'</div><div class="khoj-ts">Just now \u00B7 Studio library not connected</div>';feed.prepend(item);e.target.value=''}});
+  function seedKhoj(){}
 
   // Export
   document.getElementById('btnExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(workflows,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='registry.json';a.click();URL.revokeObjectURL(url)});
@@ -1449,7 +1941,11 @@
     let modelHtml='';
     if(b.model){
       const modelShort=b.model.includes('sonnet')?'Sonnet 4':b.model.includes('haiku')?'Haiku 4.5':b.model.includes('opus')?'Opus 4':'Custom';
-      modelHtml='<div class="bd-section"><div class="bd-label">Model</div><div class="model-badge">'+esc(modelShort)+'</div><div style="font-family:var(--mono);font-size:.5625rem;color:var(--tx-3);margin-top:4px">'+esc(b.model)+'</div></div>';
+      const ml=MODEL_LIFECYCLE[b.model]||{status:'active',eol:null,note:''};
+      const mlCls='model-eol-'+ml.status;
+      const mlLabel=ml.status==='active'?'Active':ml.status==='deprecated'?'Deprecated':'Sunset';
+      const costTier=b.model.includes('haiku')?{label:'Low cost',price:'$0.80 / $4 per 1M tokens',note:'Fast and cheap — best for structured tasks'}:{label:'Standard',price:'$3 / $15 per 1M tokens',note:'Higher quality — best for nuanced tasks'};
+      modelHtml='<div class="bd-section"><div class="bd-label">Model</div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="model-badge">'+esc(modelShort)+'</div><span class="model-eol-badge '+mlCls+'">'+mlLabel+'</span><span class="trend-badge" style="background:var(--surface-2);color:var(--tx-2)">'+esc(costTier.label)+'</span></div><div style="font-family:var(--mono);font-size:var(--text-xs);color:var(--tx-3);margin-top:4px">'+esc(b.model)+'</div><div style="font-size:var(--text-xs);color:var(--tx-2);margin-top:4px">'+esc(costTier.price)+' · '+esc(costTier.note)+'</div>'+(ml.eol?'<div style="font-size:var(--text-xs);color:var(--red);margin-top:4px">EOL: '+esc(ml.eol)+(ml.successor?' · Successor: '+esc(ml.successor):'')+'</div>':'')+(ml.note?'<div style="font-size:var(--text-xs);color:var(--tx-3);margin-top:2px">'+esc(ml.note)+'</div>':'')+'</div>';
     }
 
     // Credential info
@@ -1459,7 +1955,17 @@
       const cred=CREDENTIALS[credId];
       if(cred){
         const stColor=cred.status==='active'?'var(--green)':cred.status==='rotating'?'var(--amber)':'var(--red)';
+        const edc=ENDPOINT_DATA_CLASS[credId]||{dataTypes:['internal'],scope:['All BUs'],permissions:'read',lastAudit:'—',notes:''};
         credHtml='<div class="bd-section"><div class="bd-label">Credential</div><div class="cred-badge"><span class="cred-badge-status" style="background:'+stColor+'"></span><span class="cred-badge-name">'+esc(cred.name)+'</span><span class="cred-badge-key">'+esc(cred.maskedKey)+'</span></div><div style="font-size:.5625rem;color:var(--tx-3);margin-top:4px">Added by '+esc(cred.addedBy)+' \u00B7 '+esc(cred.addedOn)+(cred.expiresOn!=='—'?' \u00B7 Expires '+esc(cred.expiresOn):'')+'</div></div>';
+        // Data classification section
+        credHtml+='<div class="bd-section"><div class="bd-label">Data Classification</div>';
+        credHtml+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">'+edc.dataTypes.map(t=>'<span class="sec-data-tag sec-data-'+t+'">'+t+'</span>').join('')+'</div>';
+        credHtml+='<div style="font-size:.625rem;color:var(--tx-2);line-height:1.5">'+esc(edc.notes)+'</div>';
+        credHtml+='<div style="display:flex;gap:8px;margin-top:6px;font-size:.5625rem;color:var(--tx-3)">';
+        credHtml+='<span><strong>Scope:</strong> '+esc(edc.scope.join(', '))+'</span>';
+        credHtml+='<span><strong>Perms:</strong> '+esc(edc.permissions)+'</span>';
+        credHtml+='<span><strong>Last audit:</strong> '+esc(edc.lastAudit)+'</span>';
+        credHtml+='</div></div>';
       }
     }
 
@@ -1478,7 +1984,7 @@
 
     return '<div class="bd-head">'
       +'<span class="block-dot block-dot-'+b.type+'" style="width:10px;height:10px"></span>'
-      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api">'+esc(b.api)+' \u00B7 '+b.type+'</div></div>'
+      +'<div class="bd-head-info"><div class="bd-head-name">'+esc(b.name)+'</div><div class="bd-head-api"><span data-api="'+esc(b.api)+'">'+esc(b.api)+'</span> \u00B7 '+b.type+'</div></div>'
       +'<button class="bd-close" id="drawerClose">&times;</button></div>'
       +'<div class="bd-body">'
       +'<div class="bd-section"><div class="bd-label">Description</div><div class="bd-desc">'+esc(b.desc)+'</div></div>'
@@ -1493,11 +1999,50 @@
       +'</div></div>'
       +flowHtml
       +execHtml
-      +(usedIn.length?'<div class="bd-section"><div class="bd-label">Used in '+usedIn.length+' workflow'+(usedIn.length>1?'s':'')+'</div><div class="bd-wf-list">'+usedIn.map(w=>{
-        const stCls=w.status==='Live'?'badge-live':'badge-pilot';
-        const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
-        return '<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:.5rem">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.bu)+'</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
-      }).join('')+'</div></div>':'')
+      +(usedIn.length?(function(){
+        // Split into: workflows in user's BU vs other BUs
+        const myBU=SESSION_USER.bu;
+        const inMyBU=usedIn.filter(w=>w.bu===myBU);
+        const inOtherBU=usedIn.filter(w=>w.bu!==myBU);
+        let html='';
+        // Relevance to user's role
+        if(inMyBU.length){
+          html+='<div class="bd-section"><div class="bd-label" style="color:var(--teal)">Used in Your Team ('+esc(myBU)+')</div><div class="bd-wf-list">';
+          inMyBU.forEach(w=>{
+            const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+            const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+            html+='<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:var(--text-xs)">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.saves||'—')+' saved</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
+          });
+          html+='</div></div>';
+        }else{
+          // No workflows in user's BU — suggest relevance
+          html+='<div class="bd-section"><div class="bd-label" style="color:var(--teal)">Relevant to '+esc(myBU)+'?</div><div class="bd-desc" style="font-size:.6875rem;line-height:1.5">';
+          const otherBUs=[...new Set(inOtherBU.map(w=>w.bu))];
+          html+=otherBUs.length?esc(otherBUs.join(', '))+' already use'+(otherBUs.length===1?'s':'')+' this block. ':'';
+          // Generate relevance hint based on block type + user BU
+          const relevanceHints={
+            'Chief of Staff':{'source':'Pull cross-functional data for exec reporting and initiative tracking.','ai':'Draft investor updates, generate narratives for board decks, or summarize cross-team progress.','transform':'Aggregate metrics across BUs or validate data consistency.','output':'Push digests to CEO, generate board materials, or send investor updates.','gate':'Review gates for external communications.'},
+            'Finance':{'source':'Pull financial data for reconciliation or reporting.','ai':'Automate analysis of invoices, expenses, or financial narratives.','transform':'Validate transactions against policies or flag anomalies.','output':'Push results to accounting systems or audit trails.','gate':'Add approval step for payment actions.'},
+            'GTM / Sales':{'source':'Ingest pipeline data for deal tracking.','ai':'Generate deal summaries or score leads automatically.','transform':'Route or categorize incoming opportunities.','output':'Alert the team on deal changes or generate reports.','gate':'Gate outbound communications for review.'},
+            'Customer Success':{'source':'Pull support tickets or health signals.','ai':'Summarize customer interactions or predict churn.','transform':'Aggregate signals across touchpoints.','output':'Notify CSMs or update dashboards.','gate':'Review escalations before action.'}
+          };
+          const hints=relevanceHints[myBU];
+          if(hints&&hints[b.type])html+=hints[b.type];
+          else html+='This block could be part of a workflow in '+esc(myBU)+'.';
+          html+='</div></div>';
+        }
+        // Other teams using it
+        if(inOtherBU.length){
+          html+='<div class="bd-section"><div class="bd-label">Used by Other Teams ('+inOtherBU.length+')</div><div class="bd-wf-list">';
+          inOtherBU.forEach(w=>{
+            const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+            const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+            html+='<div class="bd-wf-item" data-wf-nav="'+w.id+'"><div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:var(--text-xs)">'+icon.abbr+'</div><div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.bu)+'</div></div><span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span></div>';
+          });
+          html+='</div></div>';
+        }
+        return html;
+      })():'')
       +'</div>';
   }
 
@@ -1557,8 +2102,125 @@
     clearHighlights();
   }
 
+  // ── API Detail View (in block drawer) ──
+  function openApiDetail(apiName){
+    if(!apiName||apiName==='Internal'||apiName==='Custom'||apiName==='Rule Engine')return;
+    const apiCreds=Object.entries(CREDENTIALS).filter(([,c])=>c.service===apiName);
+    const apiBlocks=Object.entries(BLOCKS).filter(([,b])=>b.api===apiName);
+    const blockIds=apiBlocks.map(([id])=>id);
+    const apiWorkflows=[];
+    Object.entries(WORKFLOW_BLOCKS).forEach(([wid,bids])=>{
+      if(bids.some(bid=>blockIds.includes(bid))){const w=workflows.find(x=>x.id===parseInt(wid));if(w)apiWorkflows.push(w)}
+    });
+
+    // Header
+    let html='<div class="bd-head">';
+    html+='<span class="block-dot" style="background:var(--accent);width:10px;height:10px;border-radius:50%"></span>';
+    html+='<div class="bd-head-info"><div class="bd-head-name">'+esc(apiName)+'</div><div class="bd-head-api">'+apiWorkflows.length+' workflow'+(apiWorkflows.length!==1?'s':'')+' use this API</div></div>';
+    html+='<button class="bd-close" id="drawerClose">&times;</button></div>';
+    html+='<div class="bd-body">';
+
+    // Key status — one line per credential, just the essentials
+    if(apiCreds.length){
+      html+='<div class="bd-section"><div class="bd-label">API Key</div>';
+      apiCreds.forEach(([credId,c])=>{
+        const edc=ENDPOINT_DATA_CLASS[credId]||{dataTypes:['internal'],scope:['All BUs'],permissions:'read'};
+        const stColor=c.status==='active'?'var(--green)':c.status==='rotating'?'var(--amber)':'var(--red)';
+        const stLabel=c.status==='active'?'Active':c.status==='rotating'?'Rotating':'Expired';
+        html+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0">';
+        html+='<span style="width:6px;height:6px;border-radius:50%;background:'+stColor+';flex-shrink:0"></span>';
+        html+='<span style="font-family:var(--mono);font-size:var(--text-xs);color:var(--tx-3)">'+esc(c.maskedKey)+'</span>';
+        html+='<span style="font-size:var(--text-xs);font-weight:600;color:var(--tx-2)">'+stLabel+'</span>';
+        if(c.expiresOn&&c.expiresOn!=='—')html+='<span style="font-size:var(--text-xs);color:var(--tx-3);margin-left:auto">Expires '+esc(c.expiresOn)+'</span>';
+        html+='</div>';
+        // Data tags + scope on one line
+        html+='<div style="display:flex;align-items:center;gap:6px;padding:0 0 6px 14px;flex-wrap:wrap">';
+        edc.dataTypes.forEach(t=>{html+='<span class="sec-data-tag sec-data-'+t+'">'+t+'</span>'});
+        html+='<span style="font-size:var(--text-xs);color:var(--tx-3)">'+esc(edc.permissions)+' · '+esc(edc.scope.join(', '))+'</span>';
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+
+    // Workflows using this API — the main content
+    if(apiWorkflows.length){
+      html+='<div class="bd-section"><div class="bd-label">Workflows</div><div class="bd-wf-list">';
+      apiWorkflows.forEach(w=>{
+        const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+        const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+        html+='<div class="bd-wf-item" data-wf-nav="'+w.id+'">';
+        html+='<div class="wf-icon" style="background:'+icon.bg+';width:24px;height:24px;font-size:var(--text-xs)">'+icon.abbr+'</div>';
+        html+='<div><div class="bd-wf-name">'+esc(w.name)+'</div><div class="bd-wf-bu">'+esc(w.bu)+' · '+esc(w.saves)+'</div></div>';
+        html+='<span class="bd-wf-status '+stCls+'">'+esc(w.status)+'</span>';
+        html+='</div>';
+      });
+      html+='</div></div>';
+    }
+
+    // Recent activity — compact, max 3
+    const apiAudit=ENDPOINT_AUDIT.filter(ev=>apiCreds.some(([cid])=>ev.credId===cid));
+    if(apiAudit.length){
+      html+='<div class="bd-section"><div class="bd-label">Recent Activity</div>';
+      apiAudit.slice(0,3).forEach(ev=>{
+        const isAlert=ev.action.includes('Failed')||ev.action.includes('spike');
+        html+='<div style="padding:4px 0;font-size:var(--text-xs)">';
+        html+='<span style="color:'+(isAlert?'var(--red)':'var(--tx-2)')+'">'+esc(ev.action)+'</span>';
+        html+=' <span style="color:var(--tx-3)">· '+esc(ev.at)+'</span>';
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+
+    // Comments
+    const apiComments=API_COMMENTS[apiName]||[];
+    html+='<div class="bd-section"><div class="bd-label">Comments</div>';
+    if(apiComments.length){
+      apiComments.forEach(c=>{
+        html+='<div class="comment-item">'+renderAvatar(c.author,20)+'<div class="comment-body"><div class="comment-text">'+esc(c.text)+'</div><div class="comment-meta">'+esc(c.ts)+'</div></div></div>';
+      });
+    }
+    html+='<div class="comment-input-wrap"><input class="comment-input" id="apiCommentInput" placeholder="Add a comment..." data-api-name="'+esc(apiName)+'"></div>';
+    html+='</div>';
+
+    html+='</div>';
+    drawer.innerHTML=html;
+    drawer.classList.add('open');
+    drawerOpen=true;
+    document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+    drawer.querySelectorAll('[data-wf-nav]').forEach(el=>{
+      el.addEventListener('click',()=>{
+        const wfId=parseInt(el.dataset.wfNav);closeDrawer();
+        const row=document.querySelector('tr.data-row[data-id="'+wfId+'"]');
+        if(row){row.click();row.scrollIntoView({behavior:'smooth',block:'center'})}
+      });
+    });
+    // API comment submit
+    const apiInput=document.getElementById('apiCommentInput');
+    if(apiInput){
+      apiInput.addEventListener('keydown',e=>{
+        if(e.key==='Enter'&&apiInput.value.trim()){
+          const an=apiInput.dataset.apiName;
+          if(!API_COMMENTS[an])API_COMMENTS[an]=[];
+          API_COMMENTS[an].push({author:'HT',text:apiInput.value.trim(),ts:'Just now'});
+          openApiDetail(an);
+          showToast('Comment added');
+        }
+      });
+    }
+  }
+
   // Click block cards — detect workflow context from detail row
   document.addEventListener('click',e=>{
+    // Check for API label click first (can be inside a block card)
+    const apiEl=e.target.closest('[data-api]');
+    if(apiEl){
+      const apiName=apiEl.dataset.api;
+      if(apiName&&apiName!=='Internal'&&apiName!=='Custom'&&apiName!=='Rule Engine'){
+        e.stopPropagation();
+        openApiDetail(apiName);
+        return;
+      }
+    }
     const card=e.target.closest('[data-block]');
     if(card&&!card.closest('.composer-catalog')){
       e.stopPropagation();
@@ -1581,6 +2243,9 @@
 
   // Prevent block clicks from toggling row expand
   document.getElementById('tableBody').addEventListener('click',e=>{
+    // API clicks inside blocks should open API detail, not the block
+    const apiEl=e.target.closest('[data-api]');
+    if(apiEl){const an=apiEl.dataset.api;if(an&&an!=='Internal'&&an!=='Custom'&&an!=='Rule Engine'){e.stopPropagation();openApiDetail(an);return}}
     if(e.target.closest('[data-block]')){e.stopPropagation();return}
     if(e.target.closest('.comment-input-wrap')||e.target.closest('.comment-list'))return;
     const row=e.target.closest('tr.data-row');if(!row)return;
@@ -1595,19 +2260,32 @@
     const order=['source','transform','ai','output','gate'];
     const labels={source:'Sources',transform:'Transform',ai:'AI',output:'Outputs',gate:'Gates'};
     const colors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
-    let html='';
+    let html='<input type="text" class="catalog-search" id="catalogSearch" placeholder="Search blocks...">';
     order.forEach(type=>{
       const blocks=Object.entries(BLOCKS).filter(([,b])=>b.type===type);
       if(!blocks.length)return;
-      html+='<div class="catalog-group-label" style="color:'+colors[type]+'">'+labels[type]+'</div>';
+      html+='<div class="catalog-group" data-group="'+type+'"><div class="catalog-group-label" style="color:'+colors[type]+'">'+labels[type]+'</div>';
       blocks.forEach(([id,b])=>{
         const credId=BLOCK_CREDS[id];const cred=credId?CREDENTIALS[credId]:null;
         const credDot=cred?'<span style="width:4px;height:4px;border-radius:50%;background:'+(cred.status==='active'?'var(--green)':'var(--amber)')+';flex-shrink:0"></span>':'';
-        const modelTag=b.model?'<span style="font-size:.5rem;color:var(--teal);margin-left:auto">'+(b.model.includes('sonnet')?'S4':b.model.includes('haiku')?'H4.5':'')+'</span>':'';
-        html+='<div class="catalog-block" data-catalog="'+id+'">'+credDot+'<span class="block-dot block-dot-'+type+'"></span><span class="catalog-block-name">'+esc(b.name)+'</span>'+modelTag+'</div>';
+        const modelTag=b.model?'<span style="font-size:var(--text-xs);color:var(--teal);margin-left:auto">'+(b.model.includes('sonnet')?'S4':b.model.includes('haiku')?'H4.5':'')+'</span>':'';
+        html+='<div class="catalog-block" data-catalog="'+id+'" data-search="'+esc((b.name+' '+b.desc+' '+b.api+' '+b.type).toLowerCase())+'">'+credDot+'<span class="block-dot block-dot-'+type+'"></span><span class="catalog-block-name">'+esc(b.name)+'</span>'+modelTag+'</div>';
       });
+      html+='</div>';
     });
     document.getElementById('composerCatalog').innerHTML=html;
+    // Attach search handler
+    document.getElementById('catalogSearch').addEventListener('input',function(){
+      const q=this.value.toLowerCase().trim();
+      document.querySelectorAll('#composerCatalog .catalog-block').forEach(el=>{
+        el.classList.toggle('hidden',q&&!el.dataset.search.includes(q));
+      });
+      // Hide group labels if all blocks in group are hidden
+      document.querySelectorAll('#composerCatalog .catalog-group').forEach(g=>{
+        const visible=g.querySelectorAll('.catalog-block:not(.hidden)');
+        g.classList.toggle('hidden',q&&!visible.length);
+      });
+    });
   }
   function renderComposerFlow(){
     const flow=document.getElementById('composerFlow');
@@ -1615,23 +2293,29 @@
     if(!composerBlocks.length){
       flow.innerHTML='<span class="composer-flow-empty">Click blocks from the catalog to add them here</span>';
       if(metaEl)metaEl.innerHTML='';
+      renderLivePipeline();
       return;
     }
-    // Group by type preserving order
+    // Group by type in stage order
     const order=['source','transform','ai','output','gate'];
+    const stageLabels={source:'Source',transform:'Transform',ai:'AI',output:'Output',gate:'Gate'};
     const groups={};composerBlocks.forEach((bid,i)=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push({bid,idx:i})});
     let html='',first=true;
     order.forEach(type=>{
       if(!groups[type])return;
-      if(!first)html+='<span class="block-arrow">\u2192</span>';
+      if(!first)html+='<div class="composer-stage-arrow">↓</div>';
       first=false;
+      html+='<div class="composer-stage">';
+      html+='<span class="composer-stage-label composer-stage-label-'+type+'">'+stageLabels[type]+'</span>';
+      html+='<div class="composer-stage-blocks">';
       groups[type].forEach(({bid,idx})=>{
         const b=BLOCKS[bid];
         const credId=BLOCK_CREDS[bid];const cred=credId?CREDENTIALS[credId]:null;
         const credDot=cred?'<span style="width:4px;height:4px;border-radius:50%;background:'+(cred.status==='active'?'var(--green)':'var(--amber)')+';flex-shrink:0"></span>':'';
-        const modelTag=b.model?'<span style="font-size:.5rem;color:var(--teal)">'+(b.model.includes('sonnet')?'S4':b.model.includes('haiku')?'H4.5':'')+'</span>':'';
-        html+='<div class="composer-block">'+credDot+'<span class="block-dot block-dot-'+b.type+'"></span><span class="cb-name">'+esc(b.name)+'</span>'+modelTag+'<button class="cb-remove" data-idx="'+idx+'">&times;</button></div>';
+        const modelTag=b.model?'<span style="font-size:var(--text-xs);color:var(--teal)">'+(b.model.includes('sonnet')?'S4':b.model.includes('haiku')?'H4.5':'')+'</span>':'';
+        html+='<div class="composer-block">'+credDot+'<span class="block-dot block-dot-'+b.type+'"></span><span class="cb-name">'+esc(b.name)+'</span><span class="cb-api" data-api="'+esc(b.api)+'">'+esc(b.api)+'</span>'+modelTag+'<button class="cb-remove" data-idx="'+idx+'">&times;</button></div>';
       });
+      html+='</div></div>';
     });
     flow.innerHTML=html;
     // Compute metadata summary
@@ -1649,6 +2333,36 @@
       meta+='</div>';
       metaEl.innerHTML=meta;
     }
+    renderLivePipeline();
+  }
+
+  // Live pipeline preview in Step 1 — shows what the advisor has built so far
+  function renderLivePipeline(){
+    const container=document.getElementById('livePipeline');
+    const flowEl=document.getElementById('livePipelineFlow');
+    if(!container||!flowEl)return;
+    const blocks=composerBlocks.length?composerBlocks:goalCtx.blocks;
+    if(!blocks.length){
+      container.classList.remove('has-blocks');
+      return;
+    }
+    container.classList.add('has-blocks');
+    const order=['source','transform','ai','output','gate'];
+    const typeColors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
+    // Sort blocks by stage order
+    const sorted=[...blocks].sort((a,b)=>{
+      const ai=order.indexOf(BLOCKS[a]?.type||'gate');
+      const bi=order.indexOf(BLOCKS[b]?.type||'gate');
+      return ai-bi;
+    });
+    let html='',first=true;
+    sorted.forEach(bid=>{
+      const b=BLOCKS[bid];if(!b)return;
+      if(!first)html+='<span class="live-pipeline-arrow">→</span>';
+      first=false;
+      html+='<span class="live-pipeline-block"><span class="block-dot" style="background:'+typeColors[b.type]+';width:5px;height:5px;border-radius:50%;flex-shrink:0"></span>'+esc(b.name)+'</span>';
+    });
+    flowEl.innerHTML=html;
   }
   // Catalog click → add block
   document.getElementById('composerCatalog').addEventListener('click',e=>{
@@ -1666,7 +2380,7 @@
   // ── Add Workflow Modal (3-step) ──
   const overlay=document.getElementById('modalOverlay');
   const addModal=document.getElementById('addModal');
-  const stepLabels={1:'Describe',2:'Compose',3:'Review & Launch'};
+  const stepLabels={1:'Discover',2:'Build',3:'Review & Launch'};
   let modalStep=1;
   function setModalStep(step){
     modalStep=step;
@@ -1674,17 +2388,19 @@
     document.getElementById('composerStep2').classList.toggle('active',step===2);
     document.getElementById('composerStep3').classList.toggle('active',step===3);
     document.querySelectorAll('#stepDots .step-dot').forEach(d=>d.classList.toggle('active',parseInt(d.dataset.step)<=step));
-    addModal.classList.toggle('modal-wide',step>=2);
-    document.getElementById('modalTitle').textContent=step===1?'Add Workflow':stepLabels[step];
+    // Step 1: full-screen chat mode. Steps 2-3: standard modal.
+    addModal.classList.toggle('modal-chat-mode',step===1);
+    addModal.classList.toggle('modal-wide',step>=2&&step<4);
+    document.getElementById('modalTitle').textContent=step===1?'Automation Advisor':stepLabels[step]+' ('+step+'/3)';
   }
   function renderReviewSummary(){
     const name=document.getElementById('fName').value.trim();
     const bu=document.getElementById('fBU').value;
     const desc=document.getElementById('fDesc').value.trim();
-    const reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
-    const risk=document.getElementById('fRisk').value;
+    const risk=autoDetectRisk(composerBlocks);
+    const reviewer=risk==='Medium'?(document.getElementById('fReviewer').value.trim()||'TBD'):'';
     const hasAI=composerBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
-    const typeLabel=hasAI?'Type 2 — Generative':'Type 1 — Deterministic';
+    const typeLabel=hasAI?'AI-powered':'Rule-based';
     // Models
     const models=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.model).filter(Boolean))];
     const modelChips=models.map(m=>{const short=m.includes('sonnet')?'Sonnet 4':m.includes('haiku')?'Haiku 4.5':m;return '<span class="model-badge">'+esc(short)+'</span>'}).join('');
@@ -1693,7 +2409,7 @@
     const credChips=credIds.map(cid=>{const c=CREDENTIALS[cid];if(!c)return'';const stColor=c.status==='active'?'var(--green)':'var(--amber)';return '<div class="cred-badge"><span class="cred-badge-status" style="background:'+stColor+'"></span><span class="cred-badge-name">'+esc(c.name)+'</span><span class="cred-badge-key">'+esc(c.maskedKey)+'</span></div>'}).join('');
     // Pipeline preview
     const order=['source','transform','ai','output','gate'];
-    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Review Gate'};
+    const labels={source:'Sources',transform:'Transform',ai:'AI Logic',output:'Output',gate:'Approval'};
     const groups={};composerBlocks.forEach(bid=>{const b=BLOCKS[bid];if(!b)return;if(!groups[b.type])groups[b.type]=[];groups[b.type].push(bid)});
     let pipeHtml='<div class="block-flow" style="margin-top:0">';
     let pfirst=true;
@@ -1711,152 +2427,767 @@
     html+='<div class="review-row"><span class="review-label">Name</span><span class="review-value" style="font-weight:700">'+esc(name)+'</span></div>';
     html+='<div class="review-row"><span class="review-label">BU</span><span class="review-value">'+esc(bu)+'</span></div>';
     html+='<div class="review-row"><span class="review-label">Description</span><span class="review-value" style="font-size:.75rem;color:var(--tx-2)">'+esc(desc)+'</span></div>';
-    html+='<div class="review-row"><span class="review-label">Reviewer</span><span class="review-value" style="display:flex;align-items:center;gap:6px">'+renderAvatar(reviewer,22)+esc(reviewer)+'</span></div>';
+    if(risk==='Medium')html+='<div class="review-row"><span class="review-label">Reviewer</span><span class="review-value" style="display:flex;align-items:center;gap:6px">'+renderAvatar(reviewer,22)+esc(reviewer)+'</span></div>';
     html+='<div class="review-row"><span class="review-label">Type</span><span class="review-value"><span class="badge badge-type">'+esc(typeLabel)+'</span></span></div>';
-    html+='<div class="review-row"><span class="review-label">Risk</span><span class="review-value"><span class="badge '+(risk==='Low'?'badge-risk-low':'badge-risk-medium')+'">'+esc(risk)+'</span></span></div>';
+    html+='<div class="review-row"><span class="review-label">Risk</span><span class="review-value"><span class="badge '+(risk==='Low'?'badge-risk-low':'badge-risk-medium')+'">'+esc(risk)+(risk==='Low'?' — no reviewer needed':'')+'</span></span></div>';
     if(models.length)html+='<div class="review-row"><span class="review-label">Models</span><span class="review-value review-models">'+modelChips+'</span></div>';
     if(credIds.length)html+='<div class="review-row"><span class="review-label">Credentials</span><span class="review-value review-creds" style="flex-wrap:wrap;display:flex;gap:4px">'+credChips+'</span></div>';
     html+='<div class="review-pipeline"><div class="review-pipeline-label">Pipeline ('+composerBlocks.length+' blocks)</div>'+pipeHtml+'</div>';
     html+='</div>';
-    document.getElementById('reviewSummary').innerHTML=html;
+    document.getElementById('reviewSummary').innerHTML=renderCredentialGate()+html;
   }
   function resetModal(){
-    setModalStep(1);composerBlocks=[];renderComposerFlow();
-    ['fName','fDesc','fDetails','fReviewer'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('fBU').selectedIndex=0;
-    document.getElementById('chatMessages').innerHTML='<div class="chat-msg chat-msg-ai">Describe what you want to automate and I\'ll recommend the right blocks. e.g. <em>"Pull deals from CRM and summarize them weekly"</em></div>';
+    setModalStep(1);composerBlocks=[];resetGoalCtx();renderComposerFlow();closeWorkflowPreview();
+    ['fName','fDesc','fDetails','fReviewer','fSaves'].forEach(id=>document.getElementById(id).value='');
+    // Pre-fill BU from session
+    const buSel=document.getElementById('fBU');
+    for(let i=0;i<buSel.options.length;i++){if(buSel.options[i].value===SESSION_USER.bu){buSel.selectedIndex=i;break}}
+    document.getElementById('fBUDisplay').textContent=SESSION_USER.bu;
+    goalCtx.bu=SESSION_USER.bu;
+    document.getElementById('goalMessages').innerHTML='<div class="chat-msg chat-msg-ai" style="margin-top:auto">Hi '+esc(SESSION_USER.name.split(' ')[0])+', what task do you want to automate?<br><br>I\'ll check if there\'s an existing workflow you can reuse, or help you build one from scratch. Just describe what you spend time on today.</div>';
     const submitBtn=document.getElementById('modalSubmit');
     submitBtn.disabled=false;submitBtn.textContent='Launch as Pilot';
   }
-  document.getElementById('btnAdd').addEventListener('click',()=>{resetModal();renderComposerCatalog();overlay.classList.add('open');document.getElementById('fName').focus()});
+  let creationStartTime=null;
+  document.getElementById('btnAdd').addEventListener('click',()=>{resetModal();renderComposerCatalog();overlay.classList.add('open');document.getElementById('goalInput').focus();creationStartTime=Date.now()});
   document.getElementById('modalClose').addEventListener('click',()=>{overlay.classList.remove('open')});
   document.getElementById('modalCancel').addEventListener('click',()=>{overlay.classList.remove('open')});
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
-  // Step 1 → 2
-  document.getElementById('modalNext').addEventListener('click',()=>{
-    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),reviewer=document.getElementById('fReviewer').value.trim();
+  // Transition from chat (step 1) to build (step 2) — called by chat when ready
+  // ── Workflow Preview Panel (split view in chat) ──
+  function openWorkflowPreview(wfId){
+    const w=workflows.find(x=>x.id===wfId);if(!w)return;
+    const icon=WF_ICONS[wfId]||{abbr:'??',bg:'#999'};
+    const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+    const wfBlocks=WORKFLOW_BLOCKS[wfId]||[];
+    const panel=document.getElementById('wfPreviewPanel');
+
+    let html='<div class="wf-preview-head">';
+    html+='<div class="wf-icon" style="background:'+icon.bg+';width:32px;height:32px;font-size:.5625rem">'+icon.abbr+'</div>';
+    html+='<div class="wf-preview-head-info"><div class="wf-preview-title">'+esc(w.name)+'</div>';
+    html+='<div class="wf-preview-sub">'+esc(w.bu)+' · <span class="badge '+stCls+'" style="font-size:var(--text-xs)">'+esc(w.status)+'</span> · '+esc(w.saves)+' saved</div></div>';
+    html+='<button class="wf-preview-close" id="previewClose">&times;</button></div>';
+
+    html+='<div class="wf-preview-body">';
+    // Description
+    html+='<div class="wf-preview-section"><div class="wf-preview-label">What it does</div><div class="wf-preview-text">'+esc(w.desc)+'</div></div>';
+    // Prompt summary
+    if(w.prompt_summary)html+='<div class="wf-preview-section"><div class="wf-preview-label">How it works</div><div class="wf-preview-text" style="font-style:italic;color:var(--tx-2)">'+esc(w.prompt_summary)+'</div></div>';
+    // Pipeline
+    if(wfBlocks.length){
+      html+='<div class="wf-preview-section"><div class="wf-preview-label">Pipeline ('+wfBlocks.length+' blocks)</div>';
+      html+='<div class="build-spec-pipeline">';
+      const pipeOrder=['source','transform','ai','output','gate'];
+      const typeColors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
+      let first=true;
+      pipeOrder.forEach(type=>{
+        wfBlocks.filter(bid=>BLOCKS[bid]?.type===type).forEach(bid=>{
+          if(!first)html+='<span class="build-spec-arrow">→</span>';
+          first=false;
+          html+='<span class="build-spec-step"><span class="block-dot" style="background:'+typeColors[type]+';width:5px;height:5px;border-radius:50%;flex-shrink:0"></span>'+esc(BLOCKS[bid]?.name||bid)+'</span>';
+        });
+      });
+      html+='</div></div>';
+    }
+    // Governance
+    html+='<div class="wf-preview-section"><div class="wf-preview-label">Governance</div><div class="wf-preview-text">';
+    html+='<strong>Reviewer:</strong> '+esc(w.reviewer||'None')+'<br>';
+    html+='<strong>Risk:</strong> '+esc(w.risk)+'<br>';
+    html+='<strong>Rewrite rate:</strong> '+esc(w.rewrite_rate);
+    html+='</div></div>';
+    // Reused by
+    if(w.reused_by&&w.reused_by.length){
+      html+='<div class="wf-preview-section"><div class="wf-preview-label">Reused by</div><div style="display:flex;gap:4px;flex-wrap:wrap">';
+      w.reused_by.forEach(bu=>{html+='<span class="reuse-tag">'+esc(bu)+'</span>'});
+      html+='</div></div>';
+    }
+    html+='</div>';
+
+    // Footer actions
+    html+='<div class="wf-preview-footer">';
+    html+='<button class="btn btn-accent" id="previewUseThis">This works for me</button>';
+    html+='<button class="btn" id="previewNotFit">Doesn\'t fit — build new</button>';
+    html+='</div>';
+
+    panel.innerHTML=html;
+    addModal.classList.add('has-preview');
+
+    // Close preview
+    document.getElementById('previewClose').addEventListener('click',closeWorkflowPreview);
+    // "This works" → close modal, navigate to workflow
+    document.getElementById('previewUseThis').addEventListener('click',()=>{
+      closeWorkflowPreview();
+      overlay.classList.remove('open');resetModal();
+      setTimeout(()=>{
+        const row=document.querySelector('tr.data-row[data-id="'+wfId+'"]');
+        if(row){row.click();row.scrollIntoView({behavior:'smooth',block:'center'})}
+      },300);
+      showToast('Using "'+w.name+'"');
+    });
+    // "Doesn't fit" → close preview, add a chat message, continue building
+    document.getElementById('previewNotFit').addEventListener('click',()=>{
+      closeWorkflowPreview();
+      addGoalMsg('ai','Got it — <strong>'+esc(w.name)+'</strong> doesn\'t fit your case. Let\'s build something new. You can keep describing what you need or click <strong>"Build new workflow"</strong> below if the spec looks right.');
+    });
+  }
+  function closeWorkflowPreview(){
+    addModal.classList.remove('has-preview');
+    document.getElementById('wfPreviewPanel').innerHTML='';
+  }
+
+  function startBuildMode(proposal){
+    // Auto-fill form from proposal
+    if(proposal){
+      if(proposal.name&&proposal.name!=='New Automation'){document.getElementById('fName').value=proposal.name;clearFieldError('fName','errName')}
+      if(proposal.desc){document.getElementById('fDesc').value=proposal.desc;clearFieldError('fDesc','errDesc')}
+      if(proposal.timeSavings){document.getElementById('fSaves').value=proposal.timeSavings;clearFieldError('fSaves','errSaves')}
+      composerBlocks=[];
+      (proposal.blocks||[]).forEach(bid=>{if(BLOCKS[bid]&&!composerBlocks.includes(bid))composerBlocks.push(bid)});
+    }else if(goalRecommendedBlocks.length&&!composerBlocks.length){
+      goalRecommendedBlocks.forEach(bid=>{if(BLOCKS[bid]&&!composerBlocks.includes(bid))composerBlocks.push(bid)});
+    }
+    renderComposerFlow();
+    renderComposerCatalog();
+    autoDetectRisk(composerBlocks);
+    setModalStep(2);
+    addModal.classList.add('modal-wide');
+  }
+  // Step 2 → 3
+  // Credential readiness check
+  function checkCredentialReadiness(){
+    const credStatus=[];
+    const seenCreds=new Set();
+    composerBlocks.forEach(bid=>{
+      const credId=BLOCK_CREDS[bid];
+      if(!credId||seenCreds.has(credId))return;
+      seenCreds.add(credId);
+      const cred=CREDENTIALS[credId];
+      const edc=ENDPOINT_DATA_CLASS[credId];
+      const block=BLOCKS[bid];
+      if(!cred){
+        // Credential doesn't exist in vault at all
+        credStatus.push({credId,blockName:block?.name||bid,name:'Unknown ('+credId+')',status:'missing',detail:'API key not in vault — needs to be created and added',owner:null});
+        return;
+      }
+      // Check if BU has access
+      const buInScope=!edc||edc.scope.includes('All BUs')||edc.scope.includes(SESSION_USER.bu);
+      if(cred.status==='expired'){
+        credStatus.push({credId,blockName:block?.name||bid,name:cred.name,status:'missing',detail:'Credential expired — contact '+esc(cred.addedBy)+' to renew',owner:cred.addedBy});
+      }else if(!buInScope){
+        credStatus.push({credId,blockName:block?.name||bid,name:cred.name,status:'needs-access',detail:SESSION_USER.bu+' not in scope — request access from '+cred.addedBy,owner:cred.addedBy});
+      }else{
+        credStatus.push({credId,blockName:block?.name||bid,name:cred.name,status:'ready',detail:cred.status==='rotating'?'Active (rotating)':'Active',owner:cred.addedBy});
+      }
+    });
+    return credStatus;
+  }
+
+  function renderCredentialGate(){
+    const creds=checkCredentialReadiness();
+    if(!creds.length)return''; // no credentials needed (internal blocks only)
+    const ready=creds.filter(c=>c.status==='ready').length;
+    const needsAccess=creds.filter(c=>c.status==='needs-access').length;
+    const missing=creds.filter(c=>c.status==='missing').length;
+    const allReady=needsAccess===0&&missing===0;
+
+    let html='<div class="field-group" style="margin-bottom:16px"><div class="field-group-label">Credentials ('+creds.length+')</div>';
+    // Summary
+    html+='<div class="cred-gate-summary">';
+    html+='<span class="cred-gate-summary-item"><span class="cred-gate-status cred-gate-ready"></span> '+ready+' ready</span>';
+    if(needsAccess)html+='<span class="cred-gate-summary-item"><span class="cred-gate-status cred-gate-needs-access"></span> '+needsAccess+' needs access</span>';
+    if(missing)html+='<span class="cred-gate-summary-item"><span class="cred-gate-status cred-gate-missing"></span> '+missing+' missing</span>';
+    html+='</div>';
+    // List
+    creds.forEach((c,i)=>{
+      html+='<div class="cred-gate-item">';
+      html+='<span class="cred-gate-status cred-gate-'+c.status+'"></span>';
+      html+='<div class="cred-gate-info"><div class="cred-gate-name">'+esc(c.name)+'</div><div class="cred-gate-detail">for '+esc(c.blockName)+' — '+esc(c.detail)+'</div></div>';
+      if(c.status!=='ready'){
+        html+='<div class="cred-gate-action"><button class="cred-gate-btn" data-cred-req="'+i+'">Request</button></div>';
+      }
+      html+='</div>';
+    });
+    if(!allReady){
+      html+='<div style="font-size:.625rem;color:var(--amber);margin-top:8px;line-height:1.5">Some credentials need attention. You can still launch as a Pilot — the workflow will be saved but won\'t execute until all credentials are ready.</div>';
+    }
+    html+='</div>';
+    return html;
+  }
+
+  document.getElementById('composerNext2').addEventListener('click',()=>{
+    // Validate form fields
+    const name=document.getElementById('fName').value.trim(),desc=document.getElementById('fDesc').value.trim(),saves=document.getElementById('fSaves').value.trim();
     let valid=true;
     if(!name){showFieldError('fName','errName');valid=false}else{clearFieldError('fName','errName')}
-    if(!bu){showFieldError('fBU','errBU');valid=false}else{clearFieldError('fBU','errBU')}
     if(!desc){showFieldError('fDesc','errDesc');valid=false}else{clearFieldError('fDesc','errDesc')}
-    if(!reviewer){showFieldError('fReviewer','errReviewer');valid=false}else{clearFieldError('fReviewer','errReviewer')}
+    if(!saves){showFieldError('fSaves','errSaves');valid=false}else{clearFieldError('fSaves','errSaves')}
     if(!valid){document.querySelector('.field-error')?.focus();return}
-    setModalStep(2);
-  });
-  // Step 2 → 3
-  document.getElementById('composerNext2').addEventListener('click',()=>{
     if(!composerBlocks.length){showToast('Add at least one block');return}
     renderReviewSummary();
     setModalStep(3);
+    // Attach credential request handlers
+    document.querySelectorAll('[data-cred-req]').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        this.textContent='Requested';
+        this.classList.add('requested');
+        showToast('Access request sent');
+      });
+    });
   });
   document.getElementById('composerBack').addEventListener('click',()=>setModalStep(1));
   document.getElementById('reviewBack').addEventListener('click',()=>setModalStep(2));
 
   // Generate Code with Agent
   // ── Block Assistant Chat ──
+  // BLOCK_KEYWORDS — IDs must match keys in BLOCKS object
   const BLOCK_KEYWORDS={
-    'hubspot-pull':['crm','deal','contact','pipeline','hubspot','sales data'],
-    'stripe-pull':['payment','invoice','stripe','billing','charge','subscription'],
-    'zendesk-pull':['ticket','support','zendesk','customer issue','help desk'],
-    'jira-pull':['task','project','jira','sprint','backlog','issue'],
-    'gsheet-pull':['spreadsheet','sheet','google sheet','gsheet','csv'],
-    'slack-pull':['slack','message','channel','conversation'],
-    'email-pull':['email','inbox','mail','gmail'],
-    'pdf-pull':['pdf','document','file','attachment'],
-    'sql-pull':['database','sql','query','db','postgres','mysql'],
-    'api-pull':['api','rest','endpoint','webhook','fetch'],
-    'calendar-pull':['calendar','schedule','meeting','event'],
-    'docusign-pull':['contract','signature','docusign','sign'],
-    'keyword-classify':['keyword','classify','categorize','tag','label','route','rule'],
-    'threshold-check':['threshold','check','limit','alert','flag','variance'],
-    'dedup':['duplicate','dedup','merge','deduplicate','clean'],
-    'template-fill':['template','fill','merge field','placeholder','format'],
-    'date-calc':['date','deadline','overdue','aging','days','calculate'],
-    'score':['score','rank','weight','prioritize','rating'],
-    'claude-summarize':['summarize','summary','recap','digest','tldr','brief'],
-    'claude-classify':['classify','categorize','sentiment','score','llm classify','ai classify'],
-    'claude-draft':['draft','write','compose','generate text','content','copy'],
-    'claude-extract':['extract','parse','structured','pull data from text','ocr'],
-    'claude-narrator':['narrative','explain','describe','plain language','story'],
-    'slack-send':['send slack','post slack','notify slack','slack message'],
-    'email-send':['send email','notify email','email alert','mail send'],
-    'gsheet-write':['write sheet','update sheet','log sheet','append sheet'],
-    'pdf-report':['report','pdf','generate pdf','export pdf','document output'],
-    'jira-update':['update jira','create ticket','jira write','log jira'],
-    'dashboard-push':['dashboard','push metric','analytics','visualization'],
-    'webhook-fire':['webhook','callback','trigger','fire event','notify'],
-    'salesforce-push':['salesforce','sf','crm update','crm write'],
-    'manager-approve':['approve','review','sign off','manager','gate'],
-    'legal-review':['legal','compliance','legal review','counsel'],
-    'exec-approve':['executive','exec','cfo','vp','senior approve']
+    // Sources
+    'hubspot-pull':['crm','deal','contact','pipeline','hubspot','sales data','leads'],
+    'zendesk-stream':['ticket','support','zendesk','customer issue','help desk','support ticket'],
+    'sheets-import':['spreadsheet','sheet','google sheet','gsheet','csv','import sheet','pull sheet'],
+    'stripe-feed':['payment','invoice','stripe','billing','charge','subscription','revenue data'],
+    'ocr-ingest':['pdf','document','scan','attachment','ocr','paper','receipt'],
+    'drive-scan':['google drive','drive','files','folders','documents'],
+    'bamboo-pull':['employee','hr','bamboohr','bamboo','people data','org data','headcount'],
+    'rss-feed':['rss','feed','changelog','monitor','news'],
+    'mixpanel-pull':['mixpanel','usage','product data','analytics','events','user behavior'],
+    'delighted-pull':['nps','survey','feedback','delighted','csat','satisfaction'],
+    'knowledge-base':['knowledge base','wiki','docs','past responses','internal docs','notion docs'],
+    // Transforms
+    'keyword-classify':['keyword','categorize','tag','label','route','rule based','sort'],
+    'threshold-check':['threshold','check','limit','alert','flag','variance','above','below','exceed'],
+    'schema-map':['map fields','schema','transform','convert','field mapping'],
+    'regex-extract':['regex','pattern','extract text','parse text'],
+    'policy-validator':['policy','validate','compliance check','rule check','enforce'],
+    'signal-aggregator':['aggregate','combine','merge signals','consolidate','multi source'],
+    // AI
+    'claude-summarize':['summarize','summary','recap','digest','tldr','brief','shorten'],
+    'claude-classify':['classify','categorize','sentiment','score','ai classify','detect','identify'],
+    'claude-draft':['draft','write','compose','generate text','content','copy','create text','author'],
+    'claude-extract':['extract','parse','structured data','pull data from text','ocr extract','fields'],
+    'claude-narrator':['narrative','explain','describe','plain language','story','narrate','readable'],
+    // Outputs — these must match actual BLOCKS keys
+    'slack-notify':['slack','send slack','post slack','notify slack','slack message','slack alert','channel','notify team','send to slack','post to slack','alert on slack'],
+    'sheets-write':['spreadsheet','sheet','google sheet','write sheet','update sheet','log sheet','append sheet','put in sheet','save to sheet','export to sheet','send to sheet'],
+    'sendgrid-email':['email','send email','notify email','email alert','mail','send mail','email it','email me','email the team','send to email'],
+    'pdf-report':['report','pdf','generate pdf','export pdf','document output','pdf report','create report','generate report','make a report'],
+    'notion-write':['notion','notion page','write to notion','update notion','save to notion'],
+    'zendesk-update':['update ticket','zendesk update','close ticket','route ticket'],
+    'salesforce-update':['salesforce','sf','crm update','crm write','update crm','push to crm','update salesforce'],
+    'json-export':['json','export json','api output','structured output','data export'],
+    // Gates
+    'manager-approve':['approve','review','sign off','manager','gate','approval'],
+    'confidence-gate':['confidence','auto approve','threshold gate','confidence gate'],
+    'dual-review':['dual review','two reviewers','double check','dual approval']
   };
   function matchBlocks(query){
     const q=query.toLowerCase();
+    const stopWords=new Set(['a','an','the','i','it','to','do','in','on','of','for','and','or','my','is','we','be','up','so','at','by','no','if','get','put','use','make','take','give','have','this','that','them','from','with','into','just','also','want','need','like','every','week']);
     const scores=Object.entries(BLOCK_KEYWORDS).map(([bid,keywords])=>{
+      if(!BLOCKS[bid])return{bid,score:0};
       let score=0;
-      keywords.forEach(kw=>{if(q.includes(kw))score+=2;else kw.split(' ').forEach(w=>{if(q.includes(w))score+=1})});
+      keywords.forEach(kw=>{
+        if(q.includes(kw))score+=3; // full phrase match
+        else{
+          const words=kw.split(' ').filter(w=>w.length>=3&&!stopWords.has(w));
+          words.forEach(w=>{if(q.includes(w))score+=1});
+        }
+      });
       return{bid,score};
-    }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score);
-    return scores.slice(0,6).map(s=>s.bid);
+    }).filter(s=>s.score>=2).sort((a,b)=>b.score-a.score);
+    // Also include any blocks with score 1 if they're a direct single-keyword hit (e.g. "slack", "email", "pdf")
+    const directHits=Object.entries(BLOCK_KEYWORDS).filter(([bid])=>BLOCKS[bid]).map(([bid,keywords])=>{
+      const hit=keywords.some(kw=>kw.length>=3&&q.includes(kw)&&!kw.includes(' '));
+      return hit?bid:null;
+    }).filter(Boolean);
+    const result=[...scores.slice(0,8).map(s=>s.bid)];
+    directHits.forEach(bid=>{if(!result.includes(bid))result.push(bid)});
+    return result.slice(0,10);
   }
-  function addChatMsg(type,html){
-    const el=document.getElementById('chatMessages');
+  // ── Goal Chat (Automation Advisor — Step 1) ──
+  // Conversation state — accumulates across turns
+  let goalCtx={sources:[],processing:[],outputs:[],timeSavings:null,bu:'',blocks:[],rawGoal:'',turnCount:0};
+  let goalRecommendedBlocks=[];
+  function resetGoalCtx(){goalCtx={sources:[],processing:[],outputs:[],timeSavings:null,bu:SESSION_USER.bu,blocks:[],rawGoal:'',turnCount:0};goalRecommendedBlocks=[]}
+  function addGoalMsg(type,html){
+    const el=document.getElementById('goalMessages');
     const msg=document.createElement('div');
     msg.className='chat-msg chat-msg-'+type;
     msg.innerHTML=html;
     el.appendChild(msg);
-    el.scrollTop=el.scrollHeight;
+    // Scroll the chat scroll container
+    const scrollEl=el.closest('.goal-chat-scroll')||el;
+    scrollEl.scrollTop=scrollEl.scrollHeight;
     return msg;
   }
-  function handleChatSend(){
-    const input=document.getElementById('chatInput');
-    const q=input.value.trim();if(!q)return;
-    addChatMsg('user',esc(q));
-    input.value='';
-    // Simulate thinking delay
-    setTimeout(()=>{
-      const matches=matchBlocks(q);
-      if(!matches.length){
-        addChatMsg('ai','I couldn\'t find specific blocks for that. Try describing the data source (e.g. "HubSpot", "Stripe"), what to do with it (e.g. "summarize", "classify"), and where it should go (e.g. "Slack", "email").');
-        return;
-      }
-      // Build response
-      let resp='Here\'s what I\'d recommend:<div class="chat-msg-blocks">';
-      matches.forEach(bid=>{
-        const bl=BLOCKS[bid];if(!bl)return;
-        const alreadyAdded=composerBlocks.includes(bid);
-        const typeColor=bl.type==='source'?'var(--slate-bg)':bl.type==='transform'?'var(--amber-bg)':bl.type==='ai'?'var(--teal-bg)':bl.type==='output'?'var(--plum-bg)':'var(--gold-bg)';
-        resp+='<span class="chat-block-chip'+(alreadyAdded?' added':'')+'" data-chat-block="'+bid+'" style="border-left:3px solid '+typeColor+'">'+(alreadyAdded?'✓ ':' + ')+esc(bl.name)+'</span>';
-      });
-      resp+='</div><div style="font-size:.5625rem;color:var(--tx-3);margin-top:4px">Click a block to add it to your pipeline.</div>';
-      addChatMsg('ai',resp);
-    },600);
+  // BU inference map
+  const BU_HINTS={'sales':'GTM / Sales','deal':'GTM / Sales','crm':'GTM / Sales','pipeline':'GTM / Sales','prospect':'GTM / Sales','lead':'GTM / Sales','invoice':'Finance','expense':'Finance','payment':'Finance','billing':'Finance','revenue':'Finance','accounting':'Finance','ap ':'Finance','ar ':'Finance','support':'Customer Success','ticket':'Customer Success','nps':'Customer Success','churn':'Customer Success','csat':'Customer Success','onboarding':'Implementation','implementation':'Implementation','employee':'People Ops','hr':'People Ops','bamboo':'People Ops','hiring':'People Ops','roadmap':'Product','feature':'Product','bug':'Product','marketing':'Marketing','campaign':'Marketing','content':'Marketing','legal':'Legal','contract':'Legal','compliance':'Legal','procurement':'Procurement','vendor':'Procurement','purchase':'Procurement'};
+  const REVIEWER_HINTS={'GTM / Sales':'VP Sales','Finance':'Controller','Customer Success':'Head of CS','Implementation':'Head of Implementation','Chief of Staff':'Chief of Staff','People Ops':'VP People','Product':'VP Product','Marketing':'VP Marketing','Legal':'General Counsel','Procurement':'Head of Procurement'};
+
+  // ── Work Lane Classification (Product / Product Ops / Ops) ──
+  const PRODUCT_SIGNALS=['feature','product','ui','ux','interface','user experience','app','platform','dashboard','customer facing','end user','in the product','build into','should be a feature','native','core product'];
+  const PRODUCT_OPS_SIGNALS=['onboarding','migration','data quality','customer data','implementation','provisioning','setup','customer setup','handoff','go live','launch','trial','pilot customer','customer report','customer facing report','white label','branded'];
+  function classifyWorkLane(rawText){
+    const q=rawText.toLowerCase();
+    const productScore=PRODUCT_SIGNALS.reduce((s,kw)=>s+(q.includes(kw)?1:0),0);
+    const productOpsScore=PRODUCT_OPS_SIGNALS.reduce((s,kw)=>s+(q.includes(kw)?1:0),0);
+    if(productScore>=2)return'product';
+    if(productOpsScore>=2)return'product-ops';
+    if(productScore===1&&productOpsScore>=1)return'product-ops';
+    return'ops';
   }
-  document.getElementById('chatSend').addEventListener('click',handleChatSend);
-  document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleChatSend()}});
-  // Click to add block from chat recommendation
-  document.getElementById('chatMessages').addEventListener('click',e=>{
-    const chip=e.target.closest('[data-chat-block]');if(!chip||chip.classList.contains('added'))return;
-    const bid=chip.dataset.chatBlock;
-    composerBlocks.push(bid);
-    renderComposerFlow();
-    chip.classList.add('added');
-    chip.textContent='✓ '+BLOCKS[bid].name;
-    showToast('Added '+BLOCKS[bid].name);
-  });
+  const LANE_META={
+    'product':{label:'Product',color:'var(--blue)',bg:'var(--blue-bg)',desc:'This sounds like it should be a product feature, not a workflow.'},
+    'product-ops':{label:'Product Ops',color:'var(--plum)',bg:'var(--plum-bg)',desc:'This sits between product and ops — it could graduate into a product feature over time.'},
+    'ops':{label:'Ops',color:'var(--slate)',bg:'var(--slate-bg)',desc:'Internal operational workflow — this is what the registry is built for.'}
+  };
+
+  // ── Workflow Decomposition ──
+  // Detects whether user's pain maps to one or multiple distinct workflows
+  // Patterns that suggest multiple workflows: "and also", "separately", "then I also", "another thing", multiple unrelated source+action pairs
+  const SPLIT_SIGNALS=['and also','separately','another thing','on top of that','plus i','besides that','then i also','i also have to','also i need','the other task','second task','third task'];
+
+  function detectWorkflows(rawText){
+    const ql=rawText.toLowerCase();
+    // Check for explicit split signals
+    const hasSplitSignal=SPLIT_SIGNALS.some(s=>ql.includes(s));
+    // Check for multiple distinct source→action clusters
+    const allBlocks=matchBlocks(ql);
+    const sources=allBlocks.filter(bid=>BLOCKS[bid]?.type==='source');
+    const processing=allBlocks.filter(bid=>BLOCKS[bid]?.type==='ai'||BLOCKS[bid]?.type==='transform');
+    const outputs=allBlocks.filter(bid=>BLOCKS[bid]?.type==='output');
+    // Heuristic: multiple sources with different APIs + split signal = likely multiple workflows
+    const uniqueSourceAPIs=[...new Set(sources.map(bid=>BLOCKS[bid]?.api))];
+    const isMultiple=(hasSplitSignal&&uniqueSourceAPIs.length>1)||(uniqueSourceAPIs.length>=3&&processing.length>=2);
+    if(!isMultiple)return null; // single workflow — use normal flow
+    // Try to decompose into clusters
+    // Split by sentence boundaries near split signals
+    let segments=[rawText];
+    SPLIT_SIGNALS.forEach(sig=>{
+      const newSegs=[];
+      segments.forEach(seg=>{
+        const idx=seg.toLowerCase().indexOf(sig);
+        if(idx>15){ // only split if there's meaningful text before
+          newSegs.push(seg.slice(0,idx).trim());
+          newSegs.push(seg.slice(idx+sig.length).trim());
+        }else{newSegs.push(seg)}
+      });
+      segments=newSegs;
+    });
+    // Also try splitting on sentence boundaries
+    if(segments.length===1){
+      segments=rawText.split(/(?<=[.!?])\s+/).filter(s=>s.length>15);
+      if(segments.length<2)segments=[rawText];
+    }
+    // Build a workflow proposal per segment
+    const wfs=[];
+    segments.forEach((seg,i)=>{
+      const segBlocks=matchBlocks(seg.toLowerCase());
+      if(!segBlocks.length)return;
+      const srcs=segBlocks.filter(bid=>BLOCKS[bid]?.type==='source');
+      const procs=segBlocks.filter(bid=>BLOCKS[bid]?.type==='ai'||BLOCKS[bid]?.type==='transform');
+      const outs=segBlocks.filter(bid=>BLOCKS[bid]?.type==='output');
+      if(!srcs.length&&!procs.length)return;
+      // Generate name
+      const srcNames=srcs.map(bid=>BLOCKS[bid].name);
+      const actionVerbs={Summarizer:'Summary',Classifier:'Classifier',Drafter:'Drafter',Extractor:'Extractor',Narrator:'Narrator'};
+      const aiNames=procs.filter(bid=>BLOCKS[bid]?.type==='ai').map(bid=>BLOCKS[bid].name.replace('Claude ',''));
+      let name='';
+      if(srcNames.length&&aiNames.length){name=srcNames[0].replace(/\s*(CRM|Data|Tickets|Events|NPS)\s*/gi,'').trim()+' '+(actionVerbs[aiNames[0]]||aiNames[0])}
+      else if(srcNames.length){name=srcNames[0]+' Automation'}
+      else{name='Workflow '+(i+1)}
+      if(name.length>50)name=name.slice(0,47)+'...';
+      const hasAI=segBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
+      wfs.push({name,blocks:segBlocks,sources:srcNames,processing:procs.map(bid=>BLOCKS[bid].name),outputs:outs.map(bid=>BLOCKS[bid].name),hasAI,segment:seg});
+    });
+    // Only return multi if we actually got 2+ distinct workflows
+    return wfs.length>=2?wfs:null;
+  }
+
+  function buildBlockChips(blocks){
+    if(!blocks||!blocks.length)return'';
+    let html='<div class="goal-suggested-blocks">';
+    blocks.forEach(bid=>{
+      const bl=BLOCKS[bid];if(!bl)return;
+      const typeColor=bl.type==='source'?'var(--slate)':bl.type==='transform'?'var(--amber)':bl.type==='ai'?'var(--teal)':bl.type==='output'?'var(--plum)':'var(--gold)';
+      html+='<span class="goal-block-chip" style="border-left:3px solid '+typeColor+'">'+esc(bl.name)+'</span>';
+    });
+    html+='</div>';
+    return html;
+  }
+
+  function parseUserMsg(q){
+    const ql=q.toLowerCase();
+    // Match time phrases: "3 hours a week", "about 4 hrs/wk", "takes 2 hours per month", "5 hrs", "half a day every week"
+    const timePatterns=[
+      /([\d.]+)\s*(?:hr|hour|hrs|hours)\s*(?:\/|per|a|each|every)?\s*(?:wk|week|mo|month|day)/i,
+      /([\d.]+)\s*(?:hr|hour|hrs|hours)\s*(?:\/\s*(?:wk|week|mo|month))?/i,
+      /([\d.]+)\s*(?:min|mins|minutes)\s*(?:\/|per|a|each|every)?\s*(?:wk|week|mo|month|day)/i,
+      /half\s+(?:a\s+)?day\s*(?:per|a|each|every)?\s*(?:wk|week|mo|month)/i
+    ];
+    for(const pat of timePatterns){
+      const m=ql.match(pat);
+      if(m){
+        let val=m[0];
+        // Normalize natural language to standard format
+        val=val.replace(/per |a |each |every /gi,'/').replace(/hours?/gi,'hrs').replace(/minutes?/gi,'min').replace(/week/gi,'wk').replace(/month/gi,'mo');
+        if(val.includes('half'))val='4 hrs/wk';
+        // Ensure it has a period suffix
+        if(!/\/(wk|mo|day)/i.test(val))val+='/wk';
+        goalCtx.timeSavings=val;
+        break;
+      }
+    }
+    const matches=matchBlocks(ql);
+    matches.forEach(bid=>{
+      if(!goalCtx.blocks.includes(bid))goalCtx.blocks.push(bid);
+      const b=BLOCKS[bid];if(!b)return;
+      if(b.type==='source'&&!goalCtx.sources.includes(b.name))goalCtx.sources.push(b.name);
+      if((b.type==='ai'||b.type==='transform')&&!goalCtx.processing.includes(b.name))goalCtx.processing.push(b.name);
+      if(b.type==='output'&&!goalCtx.outputs.includes(b.name))goalCtx.outputs.push(b.name);
+    });
+    if(!goalCtx.rawGoal)goalCtx.rawGoal=q;
+    else goalCtx.rawGoal+='. '+q;
+    goalCtx.turnCount++;
+  }
+
+  function goalMissing(){
+    const m=[];
+    if(!goalCtx.blocks.length)m.push('source');
+    if(!goalCtx.timeSavings)m.push('time');
+    // Only ask about output if we have source+processing but no output AND haven't asked before
+    // Don't keep asking — output is optional, we can infer or skip
+    return m;
+  }
+
+  function buildFollowUp(missing){
+    if(!goalCtx.blocks.length&&goalCtx.turnCount>=2){
+      return 'I\'m having trouble matching that to specific tools. Could you mention the app or system name? (e.g. HubSpot, Stripe, Zendesk, Google Sheets)';
+    }
+    if(!goalCtx.timeSavings&&goalCtx.blocks.length){
+      return 'How much time does this take you manually? (e.g. "about 3 hours a week")';
+    }
+    if(!goalCtx.blocks.length){
+      return 'Can you walk me through the steps? Like: <strong>what system do you start in</strong>, <strong>what do you do with the data</strong>, and roughly <strong>how long it takes</strong>?';
+    }
+    return 'Tell me more — what else should this workflow handle?';
+  }
+
+  function generateProposal(ctx){
+    const c=ctx||goalCtx;
+    const hasAI=c.blocks.some(bid=>BLOCKS[bid]?.type==='ai');
+    const srcNames=c.sources;
+    const aiNames=c.blocks.filter(bid=>BLOCKS[bid]?.type==='ai').map(bid=>BLOCKS[bid].name.replace('Claude ',''));
+    const outNames=c.outputs;
+    const actionVerbs={Summarizer:'Summary',Classifier:'Classifier',Drafter:'Drafter',Extractor:'Extractor',Narrator:'Narrator'};
+    let name='';
+    if(srcNames.length&&aiNames.length){name=srcNames[0].replace(/\s*(CRM|Data|Tickets|Events|NPS)\s*/gi,'').trim()+' '+(actionVerbs[aiNames[0]]||aiNames[0])}
+    else if(srcNames.length&&outNames.length){name=srcNames[0].replace(/\s*(CRM|Data|Tickets|Events|NPS)\s*/gi,'').trim()+' Pipeline'}
+    else if(srcNames.length){name=srcNames[0]+' Automation'}
+    else{name='New Automation'}
+    if(name.length>50)name=name.slice(0,47)+'...';
+    const srcDesc=srcNames.length?srcNames.join(', '):'data';
+    const procDesc=aiNames.length?aiNames.map(n=>n.toLowerCase()).join(', '):'process';
+    const outDesc=outNames.length?outNames.join(', '):'configured output';
+    let desc='Pulls '+srcDesc+', '+procDesc+(procDesc==='process'?'es':'s')+' it, and sends to '+outDesc+'.';
+    if(desc.length>120)desc=desc.slice(0,117)+'...';
+    // Build prompt_summary
+    const reviewer=c.bu?REVIEWER_HINTS[c.bu]||'TBD':'TBD';
+    let promptSummary='Ingests from '+srcDesc+'. ';
+    if(aiNames.length)promptSummary+='Uses '+aiNames.join(', ')+' to '+procDesc+'. ';
+    else if(c.processing.length)promptSummary+='Applies '+c.processing.join(', ')+'. ';
+    promptSummary+='Outputs to '+outDesc+'. ';
+    const mediumOutputs=['sendgrid-email','salesforce-update','zendesk-update','slack-notify'];
+    const isMedium=c.blocks.some(bid=>mediumOutputs.includes(bid));
+    if(isMedium)promptSummary+=reviewer+' reviews before any action.';
+    else promptSummary+='Low risk — no approval needed.';
+    // APIs & credentials needed
+    const apis=[...new Set(c.blocks.map(bid=>BLOCKS[bid]?.api).filter(Boolean).filter(a=>a!=='Internal'&&a!=='Custom'&&a!=='Rule Engine'))];
+    const credIds=[...new Set(c.blocks.map(bid=>BLOCK_CREDS[bid]).filter(Boolean))];
+    const creds=credIds.map(cid=>CREDENTIALS[cid]).filter(Boolean);
+    return{name,desc,bu:c.bu,timeSavings:c.timeSavings,blocks:c.blocks,hasAI,promptSummary,apis,creds,reviewer:isMedium?reviewer:null,isMedium,rawGoal:c.rawGoal};
+  }
+
+  function goalIsReady(){
+    return goalCtx.blocks.length>=1&&goalCtx.timeSavings;
+  }
+
+  // Render a full build spec document for a workflow proposal
+  function renderBuildSpec(proposal,lane){
+    const typeLabel=proposal.hasAI?'Generative':'Deterministic';
+    const typeColor=proposal.hasAI?'var(--teal)':'var(--slate)';
+    const laneInfo=LANE_META[lane||'ops'];
+    let html='<div class="build-spec">';
+    // Header with lane tag
+    html+='<div class="build-spec-header"><span class="build-spec-title">'+esc(proposal.name)+'</span><div style="display:flex;gap:4px"><span class="build-spec-tag" style="background:'+laneInfo.color+'">'+laneInfo.label+'</span><span class="build-spec-tag" style="background:'+typeColor+'">'+typeLabel+'</span></div></div>';
+    html+='<div class="build-spec-body">';
+    // Lane context
+    if(lane==='product-ops'){
+      html+='<div class="build-spec-section"><div class="lane-banner" style="background:'+laneInfo.bg+';border:1px solid '+laneInfo.color+';margin:0"><span class="lane-banner-tag" style="background:'+laneInfo.color+'">Product Ops</span><div>This workflow sits between product and ops. Track its usage — if it proves valuable, it should <strong>graduate into a product feature</strong>.</div></div></div>';
+    }
+    // What it does
+    html+='<div class="build-spec-section"><div class="build-spec-label">What this automates</div><div class="build-spec-text">'+esc(proposal.rawGoal||proposal.desc)+'</div></div>';
+    // Pipeline
+    html+='<div class="build-spec-section"><div class="build-spec-label">Pipeline</div><div class="build-spec-pipeline">';
+    const pipeOrder=['source','transform','ai','output','gate'];
+    const typeColors={source:'var(--slate)',transform:'var(--amber)',ai:'var(--teal)',output:'var(--plum)',gate:'var(--gold)'};
+    let first=true;
+    pipeOrder.forEach(type=>{
+      const typeBlocks=proposal.blocks.filter(bid=>BLOCKS[bid]?.type===type);
+      typeBlocks.forEach(bid=>{
+        if(!first)html+='<span class="build-spec-arrow">→</span>';
+        first=false;
+        html+='<span class="build-spec-step"><span class="block-dot" style="background:'+typeColors[type]+';width:5px;height:5px;border-radius:50%;flex-shrink:0"></span>'+esc(BLOCKS[bid].name)+'</span>';
+      });
+    });
+    html+='</div></div>';
+    // Prompt summary
+    html+='<div class="build-spec-section"><div class="build-spec-label">Prompt Summary</div><div class="build-spec-text" style="font-style:italic;color:var(--tx-2)">'+esc(proposal.promptSummary)+'</div></div>';
+    // Meta row
+    html+='<div class="build-spec-section"><div class="build-spec-meta">';
+    html+='<span class="build-spec-meta-item"><strong>Owner:</strong> '+esc(SESSION_USER.name)+'</span>';
+    html+='<span class="build-spec-meta-item"><strong>BU:</strong> '+esc(proposal.bu||SESSION_USER.bu)+'</span>';
+    if(proposal.timeSavings)html+='<span class="build-spec-meta-item"><strong>Saves:</strong> '+esc(proposal.timeSavings)+'</span>';
+    html+='<span class="build-spec-meta-item"><strong>Blocks:</strong> '+proposal.blocks.length+'</span>';
+    if(proposal.apis.length)html+='<span class="build-spec-meta-item"><strong>APIs:</strong> '+esc(proposal.apis.join(', '))+'</span>';
+    if(proposal.reviewer)html+='<span class="build-spec-meta-item"><strong>Reviewer:</strong> '+esc(proposal.reviewer)+'</span>';
+    else html+='<span class="build-spec-meta-item"><strong>Risk:</strong> Low — no reviewer</span>';
+    html+='</div></div>';
+    // Model guidance — only when AI blocks are present
+    if(proposal.hasAI){
+      const aiBlocks=proposal.blocks.filter(bid=>BLOCKS[bid]?.type==='ai');
+      html+='<div class="build-spec-section"><div class="build-spec-label">Why This Needs an LLM</div><div class="build-spec-text">';
+      const tasks=aiBlocks.map(bid=>{
+        const b=BLOCKS[bid];const n=b.name.replace('Claude ','');
+        if(n==='Summarizer')return'summarizing unstructured text into concise outputs';
+        if(n==='Classifier')return'classifying or scoring data where rules alone can\'t capture the nuance';
+        if(n==='Drafter')return'generating new written content from context';
+        if(n==='Extractor')return'extracting structured fields from messy, unstructured documents';
+        if(n==='Narrator')return'turning raw data into human-readable narratives';
+        return'AI-powered processing';
+      });
+      html+='This workflow involves <strong>'+tasks.join('</strong> and <strong>')+'</strong> — tasks that need language understanding, not just pattern matching. A rule-based approach wouldn\'t handle the variability in the input.</div></div>';
+      html+='<div class="build-spec-section"><div class="build-spec-label">Model Selection</div>';
+      html+='<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">';
+      aiBlocks.forEach(bid=>{
+        const b=BLOCKS[bid];const n=b.name.replace('Claude ','');
+        const model=b.model||'';
+        const isSonnet=model.includes('sonnet');
+        const isHaiku=model.includes('haiku');
+        const modelName=isSonnet?'Sonnet 4':isHaiku?'Haiku 4.5':'Unknown';
+        let reason='';
+        if(n==='Summarizer')reason=isSonnet?'Sonnet 4 — needs to understand nuance and produce quality prose. Speed is secondary to accuracy.':'';
+        else if(n==='Classifier')reason=isHaiku?'Haiku 4.5 — classification is a structured task. Fast and cheap; accuracy is comparable to larger models for categorization.':'';
+        else if(n==='Drafter')reason=isSonnet?'Sonnet 4 — generating content requires creativity and tone awareness. Worth the extra cost per call.':'';
+        else if(n==='Extractor')reason=isHaiku?'Haiku 4.5 — extraction is structured output from structured prompts. Speed matters more than sophistication.':'';
+        else if(n==='Narrator')reason=isSonnet?'Sonnet 4 — narratives need natural language flow and contextual judgment.':'';
+        if(!reason)reason=modelName+' — auto-selected based on task complexity.';
+        html+='<div class="build-spec-text" style="display:flex;gap:6px;align-items:flex-start"><span class="model-badge" style="flex-shrink:0;font-size:var(--text-xs);margin-top:2px">'+esc(modelName)+'</span><span><strong>'+esc(b.name)+':</strong> '+reason+'</span></div>';
+      });
+      html+='</div></div>';
+    }
+    // Credentials needed
+    if(proposal.creds.length){
+      html+='<div class="build-spec-section"><div class="build-spec-label">Credentials Required</div><div class="build-spec-meta">';
+      proposal.creds.forEach(c=>{
+        const dot=c.status==='active'?'var(--green)':'var(--amber)';
+        html+='<span class="build-spec-meta-item"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:'+dot+';margin-right:3px"></span>'+esc(c.name)+' <span style="color:var(--tx-3)">'+esc(c.maskedKey)+'</span></span>';
+      });
+      html+='</div></div>';
+    }
+    html+='</div></div>';
+    return html;
+  }
+
+  // Autofill helper — fills form + pipeline for a given proposal
+
+  // Check if existing workflows already solve this problem
+  function findMatchingWorkflows(blocks,rawText){
+    const ql=rawText.toLowerCase();
+    const matches=[];
+    workflows.forEach(w=>{
+      let score=0;
+      const wfBlocks=WORKFLOW_BLOCKS[w.id]||[];
+      // Block overlap score
+      const overlap=blocks.filter(bid=>wfBlocks.includes(bid)).length;
+      if(overlap>=2)score+=overlap*3;
+      // Name/desc keyword overlap
+      const wfText=(w.name+' '+w.desc+' '+(w.prompt_summary||'')).toLowerCase();
+      const words=ql.split(/\s+/).filter(w=>w.length>=4);
+      words.forEach(word=>{if(wfText.includes(word))score+=1});
+      if(score>=5)matches.push({workflow:w,score,overlap});
+    });
+    return matches.sort((a,b)=>b.score-a.score).slice(0,3);
+  }
+
+  let goalAutofillCounter=0;
+  function handleGoalSend(){
+    const input=document.getElementById('goalInput');
+    const q=input.value.trim();if(!q)return;
+    addGoalMsg('user',esc(q));
+    input.value='';
+
+    // Show thinking indicator
+    const thinkingMsg=addGoalMsg('ai','<span class="goal-thinking"><span class="spin"></span>Thinking...</span>');
+
+    setTimeout(()=>{
+      parseUserMsg(q);
+      renderLivePipeline();
+      // Remove thinking indicator
+      thinkingMsg.remove();
+
+      // Classify work lane
+      const lane=classifyWorkLane(goalCtx.rawGoal);
+      const laneInfo=LANE_META[lane];
+
+      // If this is a Product problem, redirect early
+      if(lane==='product'&&goalCtx.turnCount<=2){
+        let resp='<div class="lane-banner" style="background:'+laneInfo.bg+';border:1px solid '+laneInfo.color+'">';
+        resp+='<span class="lane-banner-tag" style="background:'+laneInfo.color+'">Product</span>';
+        resp+='<div>This sounds like it should be <strong>built into the product</strong> rather than automated as a workflow. Workflows are great for internal ops, but if the end customer needs this, it belongs in the product roadmap.<br><br>';
+        resp+='<strong>Recommendation:</strong> File this as a feature request with the Product team. Want me to help you draft it, or is this actually an internal ops task I should help automate?</div>';
+        resp+='</div>';
+        addGoalMsg('ai',resp);
+        return; // don't proceed — wait for user to clarify
+      }
+
+      // Check for multi-workflow decomposition
+      const multiWfs=detectWorkflows(goalCtx.rawGoal);
+      const missing=goalMissing();
+      let resp='';
+
+      if(multiWfs){
+        // ── Multiple workflows detected ──
+        resp+='It sounds like there are <strong>'+multiWfs.length+' separate workflows</strong> here. I\'ve drafted a build spec for each:<br><br>';
+        const multiProposals=multiWfs.map(wf=>{
+          const subCtx={sources:wf.sources,processing:wf.processing,outputs:wf.outputs,blocks:wf.blocks,bu:goalCtx.bu,timeSavings:goalCtx.timeSavings,rawGoal:wf.segment};
+          return generateProposal(subCtx);
+        });
+        multiProposals.forEach(p=>{resp+=renderBuildSpec(p,lane)});
+        goalRecommendedBlocks=goalCtx.blocks;
+
+        if(!goalCtx.timeSavings)resp+='<br>How much total time do these tasks take you manually? I\'ll add that to the specs.<br>';
+
+        resp+='<br>Which one do you want to build first?<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">';
+        multiProposals.forEach((p,i)=>{
+          const btnId='goalSetupWf'+(++goalAutofillCounter);
+          resp+='<button class="goal-autofill-btn" id="'+btnId+'" data-wf-idx="'+i+'">Build: '+esc(p.name)+'</button>';
+        });
+        resp+='</div>';
+        addGoalMsg('ai',resp);
+
+        multiProposals.forEach((p,i)=>{
+          const btns=document.querySelectorAll('[data-wf-idx="'+i+'"]');
+          btns.forEach(btn=>{
+            btn.addEventListener('click',function(){
+              document.querySelectorAll('.goal-autofill-btn').forEach(b=>{b.style.opacity='.5';b.style.pointerEvents='none'});
+              this.style.opacity='1';this.textContent='Building: '+p.name;
+              this.style.background='var(--green-bg)';this.style.color='var(--green)';this.style.borderColor='var(--green)';
+              startBuildMode(p);
+            });
+          });
+        });
+
+      }else if(goalIsReady()){
+        // ── Single workflow ready — check for existing matches first ──
+        goalRecommendedBlocks=goalCtx.blocks;
+        const existingMatches=findMatchingWorkflows(goalCtx.blocks,goalCtx.rawGoal);
+
+        if(existingMatches.length){
+          // Found existing workflows that might already solve this
+          resp+='Before we build something new — these existing workflows look like they might already do what you need:<br><br>';
+          existingMatches.forEach(m=>{
+            const w=m.workflow;
+            const icon=WF_ICONS[w.id]||{abbr:'??',bg:'#999'};
+            const stCls=w.status==='Live'?'badge-live':'badge-pilot';
+            resp+='<div class="match-card" data-match-wf="'+w.id+'">';
+            resp+='<div class="wf-icon" style="background:'+icon.bg+';width:28px;height:28px;font-size:var(--text-xs)">'+icon.abbr+'</div>';
+            resp+='<div class="match-card-info"><div class="match-card-name">'+esc(w.name)+'</div><div class="match-card-desc">'+esc(w.desc)+'</div></div>';
+            resp+='<div class="match-card-meta"><span class="badge '+stCls+'" style="font-size:var(--text-xs)">'+esc(w.status)+'</span>';
+            if(m.overlap)resp+='<span class="match-card-overlap">'+m.overlap+' shared blocks</span>';
+            resp+='</div></div>';
+          });
+          resp+='<br><div style="font-size:.6875rem;color:var(--tx-2);line-height:1.5">Click a workflow above to view it, or if none of these fit:</div>';
+        }
+
+        // Generate build spec for new workflow
+        const proposal=generateProposal();
+        if(!existingMatches.length){
+          resp+='I\'ve drafted the build spec:';
+        }
+        resp+=renderBuildSpec(proposal,lane);
+
+        const btnId='goalBuild'+(++goalAutofillCounter);
+        resp+='<div class="build-spec-footer" style="border:1px solid var(--border-dim);border-top:none;border-radius:0 0 var(--r) var(--r);margin-top:-1px">';
+        resp+='<button class="goal-autofill-btn" id="'+btnId+'" style="margin:0">Build new workflow</button>';
+        resp+='<span style="font-size:.5625rem;color:var(--tx-3)">Or keep chatting to refine.</span>';
+        resp+='</div>';
+        addGoalMsg('ai',resp);
+
+        // Attach handlers
+        document.getElementById(btnId).addEventListener('click',function(){
+          document.querySelectorAll('.goal-autofill-btn').forEach(b=>{b.style.opacity='.5';b.style.pointerEvents='none'});
+          this.style.opacity='1';this.textContent='Setting up...';
+          this.style.background='var(--green-bg)';this.style.color='var(--green)';this.style.borderColor='var(--green)';
+          startBuildMode(proposal);
+        });
+        // Match card click → close modal, expand that workflow
+        document.querySelectorAll('[data-match-wf]').forEach(card=>{
+          card.addEventListener('click',function(){
+            const wfId=parseInt(this.dataset.matchWf);
+            openWorkflowPreview(wfId);
+          });
+        });
+
+      }else{
+        // ── Not ready — ask follow-ups ──
+        // Show what we know so far
+        if(goalCtx.blocks.length){
+          resp+='Here\'s what I\'m picking up:'+buildBlockChips(goalCtx.blocks)+'<br>';
+          if(goalCtx.sources.length)resp+='<strong>Source:</strong> '+esc(goalCtx.sources.join(', '))+'<br>';
+          if(goalCtx.processing.length)resp+='<strong>Processing:</strong> '+esc(goalCtx.processing.join(', '))+'<br>';
+          if(goalCtx.outputs.length)resp+='<strong>Output:</strong> '+esc(goalCtx.outputs.join(', '))+'<br>';
+          if(goalCtx.timeSavings)resp+='<strong>Manual effort:</strong> '+esc(goalCtx.timeSavings)+'<br>';
+          if(goalCtx.bu)resp+='<strong>BU:</strong> '+esc(goalCtx.bu)+'<br>';
+          resp+='<br>';
+          resp+=buildFollowUp(missing);
+        }else if(goalCtx.turnCount===1){
+          resp+='I\'d love to help. Walk me through what you do today step by step — where the data comes from, what you do with it, where it ends up, and roughly how long it takes.';
+        }else{
+          resp+=buildFollowUp(missing);
+        }
+        addGoalMsg('ai',resp);
+      }
+    },800);
+  }
+  document.getElementById('goalSend').addEventListener('click',handleGoalSend);
+  document.getElementById('goalInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleGoalSend()}});
 
   // Inline validation helpers
   function clearFieldError(inputId,errId){document.getElementById(inputId).classList.remove('field-error');const e=document.getElementById(errId);if(e)e.classList.remove('show')}
   function showFieldError(inputId,errId){document.getElementById(inputId).classList.add('field-error');const e=document.getElementById(errId);if(e)e.classList.add('show')}
   // Clear errors on input
-  ['fName','fBU','fDesc','fReviewer'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',()=>clearFieldError(id,'err'+id.slice(1)));el.addEventListener('change',()=>clearFieldError(id,'err'+id.slice(1)))});
+  ['fName','fBU','fDesc','fReviewer','fSaves'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',()=>clearFieldError(id,'err'+id.slice(1)));el.addEventListener('change',()=>clearFieldError(id,'err'+id.slice(1)))}});
+  // Auto-detect risk from blocks: Medium if outputs send to external systems (email, Slack, Salesforce, etc.)
+  function autoDetectRisk(blocks){
+    const mediumOutputs=['sendgrid-email','salesforce-update','zendesk-update','slack-notify'];
+    const isMedium=blocks.some(bid=>mediumOutputs.includes(bid));
+    document.getElementById('fRisk').value=isMedium?'Medium':'Low';
+    // Auto-assign reviewer for medium risk
+    const bu=document.getElementById('fBU').value;
+    if(isMedium&&bu){document.getElementById('fReviewer').value=REVIEWER_HINTS[bu]||'TBD'}
+    else if(!isMedium){document.getElementById('fReviewer').value=''}
+    return isMedium?'Medium':'Low';
+  }
   // Toast helper
   function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
 
   const submitBtn=document.getElementById('modalSubmit');
   submitBtn.addEventListener('click',async()=>{
-    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),details=document.getElementById('fDetails').value.trim(),risk=document.getElementById('fRisk').value,reviewer=document.getElementById('fReviewer').value.trim()||'TBD';
+    const name=document.getElementById('fName').value.trim(),bu=document.getElementById('fBU').value,desc=document.getElementById('fDesc').value.trim(),details=document.getElementById('fDetails').value.trim(),saves=document.getElementById('fSaves').value.trim()||'\u2014';
+    const risk=autoDetectRisk(composerBlocks);
+    const reviewer=risk==='Medium'?(document.getElementById('fReviewer').value.trim()||'TBD'):'';
     // Auto-detect type from blocks
     const hasAI=composerBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
     const type=hasAI?2:1;
@@ -1878,10 +3209,11 @@
       const srcBlocks=composerBlocks.filter(bid=>BLOCKS[bid]?.type==='source').map(bid=>BLOCKS[bid].name);
       const aiBlocks=composerBlocks.filter(bid=>BLOCKS[bid]?.type==='ai').map(bid=>BLOCKS[bid].name);
       const outBlocks=composerBlocks.filter(bid=>BLOCKS[bid]?.type==='output').map(bid=>BLOCKS[bid].name);
-      promptSummary='Ingests data from '+(srcBlocks.length?srcBlocks.join(', '):'configured sources')+'. '+(aiBlocks.length?'Processes via '+aiBlocks.join(', ')+'. ':'Applies rule-based transforms. ')+'Outputs to '+(outBlocks.length?outBlocks.join(', '):'configured destinations')+'. '+reviewer+' reviews before any action.';
+      const reviewGate=risk==='Medium'?reviewer+' reviews before any action.':'Low risk — no approval needed.';
+      promptSummary='Ingests data from '+(srcBlocks.length?srcBlocks.join(', '):'configured sources')+'. '+(aiBlocks.length?'Processes via '+aiBlocks.join(', ')+'. ':'Applies rule-based transforms. ')+'Outputs to '+(outBlocks.length?outBlocks.join(', '):'configured destinations')+'. '+reviewGate;
     }
     const maxId=Math.max(...workflows.map(w=>w.id)),maxDay=Math.max(...workflows.map(w=>w.day));
-    const nw={id:maxId+1,name,desc,bu,type,risk,status:'Pilot',saves:'\u2014',day:maxDay+5,prompt_summary:promptSummary,reused_by:[],reviewer,rewrite_rate:'\u2014%'};
+    const nw={id:maxId+1,name,desc,bu,type,risk,status:'Pilot',saves:saves,day:maxDay+5,prompt_summary:promptSummary,reused_by:[],reviewer,rewrite_rate:'\u2014%'};
     workflows.push(nw);
     // Save composed blocks
     if(composerBlocks.length){WORKFLOW_BLOCKS[nw.id]=[...composerBlocks]}
@@ -1890,29 +3222,53 @@
     const stack=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.api).filter(Boolean).filter(a=>a!=='Internal'&&a!=='Custom'&&a!=='Rule Engine'))];
     REUSE_INTEL[nw.id]={stack,reusable:[],specific:[],readiness:'Low',days_to_live:null,reuse_days:null,risks:['New workflow — reuse assessment pending']};
     // Auto-generate quality + icons
-    WF_QUALITY[nw.id]={design:'Modular',output:'Informational',designNote:'Block-composed pipeline',outputNote:'New — output utility pending assessment'};
+    WF_QUALITY[nw.id]={design:'Easy to update',output:'Needs a quick check',designNote:'Block-composed pipeline',outputNote:'New workflow — output usefulness to be assessed after first runs'};
     WF_ICONS[nw.id]={abbr:name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase(),bg:'#4e6378'};
     COMMENTS[nw.id]=[];USE_CASES[nw.id]=[];
     // Add to execution log
     EXEC_LOG.unshift({wfId:nw.id,status:'success',startedAt:'Just now',duration:'—',blocksRun:composerBlocks.length,trigger:'Manual',note:'Pilot created'});
-    overlay.classList.remove('open');resetModal();
+    // Show success state inside the modal
     computeStats();computeReuseMap();renderBlockLibrary();renderExecPanel();render();
-    showToast('Launched "'+name+'" as Pilot');
+    // Create success overlay inside the modal
+    // Compute time-to-creation
+    const creationElapsed=creationStartTime?Math.round((Date.now()-creationStartTime)/1000):0;
+    const creationTimeStr=creationElapsed>=60?Math.floor(creationElapsed/60)+'m '+creationElapsed%60+'s':creationElapsed+'s';
+    const successEl=document.createElement('div');
+    successEl.id='launchSuccess';
+    successEl.style.cssText='position:absolute;inset:0;background:var(--surface);z-index:10;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center';
+    successEl.innerHTML='<div style="width:48px;height:48px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.5rem;color:var(--green)">✓</div>'
+      +'<h3 style="margin-bottom:4px;font-size:1rem">'+esc(name)+' is live as a Pilot</h3>'
+      +'<p style="font-size:.8125rem;color:var(--tx-2);line-height:1.6;max-width:340px;margin-bottom:4px">'+composerBlocks.length+' blocks · '+esc(SESSION_USER.bu)+'</p>'
+      +'<div class="success-metrics">'
+      +'<div class="success-metric"><div class="success-metric-val">'+creationTimeStr+'</div><div class="success-metric-label">Time to create</div></div>'
+      +'<div class="success-metric"><div class="success-metric-val" style="color:var(--green)">'+esc(saves)+'</div><div class="success-metric-label">Time saved</div></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button class="btn btn-accent" id="successViewBtn">View in registry</button>'
+      +'<button class="btn" id="successAddBtn">Add another</button>'
+      +'</div>';
+    addModal.style.position='relative';
+    addModal.appendChild(successEl);
+    // Handlers
+    const closeSuccess=()=>{successEl.remove();overlay.classList.remove('open');resetModal()};
+    document.getElementById('successViewBtn').addEventListener('click',()=>{
+      closeSuccess();
+      setTimeout(()=>{
+        const row=document.querySelector('tr.data-row[data-id="'+nw.id+'"]');
+        if(row){row.click();row.scrollIntoView({behavior:'smooth',block:'center'})}
+      },300);
+    });
+    document.getElementById('successAddBtn').addEventListener('click',()=>{
+      successEl.remove();resetModal();renderComposerCatalog();
+      document.getElementById('goalInput').focus();
+    });
   });
 
-  // Log reuse note to Studio
-  window.logStudioNote=function(id){
-    const w=workflows.find(x=>x.id===id);if(!w)return;
-    const intel=REUSE_INTEL[id]||{readiness:'—'};
-    const feed=document.getElementById('khojFeed');
-    const item=document.createElement('div');item.className='khoj-item';
-    item.innerHTML='<span class="khoj-tag khoj-tag-reuse">#reuse</span><div class="khoj-text">'+esc(w.name)+' \u2014 readiness: '+esc(intel.readiness)+'. '+esc(w.status)+' in '+esc(w.bu)+'. Reused by '+w.reused_by.length+' BUs.</div><div class="khoj-ts">Just now</div>';
-    feed.prepend(item);
-  };
+  window.logStudioNote=function(){};
 
   // Request Workflow Modal
   const reqOv=document.getElementById('requestOverlay');
-  document.getElementById('btnRequest').addEventListener('click',()=>{reqOv.classList.add('open')});
+  const btnReq=document.getElementById('btnRequest');if(btnReq)btnReq.addEventListener('click',()=>{reqOv.classList.add('open')});
   document.getElementById('requestClose').addEventListener('click',()=>reqOv.classList.remove('open'));
   document.getElementById('requestCancel').addEventListener('click',()=>reqOv.classList.remove('open'));
   reqOv.addEventListener('click',e=>{if(e.target===reqOv)reqOv.classList.remove('open')});
@@ -1939,11 +3295,7 @@
     if(!bu||!task){showToast('BU and task description required');return}
     const time=document.getElementById('rqTime').value.trim()||'—';
     const urgency=document.getElementById('rqUrgency').value;
-    // Add to Studio Library
-    const feed=document.getElementById('khojFeed');
-    const item=document.createElement('div');item.className='khoj-item';
-    item.innerHTML='<span class="khoj-tag khoj-tag-note">#request</span><div class="khoj-text"><strong>'+esc(bu)+'</strong>: '+esc(task)+' ('+esc(time)+', '+esc(urgency)+')</div><div class="khoj-ts">Just now</div>';
-    feed.prepend(item);
+    // Log request
     // Show confirmation in modal
     document.querySelector('#requestOverlay .modal-body').innerHTML='<div class="rq-submitted"><div class="rq-submitted-icon">&check;</div><div class="rq-submitted-text">Request submitted</div><div class="rq-submitted-sub">Added to Studio Library. The team will assess feasibility and check for existing workflows that can be reused.</div></div>';
     setTimeout(()=>{reqOv.classList.remove('open');

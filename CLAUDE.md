@@ -1,153 +1,158 @@
-CLAUDE.md — Rillet AI Registry
-You are working inside the Rillet AI Workflow Registry — a shared catalog of all AI-assisted workflows running across business units at Rillet.
-This file tells you exactly how to read, update, and maintain this registry. Read it fully before doing anything.
+CLAUDE.md — Rillet AI Ops
+
+Internal AI workflow registry for Rillet. Catalog, govern, and reuse AI automations across every team.
 
 What This Repo Is
 
-data/registry.json — the source of truth. All workflow entries live here.
-index.html — the UI. Loads registry.json at runtime and renders it.
-CLAUDE.md — this file. You read it every session.
+- `data/registry.json` — source of truth for all workflow entries
+- `index.html` — single-page UI, loads registry.json at runtime
+- `CLAUDE.md` — this file
 
-Your job: keep registry.json accurate, add new workflows when asked, and write progress notes back to the second brain (Khoj) after every change.
+What This Platform Is (and Isn't)
 
-Before Starting Any Task
+**This is a registry** — a catalog and governance layer for AI automations. It is NOT a runtime. It does not execute workflows.
 
-Read data/registry.json to understand what workflows currently exist
-Check for the workflow(s) relevant to the request
-If querying Khoj MCP is available, search for prior context on the workflow or domain before making changes
+How it connects to actual automations:
+- **Code lives elsewhere** (GitHub, internal tools, no-code platforms like n8n/Flowise). The registry links to it. Each workflow entry is metadata about the automation — what it does, who owns it, how well it works.
+- **Rillet's product AI agents** (accrual, audit, P&L flux, board decks) run inside the product. This registry sits alongside them as the management layer — tracking what exists, who owns it, and how well it works.
+- **No one uploads code to the registry.** The blocks represent logical components (data source, AI processing, output destination), not executable code. In production, the block composition would map to a runtime configuration.
 
-bash# Always start with
-cat data/registry.json | jq '[.[] | {id, name, bu, status}]'
+Architecture Overview
+
+1. **Session & Identity** — Users are logged in with name, BU, and role (`SESSION_USER`). BU is auto-filled everywhere. Currently set to Founders Associate / Chief of Staff.
+2. **Automation Advisor (Chat)** — Full-screen Claude-style chat interface (Step 1). Gathers context across turns, checks for existing workflows, classifies the work lane, decomposes multi-workflow problems, generates build specs.
+3. **Work Lane Classification** — Every request is classified as Product, Product Ops, or Ops.
+4. **Existing Workflow Matching** — Before building anything new, the advisor searches the registry for workflows that might already solve the problem. Shows matches in a split-view panel so the user can evaluate without losing their conversation.
+5. **Block Composer (Step 2)** — Form fields + searchable block catalog + staged pipeline builder. Pre-populated from the advisor chat.
+6. **Credential Gate (Step 3)** — Before launch, checks that all required API keys exist and the user's BU has access. Shows ready/needs-access/missing status per credential with request buttons.
+7. **Review & Launch (Step 3)** — Summary view + credential gate. Launches as Pilot. Success screen shows time-to-creation and time-saved metrics.
+8. **Block Drawer** — Right sidebar showing block details, model lifecycle (active/deprecated), cost tier (Low cost/Standard), data classification, and usage by team.
+9. **API Detail View** — Click any API name to see: key status, workflows using it, recent activity, and team comments.
+10. **API Connections Panel** — Sidebar panel with two tabs: Connections (all APIs with status dots, clickable) and Activity (recent credential events).
+11. **Registry Table** — Main workflow table with search, filters, security grade, expandable detail rows with reliability indicators and comments.
+
+Work Lane Framework
+
+Every automation request is classified into one of three lanes:
+
+**Product** — End customer interacts with this directly. Should be a product feature, not a workflow. The advisor redirects.
+**Product Ops** — Between product and ops. Supports product experience but isn't core. Graduation candidate — track usage, may become a feature.
+**Ops** — Pure internal team efficiency. Customer never sees it. This is what the registry is for.
+
+Risk & Reviewer (auto-detected, not user-facing):
+- **Medium**: Pipeline sends emails, updates Salesforce/Zendesk, or posts to Slack. Reviewer auto-assigned from BU.
+- **Low**: Everything else. No reviewer needed. All teams encouraged to automate.
+
+Automation Advisor (Chat System)
+
+Full-screen chat interface, Claude/ChatGPT-style. Messages centered at 640px max-width, input pinned to bottom.
+
+The advisor:
+1. Greets the user by first name
+2. Gathers context across multiple turns — tracks sources, processing, outputs, time savings
+3. Checks for existing workflows that match — shows them in a split-view panel before building new
+4. Classifies the work lane (Product/Product Ops/Ops)
+5. Detects multi-workflow problems — splits compound requests into separate build specs
+6. Generates build specs when ready (1+ blocks + time savings)
+7. Transitions to build mode (Step 2) when user clicks "Build new workflow"
+
+The advisor does NOT:
+- Ask about BU (known from session)
+- Ask about risk/reviewer (auto-detected from blocks)
+- Nag about output destination if the user doesn't mention one
+- Dump everything after one message
+
+Time matching handles natural language: "about 3 hours a week", "takes 4 hours per month", "half a day every week".
+
+Block System
+
+33 blocks across 5 types:
+- **Sources** (11): HubSpot, Zendesk, Sheets, Stripe, PDF/OCR, Drive, BambooHR, RSS, Mixpanel, Delighted, Knowledge Base
+- **Transforms** (6): Keyword Classifier, Threshold Checker, Schema Mapper, Regex Extractor, Policy Validator, Signal Aggregator
+- **AI** (5): Claude Summarizer (Sonnet 4), Classifier (Haiku 4.5), Drafter (Sonnet 4), Extractor (Haiku 4.5), Narrator (Sonnet 4)
+- **Outputs** (8): Slack Alert, Sheets Update, Email Send, PDF Report, Notion, Zendesk Update, Salesforce Update, JSON Export
+- **Gates** (3): Manager Review, Confidence Gate, Dual Review
+
+Block drawer shows:
+- Model lifecycle status (Active/Deprecated) with cost tier (Low cost = Haiku, Standard = Sonnet) and pricing
+- Data classification (PII/Financial/Internal) with scope and permissions
+- Usage split: "Used in Your Team" vs "Used by Other Teams" with role-specific relevance hints
+
+API names are clickable throughout the UI — opens the API detail view.
+
+API Connections
+
+Sidebar panel with two tabs:
+- **Connections** — Each API service with status dot (green/amber/red) and workflow count. Clickable to open detail.
+- **Activity** — Recent credential events (rotations, access changes, failures).
+
+API Detail View (in drawer):
+- Key status: masked key, active/rotating/expired, expiration date, data tags, scope
+- Workflows using this API (clickable)
+- Recent activity (3 entries)
+- Comments — team discussion per API (add comments with Enter)
+
+Badge shows total connected APIs count, or flags issues (rotating/expired keys).
+
+Prompt Versioning
+
+Each workflow tracks:
+- Current prompt version (semantic versioning: X.Y.Z)
+- Last updated date
+- Changelog (what changed in this version)
+- Previous versions list
+
+Shown in the workflow detail row as "Last updated: [date]".
+
+Model Lifecycle
+
+Each AI model tracks:
+- Status: `active`, `deprecated`, or `sunset`
+- EOL date and successor model (when applicable)
+- Cost tier: Low cost (Haiku: $0.80/$4 per 1M tokens) or Standard (Sonnet: $3/$15 per 1M tokens)
+
+When a model is deprecated, all workflows using it can be identified via the block system.
+
+Output Quality
+
+Each workflow tracks acceptance rates across all runs:
+- Accepted (used as-is), Edited (used with changes), Rejected (discarded)
+- Displayed as plain-language reliability: "Reliable — 83% used as-is", "Too early to tell — only 8 runs", "Needs work — only 50% used as-is"
+
+Known Technical Limitations (for production roadmap)
+
+1. **Keyword matching is brittle** — The advisor uses keyword-based block matching. A production system would use an actual Claude API call to understand user intent.
+2. **No persistence** — All state resets on page refresh. Production needs a backend with auth and database.
+3. **No real runtime connection** — The registry is metadata only. Production would integrate with the actual workflow execution layer.
+4. **No prompt drift detection** — Monitoring rewrite rate trends over time would catch degrading prompts. Currently static.
+5. **Single API key per service** — Production should support per-environment keys (prod/staging) and per-team scoping.
+6. **No cost tracking** — Token usage cannot be estimated from the UI. Requires runtime instrumentation (Langfuse, Portkey, or custom logging).
 
 Data Schema
-Each entry in registry.json must have all of these fields:
-FieldTypeRulesidnumberSequential. Next ID = max(existing ids) + 1namestringTitle case. Max 50 chars.descstringOne sentence. Max 120 chars.bustringMust match an existing BU or create a new one with justificationtypenumber1 = deterministic/rule-based, 2 = generative/LLMriskstring"Low" or "Medium" onlystatusstring"Live" or "Pilot" onlysavesstringFormat: "N hrs/wk" or "N hrs/mo". Use "—" if unknowndaynumberDay offset when workflow was added. Use current max + 5 if newprompt_summarystring2-3 sentences: inputs → logic → output → human review gate. See format below.reused_bystring[]Array of BU names reusing this workflow. [] if none.reviewerstringRole title of human reviewer. "TBD" if not yet assigned.rewrite_ratestringFormat: "N%". Use "—%" if unknown.
-prompt_summary Format
-Always follow this structure:
-[What it ingests]. [What AI logic / rules it applies and what it outputs]. [Who reviews before any action is taken].
-Example:
 
-"Parses PDF invoices via OCR, extracts line items, and cross-references against approved PO database. Flags unit price variance >2%, quantity mismatches, and unapproved line items. Human reviewer required before any AP action."
+Each entry in registry.json:
+- `id` (number) — Sequential, next = max + 1
+- `name` (string) — Title case, max 50 chars
+- `desc` (string) — One sentence, max 120 chars
+- `bu` (string) — Must match existing BU
+- `type` (number) — 1 = deterministic, 2 = generative. Auto-detected from blocks.
+- `risk` (string) — "Low" or "Medium". Auto-detected from output blocks.
+- `status` (string) — "Live" or "Pilot"
+- `saves` (string) — "N hrs/wk" or "N hrs/mo"
+- `day` (number) — Day offset when added
+- `prompt_summary` (string) — 2-3 sentences: ingests → logic → output → review gate
+- `reused_by` (string[]) — BU names reusing this workflow
+- `reviewer` (string) — Auto-assigned for Medium risk. Empty for Low risk.
+- `rewrite_rate` (string) — "N%" or "—%"
 
-Never start with "This workflow". Never use vague language like "processes data".
+Business Units
 
-How to Add a New Workflow
-When someone asks you to add a workflow, collect or infer:
-
-Name, BU, description, how it works, who reviews it, estimated time savings
-
-Then:
-
-Read the current registry to get the next id and day values
-Write a proper prompt_summary following the format above
-Add the new entry to data/registry.json
-Confirm the JSON is valid
-Write a progress note (see "After Every Change" below)
-
-bash# Validate JSON after editing
-python3 -c "import json; json.load(open('data/registry.json')); print('✓ Valid JSON')"
-
-How to Update an Existing Workflow
-Common update requests:
-Promote Pilot → Live:
-bash# Find the workflow, change "status": "Pilot" → "status": "Live"
-# Also update rewrite_rate and saves if now known
-Add a BU to reused_by:
-bash# Add the BU string to the reused_by array
-# Example: "reused_by": ["Finance"] → "reused_by": ["Finance", "Legal"]
-Update saves or rewrite_rate:
-bash# Update the field with the new value
-# Always use format "N hrs/wk" or "N%"
-Always validate JSON after editing.
-
-After Every Change
-After completing any task, do all three:
-1. Confirm the change
-✓ Updated: [workflow name]
-  Field: [what changed]
-  Value: [old] → [new]
-2. Write a progress note to Khoj (if MCP available)
-Format:
-Tag: #progress #[domain-tag]
-Content: "[Workflow name] — [what changed] — [status]. [Any relevant context for future engineers.]"
-Timestamp: [now]
-Example:
-Tag: #progress #finance
-Content: "Invoice Discrepancy Flagger — promoted Pilot → Live. Rewrite rate settled at 5%. Controller is the reviewer. Reused by Procurement."
-3. Show a summary diff
-REGISTRY UPDATE
-───────────────
-Workflow: Invoice Discrepancy Flagger (#2)
-Changed:  status: "Pilot" → "Live"
-          rewrite_rate: "—%" → "5%"
-Khoj:     ✓ progress note written · #finance #progress
-
-Business Units (Existing)
-Only use these unless explicitly asked to create a new one:
-
-GTM / Sales
-Finance
-Customer Success
-Implementation
-Chief of Staff
-People Ops
-Product
-Marketing
-Legal
-Procurement
-
-
-Type Classification Guide
-Type 1 — Deterministic / Rule-based
-
-Uses fixed rules, thresholds, or regex matching
-Output is predictable given same input
-Examples: invoice matching, expense policy checking, ticket routing by keyword
-
-Type 2 — Generative / LLM-based
-
-Uses an LLM to generate, summarize, or classify with judgment
-Output varies; requires more human review
-Examples: deal summaries, RFP drafts, health score narratives
-
-If unclear, ask. Do not guess.
-
-Risk Classification Guide
-Low — Output is informational or advisory. No financial, legal, or customer-facing action taken without human sign-off.
-Medium — Output directly triggers or informs a consequential action (payment, customer communication, board-level data). Reviewer gate is mandatory.
-Never assign risk based on the BU alone — assess the workflow's output and downstream action.
+GTM / Sales, Finance, Customer Success, Implementation, Chief of Staff, People Ops, Product, Marketing, Legal, Procurement
 
 Things You Must Never Do
 
-Never delete a workflow entry (mark as "status": "Archived" if needed — add this status only when explicitly asked)
-Never change a workflow's id
-Never set reused_by to a BU that doesn't exist in the BU list without flagging it
-Never write an invalid prompt_summary (no vague language, must have reviewer gate)
-Never leave reviewer as "" — use "TBD" if unknown
-Never commit broken JSON
-
-
-Example Session
-User: "The RFP Response Drafter is now being reused by Legal too. Update it."
-You:
-
-Read registry.json, find id 11 (RFP Response Drafter)
-Check current reused_by: ["Customer Success", "Implementation"]
-Add "Legal" → ["Customer Success", "Implementation", "Legal"]
-Validate JSON
-Output:
-
-REGISTRY UPDATE
-───────────────
-Workflow: RFP Response Drafter (#11)
-Changed:  reused_by: added "Legal"
-          Now: ["Customer Success", "Implementation", "Legal"]
-Khoj:     ✓ progress note written · #gtm #progress
-
-Khoj MCP Configuration
-If the Khoj MCP server is connected, use it for:
-
-Before tasks: search_documents(query="[workflow name] [domain]") — find prior context
-After tasks: write a structured progress note (see format above)
-
-Khoj is the second brain for this registry. Every change you make should be reflected there so the next engineer starting a new session has full context without asking anyone.
+- Never delete a workflow entry (use "Archived" status if needed)
+- Never change a workflow's id
+- Never set reused_by to a BU that doesn't exist
+- Never write vague prompt_summary language
+- Never commit broken JSON
