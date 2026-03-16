@@ -1554,6 +1554,26 @@
     16:{version:'1.0.0',lastUpdated:'Mar 12',changelog:'Stable — channel list finalized',previousVersions:[]}
   };
 
+  // ── Workflow Guardrails — standing rules that apply every run ──
+  const GUARDRAILS={
+    1:[],
+    2:['Never process payments without Controller approval','Flag any invoice over $50K for manual review','Log every discrepancy with PO reference number'],
+    3:['Never share raw NPS scores with customers','Anonymize individual feedback in team-level reports'],
+    4:['Do not auto-fill payment amounts — always require human verification','Flag any SLA commitment under 99.5% uptime'],
+    5:['Match tone to existing company update style — no exclamation marks','Never round revenue numbers — use exact figures from source'],
+    6:['P1 tickets must reach eng within 5 minutes — never batch','Never auto-close tickets — only route and classify'],
+    7:['Never share competitive intel outside GTM without VP approval','Do not speculate on competitor pricing — only report confirmed changes'],
+    8:['Apply per-diem limits by city, not flat rate','Foreign currency expenses must be converted at transaction-date rate'],
+    9:[],
+    10:['Never present unverified numbers in board materials','All MRR figures must match Stripe exactly — no rounding'],
+    11:['Always cite source document for every RFP answer','Never fabricate product capabilities — only reference confirmed features'],
+    12:['Never auto-email customers based on risk score alone','Scores below 30 must trigger immediate CS manager alert'],
+    13:['Validate all endpoint names against API naming convention doc','Never provision production credentials — staging only'],
+    14:['CEO must review before any investor communication is sent','Never include unaudited financial figures'],
+    15:[],
+    16:['Only scan approved channels — never read DMs','Summarize decisions and blockers — skip casual conversation']
+  };
+
   // ── Business Impact Classification ──
   // Critical: Revenue, customer-facing, or compliance. If it breaks, someone gets paged.
   // High: Exec-facing or cross-functional. CEO/board sees the output.
@@ -2159,8 +2179,22 @@
       detailHtml+='<span style="font-size:var(--text-xs);font-weight:600;padding:2px 6px;border-radius:3px;background:'+wImpMeta.bg+';color:'+wImpMeta.color+'">'+wImpMeta.label+' impact</span>';
       detailHtml+='<span style="font-size:var(--text-xs);color:var(--tx-3)">'+esc(wImp.reason)+'</span>';
       detailHtml+='</div>';
-      // 3. Who uses it + details
+      // 3. Guardrails + version + who uses it
       detailHtml+='<div class="detail-cols"><div class="detail-section">';
+      // Guardrails
+      const guards=GUARDRAILS[w.id]||[];
+      if(guards.length){
+        detailHtml+='<div class="ml">Rules (always enforced)</div><div style="margin:4px 0 12px">';
+        guards.forEach(g=>{detailHtml+='<div style="font-size:var(--text-sm);color:var(--tx-2);line-height:1.5;padding:2px 0;display:flex;gap:6px"><span style="color:var(--red);flex-shrink:0">!</span>'+esc(g)+'</div>'});
+        detailHtml+='</div>';
+      }
+      // Version history
+      if(pv.previousVersions&&pv.previousVersions.length){
+        detailHtml+='<div class="ml">Version history</div><div style="margin:4px 0 12px">';
+        detailHtml+='<div style="font-size:var(--text-sm);color:var(--tx);padding:2px 0"><strong>v'+esc(pv.version)+'</strong> (current) — '+esc(pv.changelog)+'</div>';
+        pv.previousVersions.forEach(v=>{detailHtml+='<div style="font-size:var(--text-xs);color:var(--tx-3);padding:1px 0">v'+esc(v)+'</div>'});
+        detailHtml+='</div>';
+      }
       // Reused by
       if(w.reused_by&&w.reused_by.length){
         detailHtml+='<div class="ml">Also used by</div><div style="margin:4px 0 12px">'+reuseTags+'</div>';
