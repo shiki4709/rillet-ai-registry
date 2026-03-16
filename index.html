@@ -3713,77 +3713,26 @@
   // Escape key closes modals
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();overlay.classList.remove('open');reqOv.classList.remove('open')}});
 
-  // ── Guided Product Tour (Driver.js) ──
-  const tourBtn=document.createElement('button');
-  tourBtn.id='tourBtn';
-  tourBtn.innerHTML='&#9654; Take the tour';
-  tourBtn.style.cssText='position:fixed;bottom:24px;right:24px;z-index:300;padding:10px 20px;font-size:var(--text-sm);font-weight:600;font-family:var(--sans);border:none;border-radius:99px;background:var(--accent);color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(26,138,122,.3);transition:all 150ms';
-  tourBtn.addEventListener('mouseenter',()=>{tourBtn.style.transform='scale(1.05)';tourBtn.style.boxShadow='0 6px 24px rgba(26,138,122,.4)'});
-  tourBtn.addEventListener('mouseleave',()=>{tourBtn.style.transform='';tourBtn.style.boxShadow='0 4px 16px rgba(26,138,122,.3)'});
-  document.body.appendChild(tourBtn);
-
-  tourBtn.addEventListener('click',()=>{
-    // Expand first workflow row so step 2 has something to show
-    const firstRow=document.querySelector('tr.data-row');
-    if(firstRow&&!firstRow.classList.contains('expanded')){firstRow.click()}
-
-    setTimeout(()=>{
-      if(!window.driver||!window.driver.js||!window.driver.js.driver){alert('Driver.js not loaded. Are you online? The tour requires an internet connection to load from CDN.');return}
-      const driverObj=window.driver.js.driver({
-        showProgress:true,
-        animate:true,
-        overlayColor:'rgba(44,42,37,.6)',
-        popoverClass:'tour-popover',
-        steps:[
-          {
-            element:'.table-wrap',
-            popover:{
-              title:'The AI Workflow Registry',
-              description:'Every AI automation Rillet runs — in one place. Owner, impact level, time saved, last run status. Right now, most companies have no idea what AI is running across their teams.',
-              side:'top',
-              align:'center'
-            }
-          },
-          {
-            element:'tr.data-row.expanded + tr.detail-row',
-            popover:{
-              title:'Full Workflow Detail',
-              description:'Click any row to see the full spec: how it works, the block pipeline, reliability, guardrails (rules the AI must follow every run), version history, and who else reuses it.',
-              side:'top',
-              align:'center'
-            }
-          },
-          {
-            element:'#btnAdd',
-            popover:{
-              title:'Build a New Automation',
-              description:'Start here. A full-screen AI advisor asks what you do manually, checks if a workflow already exists, classifies the work lane (Product vs Ops), then generates a build spec with blocks, credentials, and guardrails.',
-              side:'bottom',
-              align:'end'
-            }
-          },
-          {
-            element:'#btnGraph',
-            popover:{
-              title:'The AI Work Graph',
-              description:'See how AI work flows across the company — which APIs have the highest dependency risk, which teams automate the most, and where workflows share data. This is the map no org chart can show.',
-              side:'bottom',
-              align:'end'
-            }
-          },
-          {
-            popover:{
-              title:'Built for the Founders Associate Role',
-              description:'This is a working prototype of an AI operations control plane — the missing layer between automation tools and leadership. Built with Claude to show how I\'d own AI at Rillet. Happy to walk through live.',
-            }
-          }
-        ],
-        onDestroyed:()=>{tourBtn.style.display='none'}
-      });
-      driverObj.drive();
-    },400);
-  });
 })();
+</script>
+
+<button id="tour-btn" style="position:fixed;bottom:24px;right:24px;padding:12px 24px;background:#1a8a7a;color:white;border:none;border-radius:99px;cursor:pointer;font-size:14px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;z-index:9999;box-shadow:0 4px 16px rgba(26,138,122,.3)">▶ Take the tour</button>
+
+<script>
+document.getElementById('tour-btn').onclick = function() {
+  const d = window.driver.js.driver({
+    showProgress: true,
+    steps: [
+      { element: '.table-wrap', popover: { title: '1. The Registry', description: "Every AI workflow in one place — owner, impact level, time saved, last run status. This is what's missing at most companies today." }},
+      { element: 'tr.data-row', popover: { title: '2. Workflow Detail', description: 'Click any row to see the full spec: how it works, guardrails, version history, reliability, and who else reuses it.' }},
+      { element: '#btnAdd', popover: { title: '3. New Automation', description: 'A full-screen AI advisor asks what you do manually, checks if it already exists, classifies the work lane, then builds the spec.' }},
+      { element: '#btnGraph', popover: { title: '4. Work Graph', description: 'See how AI work flows across the company — dependency risk, team automation levels, and shared data. The map no org chart shows.' }},
+      { popover: { title: 'Built for Rillet', description: "A working prototype of the AI operations control plane — the missing layer between automation tools and leadership. Happy to walk through live." }}
+    ]
+  });
+  d.drive();
+  this.style.display = 'none';
+};
 </script>
 </body>
 </html>
