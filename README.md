@@ -8,6 +8,8 @@
 
 **[→ Open the demo](https://shiki4709.github.io/rillet-ai-registry/)**
 
+![Rillet AI Ops Demo](demo.gif)
+
 ## What You'll See
 
 **The Registry** — 16 AI workflows running across 6 teams. Each shows: time saved, status (Live/Pilot), last run, business impact level, and data sensitivity tags (PII/Financial).
