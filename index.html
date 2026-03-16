@@ -3720,18 +3720,71 @@
 
 <script>
 document.getElementById('tour-btn').onclick = function() {
+  this.style.display = 'none';
+
+  // Step 1: Show the registry table
   const d = window.driver.js.driver({
     showProgress: true,
+    allowClose: true,
     steps: [
-      { element: '.table-wrap', popover: { title: '1. The Registry', description: "Every AI workflow in one place — owner, impact level, time saved, last run status. This is what's missing at most companies today." }},
-      { element: 'tr.data-row', popover: { title: '2. Workflow Detail', description: 'Click any row to see the full spec: how it works, guardrails, version history, reliability, and who else reuses it.' }},
-      { element: '#btnAdd', popover: { title: '3. New Automation', description: 'A full-screen AI advisor asks what you do manually, checks if it already exists, classifies the work lane, then builds the spec.' }},
-      { element: '#btnGraph', popover: { title: '4. Work Graph', description: 'See how AI work flows across the company — dependency risk, team automation levels, and shared data. The map no org chart shows.' }},
-      { popover: { title: 'Built for Rillet', description: "A working prototype of the AI operations control plane — the missing layer between automation tools and leadership. Happy to walk through live." }}
+      {
+        element: '.stats',
+        popover: {
+          title: 'AI Operations Dashboard',
+          description: '16 workflows running across 6 teams. Every automation tracked — hours saved, live vs pilot, API connections.',
+          onNextClick: function() {
+            // Expand a workflow before moving to step 2
+            var row = document.querySelector('tr.data-row:nth-child(3)');
+            if (row && !row.classList.contains('expanded')) row.click();
+            setTimeout(function(){ d.moveNext(); }, 300);
+          }
+        }
+      },
+      {
+        element: '.detail-content',
+        popover: {
+          title: 'Full Workflow Spec',
+          description: 'How it works in plain English. The block pipeline. Guardrails — rules the AI must follow every run. Version history. Reliability. Who else reuses it.',
+          onNextClick: function() {
+            // Close the expanded row and open Work Graph
+            var row = document.querySelector('tr.data-row.expanded');
+            if (row) row.click();
+            setTimeout(function(){
+              document.getElementById('btnGraph').click();
+              setTimeout(function(){ d.moveNext(); }, 400);
+            }, 300);
+          }
+        }
+      },
+      {
+        element: '#workGraphContent',
+        popover: {
+          title: 'The AI Work Graph',
+          description: 'Which workflows have the highest business impact. Which APIs carry the most dependency risk. Which teams automate the most. The operational map no org chart can show.',
+          onNextClick: function() {
+            // Close the graph modal
+            document.getElementById('graphClose').click();
+            setTimeout(function(){ d.moveNext(); }, 300);
+          }
+        }
+      },
+      {
+        element: '#btnAdd',
+        popover: {
+          title: 'Try It: Build a New Automation',
+          description: 'Click this after the tour. A full-screen AI advisor asks what you do manually, checks if a workflow already exists, classifies the work (Product vs Ops), then generates a build spec with guardrails.',
+          side: 'bottom'
+        }
+      },
+      {
+        popover: {
+          title: 'Built for the Founders Associate Role',
+          description: "This is a working prototype of the AI operations control plane — the missing layer between automation tools and leadership. Built with Claude to show how I'd own AI at Rillet. Happy to walk through live."
+        }
+      }
     ]
   });
   d.drive();
-  this.style.display = 'none';
 };
 </script>
 </body>
