@@ -3728,6 +3728,7 @@
     if(firstRow&&!firstRow.classList.contains('expanded')){firstRow.click()}
 
     setTimeout(()=>{
+      if(!window.driver||!window.driver.js||!window.driver.js.driver){alert('Driver.js not loaded. Are you online? The tour requires an internet connection to load from CDN.');return}
       const driverObj=window.driver.js.driver({
         showProgress:true,
         animate:true,
