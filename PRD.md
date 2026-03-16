@@ -124,6 +124,7 @@ These are the foundational objects in the system. Everything in the UI is a view
 │ quality      │       │             │        │ comments    │
 │ lane         │       └─────────────┘        └─────────────┘
 │ reused_by    │
+│ guardrails   │
 └──────┬───────┘
        │
        │ belongs to          runs as            owned by
@@ -157,9 +158,15 @@ A person who creates, maintains, or reviews a workflow. Has a name, role, and op
 ### Business Unit
 An organizational team (GTM/Sales, Finance, Customer Success, etc.). Workflows belong to a BU. APIs are scoped to BUs. The BU is the primary lens for filtering and access control. Cross-functional roles (Founders Associate) have no BU and see everything.
 
+### Guardrail
+A standing rule that is enforced every time a workflow runs. Examples: "Never process payments without Controller approval", "Never fabricate product capabilities", "P1 tickets must reach eng within 5 minutes." Guardrails are the "employee handbook" for AI agents — persistent instructions that prevent the automation from doing harm, regardless of what the prompt says.
+
+Guardrails are suggested automatically based on which blocks are in the pipeline (e.g. adding an Email Send block suggests "Require approval before sending external email"). Users can also write custom rules. Guardrails are visible in the workflow detail row so anyone can see what constraints are in place.
+
 ### Relationships
 
 - A **Workflow** has many **Blocks** (ordered as a pipeline)
+- A **Workflow** has many **Guardrails** (standing rules)
 - A **Block** uses one **API** (or is Built-in)
 - An **API** has one or more **Credentials** with data classification
 - A **Workflow** belongs to one **Business Unit**
@@ -197,12 +204,14 @@ This is a registry, not a runtime:
 ### 2. Expanding a Workflow
 
 **What the user sees (top to bottom):**
-1. **How it works** — plain-English prompt summary (e.g. "Ingests weekly KPI spreadsheet. Generates a 3-paragraph narrative highlighting WoW changes. Tone-matched to company update style.")
+1. **How it works** — plain-English prompt summary
 2. **Pipeline** — visual block flow with arrows: Source → Processing → AI → Output → Approval
-3. **Reliability** — one badge: "Working well", "Works, sometimes needs edits", "New — still being tested", or "Needs improvement"
-4. **Also used by** — other teams reusing this workflow
-5. **Also useful for** — other use case ideas
-6. **Comments** — team discussion with input
+3. **Reliability + Impact** — "Working well" badge + "Critical impact" badge with reason
+4. **Rules (always enforced)** — guardrails with red `!` markers (e.g. "Never process payments without Controller approval")
+5. **Version history** — current version with changelog + list of previous versions
+6. **Also used by** — other teams reusing this workflow
+7. **Also useful for** — other use case ideas
+8. **Comments** — team discussion with input
 
 **What was intentionally removed:**
 - Reviewer line + risk badge (redundant — prompt summary already says who reviews)
@@ -232,10 +241,16 @@ This is a registry, not a runtime:
 
 **"Build new workflow" button transitions to Step 2.**
 
-**Step 2: Build (form + composer)**
+**Step 2: Build (form + composer + guardrails)**
 - Form fields pre-filled from chat: Name, BU (dropdown if user has no default), Description, Time This Takes Manually
 - Staged pipeline composer below: block catalog on left (searchable), visual pipeline on right grouped by stage (Source → Processing → AI → Output → Approval) with arrows between stages
 - Blocks show: name, API provider, credential status dot, model tag for AI blocks
+- **Guardrail builder** below the pipeline: "Rules (what should this workflow never do?)"
+  - Auto-suggests rules based on blocks in the pipeline (e.g. Email Send → "Require approval before sending external email", Claude Drafter → "Never fabricate product capabilities")
+  - Click a suggestion chip to add it
+  - Type custom rules in the input field
+  - Remove rules with × button
+  - Guardrails are saved with the workflow and visible in the expanded detail row
 - "Back to chat" returns to Step 1 without losing context
 
 **Step 3: Review & Launch**
@@ -314,9 +329,14 @@ All non-API blocks labeled "Built-in" instead of technical terms.
 ### Block Drawer
 
 Click any block to see:
-- Model lifecycle (Active/Deprecated) with cost tier and pricing for AI blocks
-- Data classification (PII/Financial/Internal) with scope and permissions
-- "Used in Your Team" vs "Used by Other Teams" with role-specific relevance hints
+- **Category** (CRM, Support, Payments, AI — Summarize, Output — Slack, etc.)
+- **Best for** — specific examples of how teams at Rillet use this block, referencing actual workflows by name (e.g. "The Ticket Classifier uses this to route 340+ tickets/week at 94% accuracy")
+- **Instead, use** — when to pick a different block and which one
+- **What you get** — specific data points and insights available (e.g. "Which deals stalled this week", "Payment failure rate by segment")
+- **Pros / Cons** — for AI blocks, trade-offs of the model choice
+- **Used in N workflows** — clickable list of workflows using this block
+
+Block intelligence is Rillet-specific, not generic. Each entry references actual workflows, real data points, and practical tips from teams who use it.
 
 ### Model Selection
 
@@ -432,5 +452,6 @@ These are acknowledged constraints of the demo, framed as a production roadmap:
 1. **Don't show what users can't act on.** If it doesn't help the user make a decision or take an action, cut it. This is the single rule that drove every UI decision.
 2. **No jargon.** The user is an operator, not an engineer. "Rule-based" not "Type 1". "Working well" not "83% accepted". "Translate Between Apps" not "Schema Mapper".
 3. **Chat first, form second.** Discover before building. Check if it already exists before creating new. Don't start with a blank form — start with a conversation.
-4. **Auto-detect everything possible.** Risk, reviewer, type, BU. Don't ask the user what the system can figure out from the pipeline.
-5. **Every workflow is a data point in the work graph.** Each automation added to the registry makes the company's operational structure more legible. The value compounds.
+4. **Auto-detect everything possible.** Risk, reviewer, type, BU, guardrail suggestions. Don't ask the user what the system can figure out from the pipeline.
+5. **AI agents need standing orders.** Guardrails are the "employee handbook" for automations — rules that are enforced every run, not just prompt suggestions. The system suggests them automatically based on what blocks are in the pipeline.
+6. **Every workflow is a data point in the work graph.** Each automation added to the registry makes the company's operational structure more legible. The value compounds.
