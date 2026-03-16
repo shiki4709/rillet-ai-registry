@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Rillet AI Ops</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1/dist/driver.css"/>
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1/dist/driver.js.iife.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -3716,76 +3714,5 @@
 })();
 </script>
 
-<button id="tour-btn" style="position:fixed;bottom:24px;right:24px;padding:12px 24px;background:#1a8a7a;color:white;border:none;border-radius:99px;cursor:pointer;font-size:14px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;z-index:9999;box-shadow:0 4px 16px rgba(26,138,122,.3)">▶ Take the tour</button>
-
-<script>
-document.getElementById('tour-btn').onclick = function() {
-  this.style.display = 'none';
-
-  // Step 1: Show the registry table
-  const d = window.driver.js.driver({
-    showProgress: true,
-    allowClose: true,
-    steps: [
-      {
-        element: '.stats',
-        popover: {
-          title: 'AI Operations Dashboard',
-          description: '16 workflows running across 6 teams. Every automation tracked — hours saved, live vs pilot, API connections.',
-          onNextClick: function() {
-            // Expand a workflow before moving to step 2
-            var row = document.querySelector('tr.data-row:nth-child(3)');
-            if (row && !row.classList.contains('expanded')) row.click();
-            setTimeout(function(){ d.moveNext(); }, 300);
-          }
-        }
-      },
-      {
-        element: '.detail-content',
-        popover: {
-          title: 'Full Workflow Spec',
-          description: 'How it works in plain English. The block pipeline. Guardrails — rules the AI must follow every run. Version history. Reliability. Who else reuses it.',
-          onNextClick: function() {
-            // Close the expanded row and open Work Graph
-            var row = document.querySelector('tr.data-row.expanded');
-            if (row) row.click();
-            setTimeout(function(){
-              document.getElementById('btnGraph').click();
-              setTimeout(function(){ d.moveNext(); }, 400);
-            }, 300);
-          }
-        }
-      },
-      {
-        element: '#workGraphContent',
-        popover: {
-          title: 'The AI Work Graph',
-          description: 'Which workflows have the highest business impact. Which APIs carry the most dependency risk. Which teams automate the most. The operational map no org chart can show.',
-          onNextClick: function() {
-            // Close the graph modal
-            document.getElementById('graphClose').click();
-            setTimeout(function(){ d.moveNext(); }, 300);
-          }
-        }
-      },
-      {
-        element: '#btnAdd',
-        popover: {
-          title: 'Try It: Build a New Automation',
-          description: 'Click this after the tour. A full-screen AI advisor asks what you do manually, checks if a workflow already exists, classifies the work (Product vs Ops), then generates a build spec with guardrails.',
-          side: 'bottom'
-        }
-      },
-      {
-        popover: {
-          title: 'Built for the Founders Associate Role',
-          description: "This is a working prototype of the AI operations control plane — the missing layer between automation tools and leadership. Built with Claude to show how I'd own AI at Rillet. Happy to walk through live."
-        }
-      }
-    ]
-  });
-  d.drive();
-};
-</script>
 </body>
 </html>
