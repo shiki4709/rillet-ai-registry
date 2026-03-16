@@ -845,6 +845,16 @@
   .wg-flow:last-child { border-bottom:none; }
   .wg-flow-arrow { color:var(--tx-3); }
 
+  /* Guardrail builder */
+  .guardrail-item { display:flex; align-items:center; gap:6px; padding:6px 0; font-size:var(--text-sm); color:var(--tx-2); }
+  .guardrail-item-icon { color:var(--red); flex-shrink:0; font-weight:700; }
+  .guardrail-item-text { flex:1; line-height:1.5; }
+  .guardrail-remove { background:none; border:none; color:var(--tx-3); cursor:pointer; font-size:var(--text-sm); padding:2px 4px; }
+  .guardrail-remove:hover { color:var(--red); }
+  .guardrail-suggest { display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); padding:4px 10px; border-radius:99px; border:1px dashed var(--border); background:var(--bg); color:var(--tx-2); cursor:pointer; margin:0 4px 4px 0; transition:all 100ms; }
+  .guardrail-suggest:hover { border-color:var(--accent); color:var(--accent); background:var(--teal-bg); }
+  .guardrail-suggest.added { opacity:.4; pointer-events:none; border-style:solid; }
+
   /* Open source toolbox */
   .oss-item { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-dim); cursor:pointer; transition:background 100ms; }
   .oss-item:last-child { border-bottom:none; }
@@ -1212,6 +1222,15 @@
               <div id="composerMeta" style="margin-top:8px"></div>
               <div class="composer-hint">Add or remove blocks from the catalog on the left.</div>
             </div>
+          </div>
+        </div>
+        <div class="field-group" style="margin-top:12px">
+          <div class="field-group-label">Rules (what should this workflow never do?)</div>
+          <div id="guardrailSuggestions" style="margin-bottom:8px"></div>
+          <div id="guardrailList"></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="text" id="guardrailInput" class="chat-input" style="border-radius:var(--r-sm);font-size:var(--text-sm);padding:8px 12px" placeholder="e.g. Never send without manager approval...">
+            <button class="btn" id="guardrailAdd" style="font-size:var(--text-xs);padding:6px 12px;white-space:nowrap">Add rule</button>
           </div>
         </div>
       </div>
@@ -2651,6 +2670,7 @@
       metaEl.innerHTML=meta;
     }
     renderLivePipeline();
+    renderGuardrailSuggestions();
   }
 
   // Live pipeline preview in Step 1 — shows what the advisor has built so far
@@ -2692,6 +2712,66 @@
     const btn=e.target.closest('.cb-remove');if(!btn)return;
     composerBlocks.splice(parseInt(btn.dataset.idx),1);
     renderComposerFlow();
+  });
+
+  // ── Guardrail Builder ──
+  let composerGuardrails=[];
+  const GUARDRAIL_SUGGESTIONS={
+    'sendgrid-email':['Require approval before sending any external email','Never include unverified financial figures in emails'],
+    'slack-notify':['Only post to approved channels — never DMs','Do not include raw customer data in Slack messages'],
+    'salesforce-update':['Never overwrite manually-edited CRM fields','Log every field change with before/after values'],
+    'zendesk-update':['Never auto-close tickets — only route and classify','P1 tickets must be routed within 5 minutes'],
+    'claude-summarize':['Use exact figures from source — never round numbers','Match tone to existing company style'],
+    'claude-draft':['Never fabricate product capabilities','Always cite source document for generated content'],
+    'claude-classify':['Log classification confidence with every result','Flag items with confidence below 80% for human review'],
+    'claude-extract':['Validate extracted amounts against source document','Flag any extraction with low confidence'],
+    'claude-narrator':['Reviewer must verify all numbers before publishing','Do not speculate on causes — only report what the data shows'],
+    'ocr-ingest':['Never process documents marked confidential without approval','Validate OCR output against source when amounts exceed $10K'],
+    'stripe-feed':['Never expose raw payment data in logs or outputs','All financial figures must match Stripe exactly'],
+    'manager-approve':['Approver must be different from the workflow creator','Time-out after 48 hours — escalate to next level']
+  };
+  function renderGuardrailSuggestions(){
+    const el=document.getElementById('guardrailSuggestions');if(!el)return;
+    const suggestions=new Set();
+    composerBlocks.forEach(bid=>{
+      const s=GUARDRAIL_SUGGESTIONS[bid];
+      if(s)s.forEach(rule=>suggestions.add(rule));
+    });
+    if(!suggestions.size){el.innerHTML='';return}
+    let html='<div style="font-size:var(--text-xs);color:var(--tx-3);margin-bottom:4px">Suggested based on your blocks:</div>';
+    [...suggestions].forEach(rule=>{
+      const added=composerGuardrails.includes(rule);
+      html+='<span class="guardrail-suggest'+(added?' added':'')+'" data-suggest-rule="'+esc(rule)+'">'+(added?'✓ ':'+ ')+esc(rule)+'</span>';
+    });
+    el.innerHTML=html;
+  }
+  function renderGuardrailList(){
+    const el=document.getElementById('guardrailList');if(!el)return;
+    el.innerHTML=composerGuardrails.map((rule,i)=>'<div class="guardrail-item"><span class="guardrail-item-icon">!</span><span class="guardrail-item-text">'+esc(rule)+'</span><button class="guardrail-remove" data-guard-idx="'+i+'">&times;</button></div>').join('');
+  }
+  // Add rule from input
+  document.getElementById('guardrailAdd').addEventListener('click',()=>{
+    const input=document.getElementById('guardrailInput');
+    const rule=input.value.trim();if(!rule)return;
+    if(!composerGuardrails.includes(rule))composerGuardrails.push(rule);
+    input.value='';
+    renderGuardrailList();renderGuardrailSuggestions();
+  });
+  document.getElementById('guardrailInput').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();document.getElementById('guardrailAdd').click()}
+  });
+  // Add rule from suggestion
+  document.getElementById('guardrailSuggestions').addEventListener('click',e=>{
+    const el=e.target.closest('[data-suggest-rule]');if(!el||el.classList.contains('added'))return;
+    const rule=el.dataset.suggestRule;
+    if(!composerGuardrails.includes(rule))composerGuardrails.push(rule);
+    renderGuardrailList();renderGuardrailSuggestions();
+  });
+  // Remove rule
+  document.getElementById('guardrailList').addEventListener('click',e=>{
+    const btn=e.target.closest('[data-guard-idx]');if(!btn)return;
+    composerGuardrails.splice(parseInt(btn.dataset.guardIdx),1);
+    renderGuardrailList();renderGuardrailSuggestions();
   });
 
   // ── Add Workflow Modal (3-step) ──
@@ -2754,7 +2834,7 @@
     document.getElementById('reviewSummary').innerHTML=renderCredentialGate()+html;
   }
   function resetModal(){
-    setModalStep(1);composerBlocks=[];resetGoalCtx();renderComposerFlow();closeWorkflowPreview();
+    setModalStep(1);composerBlocks=[];composerGuardrails=[];resetGoalCtx();renderComposerFlow();closeWorkflowPreview();renderGuardrailList();
     ['fName','fDesc','fDetails','fReviewer','fSaves'].forEach(id=>document.getElementById(id).value='');
     // Pre-fill BU from session if user has one
     const buSel=document.getElementById('fBU');
@@ -3548,7 +3628,7 @@
     // Auto-generate quality + icons
     WF_QUALITY[nw.id]={design:'Easy to update',output:'Needs a quick check',designNote:'Block-composed pipeline',outputNote:'New workflow — output usefulness to be assessed after first runs'};
     WF_ICONS[nw.id]={abbr:name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase(),bg:'#4e6378'};
-    COMMENTS[nw.id]=[];USE_CASES[nw.id]=[];
+    COMMENTS[nw.id]=[];USE_CASES[nw.id]=[];GUARDRAILS[nw.id]=[...composerGuardrails];
     // Add to execution log
     EXEC_LOG.unshift({wfId:nw.id,status:'success',startedAt:'Just now',duration:'—',blocksRun:composerBlocks.length,trigger:'Manual',note:'Pilot created'});
     // Show success state inside the modal
