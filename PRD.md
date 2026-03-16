@@ -1,7 +1,7 @@
 # Rillet AI Ops — Product Requirements Document
 
-**Version**: 5.0
-**Date**: 2026-03-14
+**Version**: 9.0
+**Date**: 2026-03-16
 **Owner**: Founders Associate
 
 ---
@@ -328,15 +328,16 @@ All non-API blocks labeled "Built-in" instead of technical terms.
 
 ### Block Drawer
 
-Click any block to see:
-- **Category** (CRM, Support, Payments, AI — Summarize, Output — Slack, etc.)
-- **Best for** — specific examples of how teams at Rillet use this block, referencing actual workflows by name (e.g. "The Ticket Classifier uses this to route 340+ tickets/week at 94% accuracy")
-- **Instead, use** — when to pick a different block and which one
-- **What you get** — specific data points and insights available (e.g. "Which deals stalled this week", "Payment failure rate by segment")
-- **Pros / Cons** — for AI blocks, trade-offs of the model choice
-- **Used in N workflows** — clickable list of workflows using this block
+Click any block in a pipeline to see (3 things only — everything else was cut):
+1. **What it does** — Rillet-specific, not generic. References actual workflows by name. E.g. HubSpot: "Sales uses this to auto-generate deal summaries. The Deal Summary Generator pulls deal stage + ARR + next steps every time a deal moves."
+2. **When to use something else** — E.g. "Customer complaints or support issues — that data is in Zendesk, not HubSpot"
+3. **What you get** — specific data points as chips. E.g. "Which deals stalled this week", "Rep-by-rep pipeline coverage"
 
-Block intelligence is Rillet-specific, not generic. Each entry references actual workflows, real data points, and practical tips from teams who use it.
+For AI blocks, also shows: pros/cons of the model choice (Sonnet vs Haiku trade-offs).
+
+Category shown in the header (CRM, Support, Payments, AI — Summarize, Output — Slack, etc.).
+
+All 33 blocks have Rillet-specific intelligence. Each references actual workflows, real data points, and practical tips.
 
 ### Model Selection
 
@@ -450,8 +451,38 @@ These are acknowledged constraints of the demo, framed as a production roadmap:
 ## Design Principles
 
 1. **Don't show what users can't act on.** If it doesn't help the user make a decision or take an action, cut it. This is the single rule that drove every UI decision.
-2. **No jargon.** The user is an operator, not an engineer. "Rule-based" not "Type 1". "Working well" not "83% accepted". "Translate Between Apps" not "Schema Mapper".
+2. **No jargon.** The user is an operator, not an engineer. "Working well" not "83% accepted". "Translate Between Apps" not "Schema Mapper". Type classification uses the Bezos framework: Type 1 (Irreversible/High Stakes) vs Type 2 (Reversible/Low Stakes).
 3. **Chat first, form second.** Discover before building. Check if it already exists before creating new. Don't start with a blank form — start with a conversation.
 4. **Auto-detect everything possible.** Risk, reviewer, type, BU, guardrail suggestions. Don't ask the user what the system can figure out from the pipeline.
 5. **AI agents need standing orders.** Guardrails are the "employee handbook" for automations — rules that are enforced every run, not just prompt suggestions. The system suggests them automatically based on what blocks are in the pipeline.
 6. **Every workflow is a data point in the work graph.** Each automation added to the registry makes the company's operational structure more legible. The value compounds.
+
+---
+
+## Changelog
+
+### v9.0 (2026-03-16)
+- **Type framework aligned to Bezos model** — Type 1 (Irreversible/High Stakes) requires human sign-off, Type 2 (Reversible/Low Stakes) AI can own. Same language in PRD, CLAUDE.md, and UI.
+- **Block intelligence rewritten** — all 33 blocks have Rillet-specific descriptions referencing actual workflows, data points, and when to use alternatives. Drawer stripped to 3 sections: what it does, when to use something else, what you get.
+- **Block drawer click fixed** — resolved event handler conflicts where API detail intercepted block clicks. Blocks now open reliably.
+- **Guardrail builder in Step 2** — auto-suggests rules based on pipeline blocks (12 block types have suggestions). Users can add custom rules. Saved with workflow.
+- **Guardrails visible in workflow detail** — shown with red `!` markers between reliability badge and reuse section.
+- **Version history in workflow detail** — current version + changelog + previous versions list.
+- **Demo GIF** — auto-generated with Puppeteer + ffmpeg, embedded in README.
+- **README rewritten** as demo landing page with live link, feature walkthrough, object model, and deploy instructions.
+
+### v8.0 (2026-03-16)
+- Guardrail added as 7th core object in the object model
+- Block drawer section updated for Rillet-specific intelligence
+- Design principle #5: "AI agents need standing orders"
+
+### v7.0 (2026-03-14)
+- AI Work Graph thesis and 5-stage evolution path
+- Category positioning (Datadog for infra → this for AI ops)
+
+### v6.0 (2026-03-14)
+- Core object model: Workflow, Block, API, Run, Owner, Business Unit
+- Entity relationship diagram
+
+### v5.0 (2026-03-14)
+- Initial PRD with thesis, architecture, and full user flow
