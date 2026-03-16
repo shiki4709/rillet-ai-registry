@@ -135,7 +135,7 @@ Each entry in registry.json:
 - `name` (string) — Title case, max 50 chars
 - `desc` (string) — One sentence, max 120 chars
 - `bu` (string) — Must match existing BU
-- `type` (number) — 1 = deterministic, 2 = generative. Auto-detected from blocks.
+- `type` (number) — 1 = Irreversible/High Stakes (requires human sign-off), 2 = Reversible/Low Stakes (AI can own or draft). Auto-detected from blocks.
 - `risk` (string) — "Low" or "Medium". Auto-detected from output blocks.
 - `status` (string) — "Live" or "Pilot"
 - `saves` (string) — "N hrs/wk" or "N hrs/mo"

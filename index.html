@@ -1113,7 +1113,7 @@
     <input type="text" class="search-input" id="searchInput" placeholder="Search workflows...">
     <select class="filter-sel" id="filterBU" style="display:none"><option value="">All BUs</option></select>
     <select class="filter-sel" id="filterStatus"><option value="">All Status</option><option value="Live">Live</option><option value="Pilot">Pilot</option></select>
-    <select class="filter-sel" id="filterType" style="display:none"><option value="">All Types</option><option value="1">Rule-based</option><option value="2">AI-powered</option></select>
+    <select class="filter-sel" id="filterType" style="display:none"><option value="">All Types</option><option value="1">Type 1 — Irreversible</option><option value="2">Type 2 — Reversible</option></select>
   </div>
 
   <div class="table-wrap">
@@ -2661,7 +2661,7 @@
       const creds=[...new Set(composerBlocks.map(bid=>BLOCK_CREDS[bid]).filter(Boolean))];
       const apis=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.api).filter(Boolean).filter(a=>a!=='Internal'&&a!=='Custom'&&a!=='Rule Engine'))];
       let meta='<div class="composer-meta">';
-      meta+='<div class="composer-meta-item"><span class="composer-meta-label">Type</span> '+(hasAI?'Generative':'Deterministic')+'</div>';
+      meta+='<div class="composer-meta-item"><span class="composer-meta-label">Type</span> '+(hasAI?'Type 2 — Reversible':'Type 1 — Irreversible')+'</div>';
       meta+='<div class="composer-meta-item"><span class="composer-meta-label">Blocks</span> '+composerBlocks.length+'</div>';
       meta+='<div class="composer-meta-item"><span class="composer-meta-label">APIs</span> '+apis.length+'</div>';
       meta+='<div class="composer-meta-item"><span class="composer-meta-label">Credentials</span> '+creds.length+'</div>';
@@ -2797,7 +2797,7 @@
     const risk=autoDetectRisk(composerBlocks);
     const reviewer=risk==='Medium'?(document.getElementById('fReviewer').value.trim()||'TBD'):'';
     const hasAI=composerBlocks.some(bid=>BLOCKS[bid]?.type==='ai');
-    const typeLabel=hasAI?'AI-powered':'Rule-based';
+    const typeLabel=hasAI?'Type 2 — Reversible':'Type 1 — Irreversible';
     // Models
     const models=[...new Set(composerBlocks.map(bid=>BLOCKS[bid]?.model).filter(Boolean))];
     const modelChips=models.map(m=>{const short=m.includes('sonnet')?'Sonnet 4':m.includes('haiku')?'Haiku 4.5':m;return '<span class="model-badge">'+esc(short)+'</span>'}).join('');
@@ -3319,7 +3319,7 @@
 
   // Render a full build spec document for a workflow proposal
   function renderBuildSpec(proposal,lane){
-    const typeLabel=proposal.hasAI?'Generative':'Deterministic';
+    const typeLabel=proposal.hasAI?'Type 2 — Reversible':'Type 1 — Irreversible';
     const typeColor=proposal.hasAI?'var(--teal)':'var(--slate)';
     const laneInfo=LANE_META[lane||'ops'];
     let html='<div class="build-spec">';

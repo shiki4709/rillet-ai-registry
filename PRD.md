@@ -357,7 +357,7 @@ Cost is tracked at the API key level, not per workflow. The registry shows which
 | name | string | Max 50 chars |
 | desc | string | Max 120 chars |
 | bu | string | Must match existing BU |
-| type | number | 1 = rule-based, 2 = AI-powered. Auto-detected. |
+| type | number | 1 = Irreversible/High Stakes (requires human sign-off, e.g. client-facing financials), 2 = Reversible/Low Stakes (AI can own or draft, e.g. internal summaries). Auto-detected. |
 | risk | string | "Low" or "Medium". Auto-detected from output blocks. |
 | status | string | "Live" or "Pilot" |
 | saves | string | "N hrs/wk" or "N hrs/mo" |
